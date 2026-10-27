@@ -60,8 +60,8 @@ const SCHRITT_NAMEN = ABLAUF.map((s, i) => {
     punkte: 'Punktestand', lernkarten: 'Demo 4: Lernkarten', video: 'Demo 5: KI-Song',
     sortieren: 'Sortieraufgabe', spiel: 'Demo 6: Minispiel', siegerehrung: 'Siegerehrung',
   }[s.modus];
-  if (n) return (i + 1) + '. ' + n + (s.final ? ' (Abschluss + Export)' : '');
-  const f = { wort: 'Im Anfang war das Wort', prompt: 'Und der Prompt?', jetzt: 'Jetzt seid ihr dran!' }[s.folie];
+  if (n) return (i + 1) + '. ' + n + (s.fragerunde ? ' (Fragerunde + Export)' : '');
+  const f = { wort: 'Im Anfang war das Wort', prompt: 'Und der Prompt?', fragerunde: 'Fragerunde', jetzt: 'Jetzt seid ihr dran!' }[s.folie];
   return (i + 1) + '. Folie: ' + (f || 'Demo ' + DEMOS[s.folie].nr);
 });
 
@@ -123,6 +123,73 @@ function rangliste(tn) {
 }
 
 /* =====================================================================
+   Video zum KI-Song: gleich nach dem Start im Hintergrund komplett laden,
+   damit es in Demo 5 sofort läuft. Alternativ: Datei vom Laptop öffnen.
+   ===================================================================== */
+const video = { quelle: VIDEO_DATEI, status: 'wartet', prozent: 0 };   // status: wartet | laedt | bereit | lokal | fehler
+
+async function videoVorladen() {
+  if (video.status !== 'wartet') return;
+  video.status = 'laedt';
+  videoAnzeigen();
+  try {
+    const r = await fetch(VIDEO_DATEI);
+    if (!r.ok || !r.body) throw new Error('HTTP ' + r.status);
+    const gesamt = Number(r.headers.get('content-length')) || 0;
+    const leser = r.body.getReader();
+    const teile = [];
+    let geladen = 0;
+    for (;;) {
+      const { done, value } = await leser.read();
+      if (done) break;
+      teile.push(value);
+      geladen += value.length;
+      const p = gesamt ? Math.floor(100 * geladen / gesamt) : 0;
+      if (p !== video.prozent) { video.prozent = p; videoAnzeigen(); }
+    }
+    if (video.status !== 'laedt') return;           // inzwischen Datei vom Laptop gewählt
+    video.quelle = URL.createObjectURL(new Blob(teile, { type: 'video/mp4' }));
+    video.status = 'bereit';
+  } catch (e) {
+    if (video.status === 'laedt') video.status = 'fehler';
+  }
+  videoAnzeigen();
+}
+
+function videoText() {
+  return {
+    wartet: '🎬 Video: noch nicht geladen',
+    laedt: `🎬 Video wird vorgeladen … ${video.prozent} %`,
+    bereit: '🎬 Video vorgeladen ✓',
+    lokal: '🎬 Video vom Laptop ✓',
+    fehler: '🎬 Video konnte nicht vorgeladen werden',
+  }[video.status];
+}
+
+// Statuszeilen auf Anmeldebildschirm, Video-Bildschirm und im Menü aktualisieren
+function videoAnzeigen() {
+  document.querySelectorAll('[data-video-status]').forEach(e => { e.textContent = videoText(); });
+  if (bildschirm && bildschirm.videoBereit) bildschirm.videoBereit();
+}
+
+// Datei vom Laptop wählen (z. B. aus dem Ordner „Videos“) – läuft ohne Internet
+function videoVomLaptop() {
+  const feld = document.createElement('input');
+  feld.type = 'file';
+  feld.accept = 'video/*';
+  feld.addEventListener('change', () => {
+    const datei = feld.files && feld.files[0];
+    if (!datei) return;
+    if (video.quelle.startsWith('blob:')) URL.revokeObjectURL(video.quelle);
+    video.quelle = URL.createObjectURL(datei);
+    video.status = 'lokal';
+    videoAnzeigen();
+    hinweis('Video vom Laptop geladen: ' + datei.name);
+  });
+  feld.click();
+}
+
+/* =====================================================================
    Bühne einpassen (16:9, 1600 × 900)
    ===================================================================== */
 const buehne = $('#buehne');
@@ -146,7 +213,7 @@ const verbindung = beamerVerbindung({
   onPin: zeigePinDialog,
   onStatus(s) {
     verbunden = s === 'verbunden' || s === 'freigeschaltet';
-    if (s === 'freigeschaltet') $('#pin-ebene').hidden = true;
+    if (s === 'freigeschaltet') { $('#pin-ebene').hidden = true; videoVorladen(); }
     $('#verbindung-weg').hidden = verbunden;
     const p = $('.kopf .punkt');
     if (p) p.classList.toggle('weg', !verbunden);
@@ -338,6 +405,16 @@ const FOLIEN_BAUER = {
       <div class="gleichung"><span>📄 9 Seiten Beschreibung in Word</span><i>↓</i><span>💻 diese Anwendung</span></div>
       <p class="zitat">„Im Anfang war das Wort.“</p></div></div>`;
   },
+  fragerunde() {
+    const inhalt = gerüst();
+    inhalt.innerHTML = `<div class="folie-fragerunde"><span class="kicker">FRAGERUNDE</span>
+      <p class="einleitung">Nach dieser Übersicht und Inspiration …</p>
+      <div class="fragen">
+        <div class="frage-karte"><span class="symbol">💡</span><p>Welche <b>Ideen für Anwendungen</b> von Claude Code fallen euch ein?</p></div>
+        <div class="frage-karte"><span class="symbol">🛠️</span><p>Welche <b>Probleme</b> würdet ihr gerne damit <b>lösen</b>?</p></div>
+        <div class="frage-karte warn"><span class="symbol">⚠️</span><p>Oder: Wo seht ihr <b>Probleme</b>, die durch die Verwendung solcher KI-generierten Webanwendungen <b>entstehen</b> könnten?</p></div>
+      </div></div>`;
+  },
   jetzt() {
     const inhalt = gerüst({
       dunkel: true,
@@ -381,7 +458,7 @@ function demoFolie(s) {
 const BILDSCHIRME = {
   /* ---------- Anmeldung ---------- */
   login() {
-    const inhalt = gerüst({ links: '<a class="knopf2" href="handout.html" target="_blank" rel="noopener">🖨 QR-Code fürs Handout</a>' });
+    const inhalt = gerüst({ links: '<a class="knopf2" href="handout.html" target="_blank" rel="noopener">🖨 QR-Code fürs Handout</a><span class="mini-text" data-video-status></span>' });
     inhalt.innerHTML = `<div class="login">
       <div class="qr-karte"><div class="qr-gross" id="qr-login"></div><div class="adresse">${esc(HANDY_ADRESSE.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</div></div>
       <div><h1>Willkommen zum KI-Workshop!</h1>
@@ -489,19 +566,34 @@ const BILDSCHIRME = {
 
   /* ---------- Demo 5: KI-Song ---------- */
   video() {
-    const inhalt = gerüst();
-    inhalt.innerHTML = `<div class="frage-kopf"><h1>KI-Song – Der 6-schrittige Pflegeprozess nach Fiechter und Meier</h1></div>
-      <div class="video-feld"><video controls preload="auto" playsinline src="${VIDEO_DATEI}"></video></div>`;
-    const video = $('video', inhalt);
-    // Liegt das Video (noch) nicht im Repository, wird es aus Google Drive eingebettet
-    video.addEventListener('error', () => {
+    const inhalt = gerüst({ links: '<button class="knopf2" data-laptop>📁 Video vom Laptop öffnen</button><span class="mini-text" data-video-status></span>' });
+    inhalt.innerHTML = `<div class="video-seite"><div class="frage-kopf"><h1>Die 6 Schritte im Pflegeprozess</h1></div>
+      <div class="video-feld"><video controls preload="auto" playsinline></video></div></div>`;
+    const el = $('video', inhalt);
+    el.src = video.quelle;
+    $('[data-laptop]', buehne).addEventListener('click', videoVomLaptop);
+    // Fehlt die Datei ganz (und ist nichts vom Laptop gewählt), wird das Video aus Google Drive eingebettet
+    el.addEventListener('error', () => {
+      if (video.status === 'lokal' || video.status === 'bereit' || !el.isConnected) return;
       const f = document.createElement('iframe');
       f.src = VIDEO_DRIVE;
       f.allow = 'autoplay; fullscreen';
       f.allowFullscreen = true;
-      video.replaceWith(f);
-    }, { once: true });
-    return { aktualisieren() {}, abbauen() { try { video.pause(); } catch (e) { /* egal */ } } };
+      el.replaceWith(f);
+    });
+    videoAnzeigen();
+    return {
+      aktualisieren() {},
+      // Vorladen fertig oder Datei vom Laptop gewählt: auf die schnelle Quelle umschalten, solange noch nicht gespielt wird
+      videoBereit() {
+        if (el.src === video.quelle || !el.isConnected) return;
+        if ((video.status === 'bereit' && el.paused && el.currentTime === 0) || video.status === 'lokal') {
+          el.src = video.quelle;
+          el.load();
+        }
+      },
+      abbauen() { try { el.pause(); } catch (e) { /* egal */ } },
+    };
   },
 
   /* ---------- Sortieraufgabe ---------- */
@@ -610,7 +702,7 @@ function punkteBildschirm(s) {
     <button class="knopf2" data-rueckgaengig hidden>↶ Rückgängig</button>
     ${s.final ? '<button class="knopf2 akzent" data-export>📥 FINALEN PUNKTESTAND EXPORTIEREN!</button>' : ''}`;
   const inhalt = gerüst({ links });
-  inhalt.innerHTML = `<div class="punkte-kopf"><h1>AKTUELLER PUNKTESTAND</h1>
+  inhalt.innerHTML = `<div class="punkte-kopf"><h1>AKTUELLER PUNKTESTAND</h1>${s.fragerunde ? '<span class="fragerunde-hinweis">Fragerunde: 💡 Ideen · 🛠️ Probleme lösen · ⚠️ Bedenken</span>' : ''}
     <div class="legende"><span><i style="background:var(--rot)"></i>hat eine Frage</span><span><i style="background:var(--gruen)"></i>hat eine Antwort</span><span><i style="background:var(--gold)"></i>ist dran</span></div></div>
     <div class="punkte-raster"></div>`;
   const raster = $('.punkte-raster', inhalt);
@@ -622,6 +714,7 @@ function punkteBildschirm(s) {
   let vergabeFenster = null;
   let auslosung = null;
   let zuletztGezogen = null;
+  let punkteTrotzFrage = null;       // id: trotz offener Frage das Punkte-Fenster zeigen
 
   buehne.querySelectorAll('[data-zufall]').forEach(b => b.addEventListener('click', () => zufall(b.dataset.zufall)));
   $('[data-rueckgaengig]', buehne).addEventListener('click', () => senden({ type: 'rueckgaengig' }));
@@ -711,19 +804,40 @@ function punkteBildschirm(s) {
 
     // Vergabe-Fenster passend zum aufgerufenen Namen
     const dran = z.aufgerufen && z.tn.find(t => t.id === z.aufgerufen);
+    if (punkteTrotzFrage && !auslosung && (!dran || dran.id !== punkteTrotzFrage)) punkteTrotzFrage = null;
     if (dran && !auslosung) vergabeOeffnen(dran);
     else if (!dran && vergabeFenster) vergabeSchliessen();
   }
 
+  // Wer eine Frage gestellt hat, bekommt dafür keine Punkte: Dann gibt es nur „Frage beantwortet“.
+  // Ausnahme: zufällig aufgerufen oder „Stattdessen Punkte geben“ gewählt.
   function vergabeOeffnen(t) {
-    if (vergabeFenster && vergabeFenster.dataset.id === t.id) {
-      $('.wer span', vergabeFenster).textContent = t.meldung === 'frage' ? '✋ hat eine Frage' : t.meldung === 'antwort' ? '💡 hat eine Antwort' : 'ist dran';
+    const art = t.meldung === 'frage' && punkteTrotzFrage !== t.id ? 'frage' : 'punkte';
+    if (vergabeFenster && vergabeFenster.dataset.id === t.id && vergabeFenster.dataset.art === art) {
+      if (art === 'punkte') $('.wer span', vergabeFenster).textContent = t.meldung === 'frage' ? '✋ hat eine Frage' : t.meldung === 'antwort' ? '💡 hat eine Antwort' : 'ist dran';
       return;
     }
     vergabeSchliessen();
     const f = document.createElement('div');
-    f.className = 'vergabe';
+    f.className = 'vergabe' + (art === 'frage' ? ' frage' : '');
     f.dataset.id = t.id;
+    f.dataset.art = art;
+    if (art === 'frage') {
+      f.innerHTML = `<div class="wer"><b>${esc(t.name)}</b><span>✋ hat eine Frage</span></div>
+        <div class="reihe"><button class="pk beantwortet" data-beantwortet>✓ Frage beantwortet</button></div>
+        <div class="unten"><button class="link-knopf" data-stattdessen>Stattdessen Punkte für eine Antwort geben</button>
+        <button class="knopf2" data-abbrechen>Abbrechen</button></div>`;
+      $('[data-beantwortet]', f).addEventListener('click', () => {
+        senden({ type: 'frageBeantwortet', id: t.id });
+        hinweis(`Frage von ${t.name} beantwortet`);
+        vergabeSchliessen();
+      });
+      $('[data-stattdessen]', f).addEventListener('click', () => { punkteTrotzFrage = t.id; vergabeOeffnen(t); });
+      $('[data-abbrechen]', f).addEventListener('click', () => senden({ type: 'aufrufen', id: null }));
+      inhalt.appendChild(f);
+      vergabeFenster = f;
+      return;
+    }
     f.innerHTML = `<div class="wer"><b>${esc(t.name)}</b><span></span></div>
       <div class="reihe">${[0, 10, 25, 50, 75, 100].map(p => `<button class="pk" data-p="${p}">${p}</button>`).join('')}
       <input type="number" min="0" max="100" step="1" placeholder="…" aria-label="eigene Punktzahl"><button class="knopf2" data-eigene>Vergeben</button></div>
@@ -779,6 +893,7 @@ function punkteBildschirm(s) {
       schritte++;
       if (schritte >= gesamt) {
         auslosung = null;
+        punkteTrotzFrage = sieger.id;      // aufgerufen, um zu antworten
         senden({ type: 'aufrufen', id: sieger.id });
         return;
       }
@@ -883,6 +998,8 @@ function menueAufbauen() {
     <button class="aktion" data-a="vollbild">⛶ Vollbild an/aus</button>
     <button class="aktion" data-a="export">📥 Punktestand exportieren (Excel)</button>
     <button class="aktion" data-a="handout">🖨 QR-Code fürs Handout drucken</button>
+    <button class="aktion" data-a="video">📁 Video vom Laptop öffnen</button>
+    <p class="klein" data-video-status>${esc(videoText())}</p>
     <h3>Teilnehmende (${z.tn.length})</h3>
     ${z.tn.length ? z.tn.map(t => `<div class="tn-zeile"><span>${t.online ? '🟢' : '⚪'} ${esc(t.name)} <span class="klein">${t.punkte.gesamt} P.</span></span><button data-tn="${t.id}">verwalten</button></div>`).join('') : '<p class="klein">Noch niemand angemeldet.</p>'}
     ${versteckt.length ? `<h3>Ausgeblendete Begriffe</h3>${versteckt.map(b => `<div class="wort-zeile"><span>${esc(b.text)}</span><button data-zeigen="${esc(b.schluessel)}">wieder zeigen</button></div>`).join('')}` : ''}
@@ -899,6 +1016,7 @@ function menueAufbauen() {
     if (a === 'vollbild') vollbild(!document.fullscreenElement);
     if (a === 'export') exportieren();
     if (a === 'handout') window.open('handout.html', '_blank', 'noopener');
+    if (a === 'video') videoVomLaptop();
     if (a === 'reset') zuruecksetzenFragen();
     if (a === 'pin') { verbindung.pinVergessen(); hinweis('PIN vergessen – beim nächsten Öffnen wird sie wieder abgefragt.'); }
   }));
@@ -932,4 +1050,4 @@ document.addEventListener('keydown', e => {
 buehne.innerHTML = '<div style="margin:auto;font-size:30px;color:#5B6F74">Verbinde …</div>';
 
 // Schnittstelle für die automatischen Tests (liest nur aus)
-window.__workshop = { get z() { return z; } };
+window.__workshop = { get z() { return z; }, get video() { return video; } };

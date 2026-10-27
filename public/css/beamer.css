@@ -283,7 +283,8 @@ button.chip:hover { border-color: var(--petrol); }
 .uhr.um .zeit { color: var(--rot); animation: pulsieren 1s infinite; font-size: 84px; }
 
 /* ---------- Video ---------- */
-.video-feld { position: absolute; left: 50%; top: 118px; transform: translateX(-50%); width: 1104px; height: 621px; background: #000; border-radius: 18px; overflow: hidden; box-shadow: var(--schatten); }
+.video-seite { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; }
+.video-feld { flex: 1; min-height: 0; aspect-ratio: 16 / 9; max-width: 1300px; margin: 18px 0 4px; background: #000; border-radius: 18px; overflow: hidden; box-shadow: var(--schatten); }
 .video-feld video, .video-feld iframe { width: 100%; height: 100%; border: 0; display: block; background: #000; }
 
 /* ---------- Sortieraufgabe ---------- */
@@ -402,3 +403,22 @@ button.chip:hover { border-color: var(--petrol); }
 .demo .bild .huepf { transform-box: fill-box; animation: schweben 2.4s ease-in-out infinite; }
 .demo .bild canvas { width: 100%; height: 100%; image-rendering: pixelated; }
 .spiel-kopf canvas { width: auto; height: 76px; }
+
+/* Punktestand: Frage beantworten statt Punkte */
+.vergabe.frage { border-color: var(--rot); }
+.vergabe .pk.beantwortet { flex: none; padding: 18px 44px; background: var(--rot); color: #fff; }
+.vergabe .pk.beantwortet:hover { background: #B83535; color: #fff; }
+.link-knopf { border: 0; background: none; padding: 0; color: var(--petrol); text-decoration: underline; font-size: 18px; }
+.fragerunde-hinweis { margin-bottom: 8px; background: var(--akzent-hell); color: #7A3A0C; border-radius: 999px; padding: 6px 16px; font-size: 19px; font-weight: 700; }
+
+/* Folie Fragerunde */
+.folie-fragerunde { height: 100%; padding: 40px 80px 0; display: flex; flex-direction: column; }
+.folie-fragerunde .kicker { align-self: flex-start; background: var(--akzent); color: #fff; border-radius: 999px; padding: 8px 20px; font-size: 22px; font-weight: 800; letter-spacing: .08em; }
+.folie-fragerunde .einleitung { font-size: 36px; color: var(--petrol); font-weight: 600; margin: 22px 0 26px; }
+.folie-fragerunde .fragen { display: grid; gap: 22px; }
+.frage-karte { display: flex; align-items: center; gap: 26px; background: #fff; border-radius: 22px; box-shadow: var(--schatten); padding: 24px 32px; border-left: 10px solid var(--petrol); animation: rein .5s both; }
+.frage-karte:nth-child(2) { animation-delay: .25s; }
+.frage-karte:nth-child(3) { animation-delay: .5s; }
+.frage-karte.warn { border-left-color: var(--akzent); }
+.frage-karte .symbol { font-size: 58px; line-height: 1; flex: none; }
+.frage-karte p { margin: 0; font-size: 38px; line-height: 1.25; color: var(--dunkelpetrol); }

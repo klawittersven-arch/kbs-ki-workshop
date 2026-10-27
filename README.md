@@ -46,14 +46,16 @@ Die Lehrkraft steuert alles am Laptop. Die Handys springen automatisch mit.
 | 7–8 | Folie Demo 3 → **Punktestand** | „Ich habe eine Frage“ / „Ich habe eine Antwort“ | DEMO 3 STARTEN / FORTFAHREN |
 | 9–10 | Folie Demo 4 → Lernkarten mit 2-Minuten-Countdown | 15 Lernkarten (Latein → Deutsch) | DEMO 4 STARTEN / ABFRAGEN! |
 | 11 | Punktestand (Vokabeln abfragen) | Melde-Knöpfe | FORTFAHREN |
-| 12–13 | Folie Demo 5 → KI-Song (Video) | „Präsentations-Modus …“ | DEMO 5 STARTEN / SORTIERAUFGABE! |
+| 12–13 | Folie Demo 5 → KI-Song „Die 6 Schritte im Pflegeprozess“ (Video) | „Präsentations-Modus …“ | DEMO 5 STARTEN / SORTIERAUFGABE! |
 | 14 | Sortieraufgabe mit Fortschritt („18 von 25 fertig“) | 6 Schritte des Pflegeprozesses ordnen | PUNKTESTAND |
 | 15 | Punktestand | Melde-Knöpfe | FORTFAHREN |
 | 16–17 | Folie Demo 6 → Highscore KAROLINE-RUN! | Endless Runner, beliebig viele Runden | DEMO 6 STARTEN / SIEGEREHRUNG |
 | 18 | Siegerehrung mit Treppchen und Pokal | „Siegerehrung …“ | ZUM PUNKTESTAND |
-| 19 | Punktestand + **FINALEN PUNKTESTAND EXPORTIEREN!** (Excel) | Melde-Knöpfe | FORTFAHREN |
+| 19 | Punktestand | Melde-Knöpfe | FORTFAHREN |
 | 20 | Folie „Und der Prompt für diese ganze Stunde?“ (Auszug aus der Verlaufsbeschreibung) | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
-| 21 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | „Präsentations-Modus …“ | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
+| 21 | Folie **Fragerunde**: Ideen? Probleme lösen? Bedenken? | „Präsentations-Modus …“ | PUNKTESTAND-MODUS |
+| 22 | Punktestand der Fragerunde + **FINALEN PUNKTESTAND EXPORTIEREN!** (Excel) | Melde-Knöpfe | FORTFAHREN |
+| 23 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | „Präsentations-Modus …“ | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
 
 Die Punkte erscheinen auf den Handys erst ab Demo 3 – so bleibt die Auflösung („Ihr habt schon
 Punkte gesammelt!“) eine Überraschung.
@@ -68,9 +70,15 @@ Punkte gesammelt!“) eine Überraschung.
   ein neues) oder *Entfernen*.
 - **Wortwolke:** Ein Wort anklicken blendet es aus (die 10 Punkte dafür werden abgezogen).
 - **Punktestand:** Namen anklicken = aufrufen. Dann Punkte vergeben (0, 10, 25, 50, 75, 100 oder
-  eigene Zahl) oder *Abbrechen*. *Zufällig aufrufen* wählt nur unter den gerade verbundenen Handys
+  eigene Zahl) oder *Abbrechen*. Hat die Person eine **Frage** (rot), gibt es keine Punkte, sondern
+  nur **„Frage beantwortet“** – das beendet den roten Status (das Handy zeigt „Deine Frage wurde
+  beantwortet“). Wer doch etwas beigetragen hat: „Stattdessen Punkte für eine Antwort geben“. *Zufällig aufrufen* wählt nur unter den gerade verbundenen Handys
   (bei „NUR MIT MELDUNG“ unter denen mit grüner Antwort-Meldung). *Rückgängig* nimmt die letzte
   Punktvergabe zurück. Nach einer Vergabe wird die Meldung der Person gelöscht.
+- **Video:** Der Beamer lädt das Video gleich nach dem Öffnen (nach der PIN) im Hintergrund komplett
+  herunter – unten auf dem Anmeldebildschirm steht „Video wird vorgeladen … %“ bzw. „Video vorgeladen ✓“.
+  In Demo 5 läuft es dann sofort. Bei schlechtem Internet: Video vorher auf dem Laptop speichern
+  (z. B. im Ordner „Videos“) und am Video-Bildschirm oder im Menü ⚙ auf **„📁 Video vom Laptop öffnen“** klicken.
 - **Zurücksetzen** löscht alle Namen, Passwörter und Punkte und meldet alle Handys ab. Wurde noch
   nicht exportiert, fragt die Anwendung vorher nach. Die PIN bleibt erhalten.
 

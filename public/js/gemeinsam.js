@@ -25,8 +25,10 @@ export const ABLAUF = [
   { modus: 'folie', folie: 'demo6', knopf: 'DEMO 6 STARTEN' },
   { modus: 'spiel', knopf: 'SIEGEREHRUNG' },
   { modus: 'siegerehrung', knopf: 'ZUM PUNKTESTAND' },
-  { modus: 'punkte', final: true, knopf: 'FORTFAHREN' },
+  { modus: 'punkte', knopf: 'FORTFAHREN' },
   { modus: 'folie', folie: 'prompt', knopf: 'NÄCHSTE FOLIE' },
+  { modus: 'folie', folie: 'fragerunde', knopf: 'PUNKTESTAND-MODUS' },
+  { modus: 'punkte', final: true, fragerunde: true, knopf: 'FORTFAHREN' },
   { modus: 'folie', folie: 'jetzt', knopf: null },
 ];
 

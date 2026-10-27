@@ -264,6 +264,15 @@ export function lehrerAktion(z, m, jetzt = Date.now(), laufend = null) {
       r.geaendert = true;
       break;
     }
+    case 'frageBeantwortet': {
+      // Frage erledigt: roten Status beenden, keine Punkte
+      const tn = z.tn[m.id];
+      if (!tn) break;
+      if (tn.meldung === 'frage') tn.meldung = null;
+      if (z.aufgerufen === tn.id) z.aufgerufen = null;
+      r.geaendert = true;
+      break;
+    }
     case 'meldungLoeschen':
       if (z.tn[m.id] && z.tn[m.id].meldung) { z.tn[m.id].meldung = null; r.geaendert = true; }
       break;

@@ -1,4 +1,4 @@
-Starte lokalen Workshop auf Port 8833 …
+Starte lokalen Workshop auf Port 8847 …
 
 Beamer und PIN
   ✓ Beim ersten Öffnen wird eine PIN festgelegt
@@ -30,7 +30,7 @@ Demo 2: Wortwolke
   ✓ Häufigster Begriff „Kreativität“ (7×) steht waagerecht in der Mitte
   ✓ Gemischte Wortwolke: 8 Wörter senkrecht
   ✓ Keine Wörter überlappen sich
-  ✓ Begriff „Fehler“ per Klick ausgeblendet
+  ✓ Begriff „ChatGPT“ per Klick ausgeblendet
 
 Demo 3: Punktestand
   ✓ Beamer zeigt „folie“ (Schritt 7)
@@ -42,6 +42,9 @@ Demo 3: Punktestand
   ✓ Aufgerufenes Handy zeigt „Du bist dran!“
   ✓ 50 Punkte vergeben und addiert, Meldung danach gelöscht
   ✓ Handy zeigt „+50 Punkte!“
+  ✓ Klick auf Lukas X. (rot): „hat eine Frage“ mit „Frage beantwortet“, keine Punkt-Knöpfe
+  ✓ „Frage beantwortet“ beendet den roten Status ohne Punkte
+  ✓ Handy zeigt „Deine Frage wurde beantwortet“
   ✓ Name anklicken und eigene Punktzahl (37) vergeben
   ✓ „Rückgängig“ nimmt die letzte Vergabe zurück
   ✓ „Zufällig aufrufen: ALLE“ wählt jemanden aus
@@ -60,7 +63,8 @@ Demo 4: Lernkarten
 Demo 5: KI-Song und Sortieraufgabe
   ✓ Beamer zeigt „folie“ (Schritt 12)
   ✓ Beamer zeigt „video“ (Schritt 13)
-  ✓ Videofenster vorhanden (Reserve: Google Drive, weil video/pflegeprozess.mp4 fehlt)
+  ✓ Video wurde beim Start vorgeladen und läuft aus dem Speicher des Laptops
+  ✓ Überschrift über dem Video einzeilig: Die 6 Schritte im Pflegeprozess
   ✓ Beamer zeigt „sortieren“ (Schritt 14)
   ✓ Sortierpunkte: 10 je richtigem Schritt − 10 je Fehler, nie unter 0, Unfertige nur anteilig
   ✓ Beamer: 27 von 30 fertig
@@ -75,12 +79,17 @@ Demo 6: KAROLINE-RUN!
   ✓ Spiel auf dem Handy geschlossen
   ✓ Platz 1 auf dem Treppchen: Anna A. (33 Punkte)
 
-Abschluss: Export und Zurücksetzen
+Abschluss: Fragerunde, Export und Zurücksetzen
   ✓ Beamer zeigt „punkte“ (Schritt 19)
-  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-27_15-19.xlsx
-  ✓ Excel-Datei gültig: 30 Namen mit Endpunktestand
+  ✓ Punktestand nach der Siegerehrung (Export erst nach der Fragerunde)
   ✓ Beamer zeigt „folie“ (Schritt 20)
   ✓ Beamer zeigt „folie“ (Schritt 21)
+  ✓ Folie Fragerunde mit Knopf PUNKTESTAND-MODUS
+  ✓ Beamer zeigt „punkte“ (Schritt 22)
+  ✓ Punktestand der Fragerunde
+  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-27_16-59.xlsx
+  ✓ Excel-Datei gültig: 30 Namen mit Endpunktestand
+  ✓ Beamer zeigt „folie“ (Schritt 23)
   ✓ Zurückgesetzt: Durchgang 2, Anmeldung, keine Namen
   ✓ Handys wurden abgemeldet und zeigen wieder die Anmeldung
   ✓ Alte Anmeldung gilt nach dem Zurücksetzen nicht mehr

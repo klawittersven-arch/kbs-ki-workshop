@@ -274,6 +274,8 @@ const BILDSCHIRME = {
       vibrieren(20);
     }));
     let warDran = false;
+    let serverMeldung = null;
+    let punkteZuvor = null;
     function zeigen() {
       app.querySelectorAll('.melde-knopf').forEach(b => {
         const an = meldung === b.dataset.art;
@@ -284,6 +286,12 @@ const BILDSCHIRME = {
     }
     return {
       aktualisieren(a) {
+        // Lehrkraft hat die Frage als beantwortet markiert (ohne Punkte)
+        if (serverMeldung === 'frage' && a.meldung === null && meldung === 'frage' && a.punkte === punkteZuvor) {
+          toast('✓ Deine Frage wurde beantwortet', 'gut', 2600);
+        }
+        serverMeldung = a.meldung;
+        punkteZuvor = a.punkte;
         if (Date.now() - zuletztGetippt > 900) meldung = a.meldung;
         zeigen();
         $('#dran').innerHTML = a.dran ? '<div class="dran">⭐ Du bist dran!</div>' : '';

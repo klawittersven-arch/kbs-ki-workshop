@@ -304,6 +304,18 @@ async function anmelden(page, vorname, initiale, passwort) {
     await warteBis(async () => /\+50/.test(await dranHandy.page.textContent('#toast')), 'Toast +50');
     pruefe(true, 'Handy zeigt „+50 Punkte!“');
     await foto(dranHandy.page, 'h-06-plus-punkte');
+    // Frage: Name anklicken → nur „Frage beantwortet“, keine Punkte
+    const fragend = (await zustand(beamer)).tn.find(t => t.meldung === 'frage');
+    const fragendHandy = handys.find(h => h.name === fragend.name);
+    await beamer.click(`.tn-karte >> text="${fragend.name}"`);
+    await beamer.waitForSelector('.vergabe.frage [data-beantwortet]');
+    pruefe(/hat eine Frage/.test(await beamer.textContent('.vergabe')) && !(await beamer.$('.vergabe .pk[data-p]')), `Klick auf ${fragend.name} (rot): „hat eine Frage“ mit „Frage beantwortet“, keine Punkt-Knöpfe`);
+    await foto(beamer, 'b-07b-frage');
+    await beamer.click('.vergabe [data-beantwortet]');
+    await warteBis(async () => { const z = await zustand(beamer); const t = z.tn.find(x => x.id === fragend.id); return t.meldung === null && !z.aufgerufen; }, 'Frage beantwortet');
+    pruefe((await zustand(beamer)).tn.find(x => x.id === fragend.id).punkte.gesamt === fragend.punkte.gesamt, '„Frage beantwortet“ beendet den roten Status ohne Punkte');
+    await warteBis(async () => /Frage wurde beantwortet/.test(await fragendHandy.page.textContent('#toast')), 'Toast Frage beantwortet');
+    pruefe(true, 'Handy zeigt „Deine Frage wurde beantwortet“');
     // Klick auf einen Namen + eigene Punktzahl, dann Rückgängig
     const ziel = (await zustand(beamer)).tn[10];
     await beamer.click(`.tn-karte >> text="${ziel.name}"`);
@@ -367,8 +379,10 @@ async function anmelden(page, vorname, initiale, passwort) {
     await foto(beamer, 'b-09-demo5-folie');
     await weiter(beamer, 'video');
     await warte(1500);
-    const videoDa = await beamer.$('.video-feld video, .video-feld iframe');
-    pruefe(!!videoDa, 'Videofenster vorhanden' + ((await beamer.$('.video-feld iframe')) ? ' (Reserve: Google Drive, weil video/pflegeprozess.mp4 fehlt)' : ''));
+    const vorgeladen = await beamer.evaluate(() => ({ status: window.__workshop.video.status, src: (document.querySelector('.video-feld video') || {}).src || '' }));
+    pruefe(vorgeladen.status === 'bereit' && vorgeladen.src.startsWith('blob:'), 'Video wurde beim Start vorgeladen und läuft aus dem Speicher des Laptops');
+    const kopf = await beamer.evaluate(() => { const h = document.querySelector('.video-seite h1'); return { text: h.textContent, zeilen: Math.round(h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight)) }; });
+    pruefe(kopf.text === 'Die 6 Schritte im Pflegeprozess' && kopf.zeilen === 1, 'Überschrift über dem Video einzeilig: ' + kopf.text);
     await foto(beamer, 'b-10-demo5-video');
     await weiter(beamer, 'sortieren');
     const erwartetSort = [];
@@ -435,9 +449,19 @@ async function anmelden(page, vorname, initiale, passwort) {
     const podest = await beamer.$$eval('.stufe .wer b', e => e.map(x => x.textContent));
     pruefe(podest[1] === z6.spiel[0].name, `Platz 1 auf dem Treppchen: ${z6.spiel[0].name} (${z6.spiel[0].punkte} Punkte)`);
 
-    /* ---------- Abschluss: Export ---------- */
-    console.log('\nAbschluss: Export und Zurücksetzen');
+    /* ---------- Abschluss: Fragerunde, Export ---------- */
+    console.log('\nAbschluss: Fragerunde, Export und Zurücksetzen');
     await weiter(beamer, 'punkte');
+    pruefe(!(await beamer.$('[data-export]')), 'Punktestand nach der Siegerehrung (Export erst nach der Fragerunde)');
+    await foto(beamer, 'b-16-punktestand-nach-siegerehrung');
+    await weiter(beamer, 'folie');
+    await foto(beamer, 'b-17-und-der-prompt');
+    await weiter(beamer, 'folie');
+    await warte(1200);
+    pruefe(/FRAGERUNDE/.test(await beamer.textContent('.inhalt')) && /PUNKTESTAND-MODUS/.test(await beamer.textContent('[data-weiter]')), 'Folie Fragerunde mit Knopf PUNKTESTAND-MODUS');
+    await foto(beamer, 'b-18-fragerunde');
+    await weiter(beamer, 'punkte');
+    pruefe(/Fragerunde/.test(await beamer.textContent('.punkte-kopf')), 'Punktestand der Fragerunde');
     const [download] = await Promise.all([beamer.waitForEvent('download'), beamer.click('[data-export]')]);
     const datei = path.join(ERGEBNISSE, 'export.xlsx');
     await download.saveAs(datei);
@@ -446,12 +470,10 @@ async function anmelden(page, vorname, initiale, passwort) {
     const zEnde = await zustand(beamer);
     const alleDrin = zEnde.tn.every(t => blatt.includes(`<t xml:space="preserve">${t.name}</t>`) && blatt.includes(`<v>${t.punkte.gesamt}</v>`));
     pruefe(alleDrin && (blatt.match(/<row /g) || []).length === TN + 1, `Excel-Datei gültig: ${TN} Namen mit Endpunktestand`);
-    await foto(beamer, 'b-16-punktestand-final');
-    await weiter(beamer, 'folie');
-    await foto(beamer, 'b-17-und-der-prompt');
+    await foto(beamer, 'b-19-punktestand-final');
     await weiter(beamer, 'folie');
     await warte(800);
-    await foto(beamer, 'b-18-jetzt-seid-ihr-dran');
+    await foto(beamer, 'b-20-jetzt-seid-ihr-dran');
 
     // Zurücksetzen
     await beamer.click('[data-zuruecksetzen]');
@@ -466,7 +488,7 @@ async function anmelden(page, vorname, initiale, passwort) {
     await anmelden(handys[5].page, handys[5].vorname, handys[5].initiale, 'neu123');
     await warteBis(async () => (await zustand(beamer)).tn.length === 1, 'Neuanmeldung');
     pruefe((await zustand(beamer)).tn[0].punkte.gesamt === 0, 'Neuanmeldung im neuen Durchgang startet bei 0 Punkten');
-    await foto(beamer, 'b-19-nach-zuruecksetzen');
+    await foto(beamer, 'b-21-nach-zuruecksetzen');
   } catch (e) {
     fehler++;
     console.log('  ✗ Abbruch: ' + e.message);
