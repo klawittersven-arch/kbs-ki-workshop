@@ -1,0 +1,90 @@
+Starte lokalen Workshop auf Port 8833 …
+
+Beamer und PIN
+  ✓ Beim ersten Öffnen wird eine PIN festgelegt
+  ✓ Zu kurze PIN wird abgelehnt
+  ✓ PIN angenommen, Anmeldebildschirm sichtbar
+  ✓ Zweites Gerät muss die PIN eingeben
+  ✓ Falsche PIN wird abgelehnt
+
+Anmeldung von 30 Handys
+  ✓ 30 Teilnehmende angemeldet
+  ✓ Zähler auf dem Anmeldebildschirm stimmt
+  ✓ Alle Handys verbunden (auch das im Reserve-Modus)
+  ✓ Gleicher Name mit falschem Passwort wird abgelehnt
+  ✓ Wiedereinstieg mit richtigem Passwort (Groß-/Kleinschreibung egal) – kein neuer Name
+
+Folien und Demo 1
+  ✓ Beamer zeigt „folie“ (Schritt 2)
+  ✓ Handy zeigt den Präsentations-Modus
+  ✓ Punkte auf dem Handy noch verborgen (Überraschung in Demo 3)
+  ✓ Beamer zeigt „folie“ (Schritt 3)
+  ✓ Beamer zeigt „umfrage“ (Schritt 4)
+  ✓ Balkendiagramm zählt alle Stimmen richtig, auch Abwählen und „Noch gar nicht“
+
+Demo 2: Wortwolke
+  ✓ Beamer zeigt „folie“ (Schritt 5)
+  ✓ Beamer zeigt „wortwolke“ (Schritt 6)
+  ✓ Alle Begriffe sind angekommen
+  ✓ Handy bestätigt: Begriffe erfolgreich abgeschickt
+  ✓ Häufigster Begriff „Kreativität“ (7×) steht waagerecht in der Mitte
+  ✓ Gemischte Wortwolke: 8 Wörter senkrecht
+  ✓ Keine Wörter überlappen sich
+  ✓ Begriff „Fehler“ per Klick ausgeblendet
+
+Demo 3: Punktestand
+  ✓ Beamer zeigt „folie“ (Schritt 7)
+  ✓ Beamer zeigt „punkte“ (Schritt 8)
+  ✓ Punkte = 1 je Stimme + 10 je Begriff (ausgeblendeter Begriff abgezogen)
+  ✓ Handy zeigt jetzt die eigenen Punkte
+  ✓ Am Beamer: 2 Namen grün (Antwort), 1 rot (Frage), Zurücknehmen klappt
+  ✓ „Zufällig aufrufen: NUR MIT MELDUNG“ wählt Sofia Q. (hat sich mit Antwort gemeldet)
+  ✓ Aufgerufenes Handy zeigt „Du bist dran!“
+  ✓ 50 Punkte vergeben und addiert, Meldung danach gelöscht
+  ✓ Handy zeigt „+50 Punkte!“
+  ✓ Name anklicken und eigene Punktzahl (37) vergeben
+  ✓ „Rückgängig“ nimmt die letzte Vergabe zurück
+  ✓ „Zufällig aufrufen: ALLE“ wählt jemanden aus
+  ✓ Geschlossenes Handy erscheint am Beamer als offline
+  ✓ Wieder geöffnet: ohne erneute Eingabe direkt im aktuellen Modus
+  ✓ Neues Gerät mit Name + Passwort: gleicher Punktestand, gleicher Modus
+
+Demo 4: Lernkarten
+  ✓ Beamer zeigt „folie“ (Schritt 9)
+  ✓ Beamer zeigt „lernkarten“ (Schritt 10)
+  ✓ Lernkarte umdrehen und bewerten, weiter zu Karte 2
+  ✓ Countdown am Beamer läuft: 1:58
+  ✓ Beamer zeigt „punkte“ (Schritt 11)
+  ✓ Nach „ABFRAGEN!“: Handys zeigen wieder die Melde-Knöpfe
+
+Demo 5: KI-Song und Sortieraufgabe
+  ✓ Beamer zeigt „folie“ (Schritt 12)
+  ✓ Beamer zeigt „video“ (Schritt 13)
+  ✓ Videofenster vorhanden (Reserve: Google Drive, weil video/pflegeprozess.mp4 fehlt)
+  ✓ Beamer zeigt „sortieren“ (Schritt 14)
+  ✓ Sortierpunkte: 10 je richtigem Schritt − 10 je Fehler, nie unter 0, Unfertige nur anteilig
+  ✓ Beamer: 27 von 30 fertig
+  ✓ Beamer zeigt „punkte“ (Schritt 15)
+
+Demo 6: KAROLINE-RUN!
+  ✓ Beamer zeigt „folie“ (Schritt 16)
+  ✓ Beamer zeigt „spiel“ (Schritt 17)
+  ✓ Highscores von 12 Spielenden am Beamer
+  ✓ Beamer zeigt „siegerehrung“ (Schritt 18)
+  ✓ Handys zeigen „SIEGEREHRUNG“, Spiel ist beendet
+  ✓ Spiel auf dem Handy geschlossen
+  ✓ Platz 1 auf dem Treppchen: Anna A. (33 Punkte)
+
+Abschluss: Export und Zurücksetzen
+  ✓ Beamer zeigt „punkte“ (Schritt 19)
+  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-27_15-19.xlsx
+  ✓ Excel-Datei gültig: 30 Namen mit Endpunktestand
+  ✓ Beamer zeigt „folie“ (Schritt 20)
+  ✓ Beamer zeigt „folie“ (Schritt 21)
+  ✓ Zurückgesetzt: Durchgang 2, Anmeldung, keine Namen
+  ✓ Handys wurden abgemeldet und zeigen wieder die Anmeldung
+  ✓ Alte Anmeldung gilt nach dem Zurücksetzen nicht mehr
+  ✓ Neuanmeldung im neuen Durchgang startet bei 0 Punkten
+  ✓ Keine JavaScript-Fehler auf den Seiten
+
+Alle Prüfungen bestanden.

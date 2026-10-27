@@ -1,0 +1,12 @@
+{
+  "name": "kbs-ki-workshop-tests",
+  "private": true,
+  "description": "Automatischer Gesamttest (nur zum Testen, nicht Teil der Anwendung): startet den Workshop lokal und spielt eine Stunde mit vielen simulierten Handys durch.",
+  "scripts": {
+    "test": "node ablauf.test.js"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1",
+    "wrangler": "^4.0.0"
+  }
+}

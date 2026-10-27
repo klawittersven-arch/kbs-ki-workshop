@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#25434B">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>KAROLINE-RUN!</title>
+<link rel="icon" href="../img/kbs-logo.png">
+<link rel="stylesheet" href="spiel.css">
+</head>
+<body class="spiel">
+<div id="buehne">
+  <div id="rahmen">
+    <canvas id="leinwand" width="320" height="180" aria-label="Spielfeld"></canvas>
+    <button type="button" id="pause-hinweis" hidden></button>
+  </div>
+  <div id="panel" aria-live="polite"></div>
+  <div id="steuerung" hidden>
+    <button type="button" id="knopf-ducken" class="steuer"></button>
+    <button type="button" id="knopf-springen" class="steuer"></button>
+  </div>
+</div>
+<noscript><p style="padding:16px">Bitte aktiviere JavaScript.</p></noscript>
+<script src="pixel.js"></script>
+<script src="spiel.js"></script>
+</body>
+</html>

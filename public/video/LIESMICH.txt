@@ -1,0 +1,3 @@
+Hier gehört das Video zum KI-Song hin: pflegeprozess.mp4
+(MusikVid_6_Schritte_PP_Mariachi.mp4 hochladen und umbenennen, siehe README.md).
+Solange die Datei fehlt, bettet der Beamer das Video aus Google Drive ein.

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>KI-Workshop – Beamer</title>
+<link rel="icon" href="img/kbs-logo.png">
+<link rel="stylesheet" href="css/beamer.css">
+</head>
+<body>
+<main id="buehne"></main>
+
+<div class="ebene" id="pin-ebene" hidden>
+  <form class="dialog" id="pin-form" autocomplete="off">
+    <h2 id="pin-titel">Lehrkraft-PIN</h2>
+    <p id="pin-text"></p>
+    <input id="pin-feld" type="password" inputmode="text" aria-label="PIN" autocomplete="off">
+    <p class="fehler" id="pin-fehler" role="alert"></p>
+    <div class="knoepfe"><button class="haupt" type="submit">Weiter</button></div>
+  </form>
+</div>
+
+<button id="menue-knopf" type="button" title="Menü der Lehrkraft" aria-label="Menü der Lehrkraft">⚙</button>
+<nav id="menue" hidden></nav>
+<div id="hinweis" role="status"></div>
+<div id="verbindung-weg" hidden>Verbindung unterbrochen – wird wiederhergestellt …</div>
+
+<script src="vendor/qrcode.min.js"></script>
+<script src="spiel/pixel.js"></script>
+<script type="module" src="js/beamer.js"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+/* Gestaltung des Spiels „KAROLINE-RUN!“ (übernommen aus „Diabetes Run!“ der Lernkarten) */
+:root {
+  --dunkelpetrol: #25434B;
+  --petrol: #3F6C72;
+  --hellblau: #EAF2F4;
+  --text: #16262A;
+  --gruen: #1B6E35;
+  --bernstein: #7A4300;
+  --bernstein-hell: #FFF2D9;
+}
+* { box-sizing: border-box; }
+/* iPhone (Safari): zwei schnelle Berührungen zoomen sonst ins Bild – etwa wenn der Lauf endet, während man noch
+   „Springen“ tippt; Spielfeld und Knöpfe ragen dann aus dem Bildschirm. manipulation verbietet nur das Doppeltipp-Zoomen,
+   Scrollen bleibt. Für alle Elemente, weil Safari die Einstellung nicht in scrollbare Bereiche (#panel) weitergibt. */
+* { touch-action: manipulation; }
+html, body { margin: 0; height: 100%; }
+body.spiel {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 18px; line-height: 1.45;
+  background: var(--dunkelpetrol); color: var(--text);
+  -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+body.lauf { overflow: hidden; overscroll-behavior: none; }
+body.lauf, body.lauf * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+#buehne { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+
+#rahmen { position: relative; flex: none; margin: 0 auto; background: #CFE5EC; touch-action: none; }
+#leinwand {
+  display: block; width: 100%; height: 100%;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  touch-action: none;
+}
+#pause-hinweis {
+  position: absolute; inset: 0; width: 100%; border: 0; margin: 0;
+  background: var(--dunkelpetrol); color: #fff; font: inherit; font-size: 20px; font-weight: 700;
+  padding: 16px; cursor: pointer;
+}
+
+#panel {
+  flex: 1; background: #fff; padding: 16px 16px 28px; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+body.lauf #panel { display: none; }
+.panel-innen { max-width: 560px; margin: 0 auto; }
+
+#panel h1 { margin: 0 0 8px; font-size: 26px; color: var(--dunkelpetrol); }
+.start-kopf { display: flex; align-items: center; gap: 12px; margin: 0 0 10px; }
+.start-kopf h1 { margin: 0; }
+.schullogo { width: 56px; height: auto; flex: none; }
+#panel h2 { margin: 0 0 10px; font-size: 22px; color: var(--dunkelpetrol); }
+#panel p { margin: 0 0 12px; }
+#panel a { color: var(--petrol); }
+#panel a.knopf { color: #fff; }
+#panel a.knopf.knopf-zweit { color: var(--dunkelpetrol); }
+
+.knopf {
+  display: block; width: 100%; min-height: 56px; padding: 12px 16px; margin: 0 0 12px;
+  font: inherit; font-size: 20px; font-weight: 700; border-radius: 12px; cursor: pointer;
+  background: var(--petrol); color: #fff; border: 2px solid var(--petrol);
+  touch-action: manipulation; text-decoration: none; text-align: center;
+}
+.knopf:hover { background: var(--dunkelpetrol); }
+.knopf-zweit { background: #fff; color: var(--dunkelpetrol); }
+.knopf-zweit:hover { background: var(--hellblau); }
+.knopf:focus-visible, .klein-link:focus-visible { outline: 3px solid #F2B600; outline-offset: 2px; }
+
+
+.feld {
+  display: block; width: 100%; font: inherit; font-size: 22px; padding: 10px 12px; min-height: 52px;
+  border: 2px solid var(--petrol); border-radius: 10px; margin: 6px 0 8px; color: var(--text); background: #fff;
+}
+.feld:focus { outline: 3px solid #F2B600; outline-offset: 1px; }
+.hinweis { font-size: 17px; background: var(--hellblau); padding: 10px 12px; border-radius: 10px; }
+.fehler { color: var(--bernstein); background: var(--bernstein-hell); padding: 6px 10px; border-radius: 8px; font-weight: 600; }
+.fehler:empty { display: none; }
+
+.profil { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; }
+.profil canvas { width: 32px; height: auto; image-rendering: pixelated; image-rendering: crisp-edges; }
+.gross { font-size: 30px; font-weight: 800; color: var(--dunkelpetrol); margin: 0 0 4px; }
+.neu-best { color: var(--gruen); font-weight: 800; }
+.wusstest { background: var(--hellblau); border-left: 6px solid var(--petrol); padding: 10px 12px; border-radius: 8px; margin: 4px 0 14px; }
+.wusstest strong { display: block; color: var(--dunkelpetrol); }
+.status { font-size: 17px; color: #3B4F53; margin: 8px 0 12px; }
+.status .klein-link { margin-left: 4px; }
+.klein-link {
+  background: none; border: 0; padding: 8px 2px; font: inherit; font-size: 17px;
+  color: var(--petrol); text-decoration: underline; cursor: pointer; min-height: 44px;
+}
+.links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.steuer-info { font-size: 17px; color: #3B4F53; }
+
+body.lauf #rahmen { margin: auto; }
+#steuerung {
+  flex: none; height: clamp(110px, 26vh, 220px); display: flex; gap: 12px; align-items: stretch; padding: 12px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  touch-action: none;
+}
+#steuerung[hidden] { display: none; }
+.steuer {
+  flex: 1; min-height: 96px; border-radius: 16px; font: inherit; font-size: 22px; font-weight: 800;
+  color: #fff; background: var(--petrol); border: 3px solid #6F9BA1; touch-action: none;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+.steuer.aktiv { background: #1A3036; border-color: #fff; }
+
+/* Querformat am Handy: Spielfeld groß, Steuerknöpfe darunter */
+body.quer #steuerung { flex: none; height: 84px; min-height: 84px; padding: 8px 12px; }
+body.quer .steuer { min-height: 64px; }
+body.quer.menue #buehne { flex-direction: row; }
+body.quer.menue #rahmen { margin: auto 0; }
+
+/* ---------- Spielrunden und Highscore ---------- */
+.frei { font-weight: 800; color: var(--gruen); }
+#panel h3 { margin: 0 0 10px; font-size: 19px; color: var(--dunkelpetrol); }
+.eintragen {
+  margin: 8px 0 16px; padding: 14px 14px 6px; border: 2px solid var(--petrol); border-radius: 12px; background: #fff;
+}
+.name-zeile { display: grid; gap: 2px; }
+.feld-huelle label { display: block; font-size: 15px; font-weight: 600; line-height: 1.25; color: var(--dunkelpetrol); }
+.feld-initial { display: flex; align-items: center; gap: 12px; }
+.feld-initial label { flex: 1; }
+.feld-initial .feld { flex: none; width: 72px; text-align: center; text-transform: uppercase; }
+.feld { font-size: 20px; }
+.klein { font-size: 15px; color: #3B4F53; }
+.meldung { font-weight: 700; padding: 10px 12px; border-radius: 10px; background: var(--hellblau); }
+.meldung.gut { background: #E2F3E7; color: #10421F; }
+.meldung.warten { background: var(--bernstein-hell); color: var(--bernstein); }
+.links a.klein-link { display: inline-flex; align-items: center; }
