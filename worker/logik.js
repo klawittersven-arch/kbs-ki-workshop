@@ -8,9 +8,11 @@ import {
   ABLAUF, UMFRAGE_OPTIONEN, UMFRAGE_KEINE, WOLKE_MAX_BEGRIFFE, PFLEGEPROZESS, PUNKTE,
   begriffSchluessel, begriffBereinigen, begriffGueltig, sortierPunkte,
   SPRACH_CODES, SPRACHEN_LOESUNG, sprachPunkte, GRAFIK_AUFGABEN, GRAFIK_VERSUCHE, grafikPunkte,
-  GRUPPENGROESSE, PUZZLE_SPERRE_MS, OFFLINE_FREIGABE_MS, puzzlePunkte,
+  GRUPPENGROESSE, PUZZLE_SPERRE_MS, OFFLINE_FREIGABE_MS, puzzlePunkte, TEST_DAUER_MS, noteAusProzent,
 } from '../public/js/gemeinsam.js';
 import { ABSCHNITTE, antwortRichtig } from '../public/js/inhalte-puzzle.js';
+import { TEST_FRAGEN } from '../public/js/inhalte-test.js';
+import { TEST_LOESUNG } from './test-loesung.js';
 
 export { ABLAUF };
 
@@ -82,6 +84,8 @@ export function neuerZustand(durchgang = 1, jetzt = Date.now()) {
     grafik: {},             // id → { aufgaben: [{ versuche: [{ x, y, teil, ok }] }×9] }
     gruppen: { anzahl: 0, zuordnung: {}, selbstWahl: false, version: 0 },   // zuordnung: id → Gruppennummer
     puzzle: null,           // { start, version, experten: id → ['A'…], gruppen: [Zustand je Gruppe] }
+    testStart: null,        // Demo 10: Beginn des Tests (für den Countdown)
+    test: {},               // id → { antworten: [Antwort-Index oder null ×8], abgegeben, zeit }
   };
 }
 
@@ -179,7 +183,48 @@ export function schrittSetzen(z, neu, kx) {
     z.aufgerufen = null;
   }
   if (jetztModus === 'puzzle') puzzleStarten(z, kx);
+  if (jetztModus === 'test' && !z.testStart) z.testStart = kx.jetzt;
+  // Test beendet (weiter zum Notenspiegel): alles Angefangene gilt als abgegeben
+  if (alt === 'test' && neu > TEST_SCHRITT) {
+    for (const t of Object.values(z.test)) if (!t.abgegeben) { t.abgegeben = true; t.zeit = kx.jetzt; }
+  }
   return true;
+}
+
+/* ---------- Demo 10: Test mit Note ---------- */
+
+const TEST_SCHRITT = ABLAUF.findIndex(s => s.modus === 'test');
+const TEST_KULANZ_MS = 3000;   // Antworten, die kurz nach Ablauf ankommen, zählen noch
+
+export function testVorbei(z, jetzt) {
+  return z.schritt > TEST_SCHRITT || (!!z.testStart && jetzt > z.testStart + TEST_DAUER_MS + TEST_KULANZ_MS);
+}
+
+// Ergebnis einer Person (null = nicht teilgenommen)
+export function testErgebnis(z, id) {
+  const t = z.test[id];
+  if (!t) return null;
+  const richtig = TEST_FRAGEN.filter((_, q) => t.antworten[q] === TEST_LOESUNG[q]).length;
+  const prozent = 100 * richtig / TEST_FRAGEN.length;
+  return {
+    richtig, von: TEST_FRAGEN.length, prozent: Math.round(prozent), note: noteAusProzent(prozent),
+    falsch: TEST_FRAGEN.map((_, q) => q).filter(q => t.antworten[q] !== TEST_LOESUNG[q])
+      .map(q => ({ frage: q, gewaehlt: t.antworten[q], richtig: TEST_LOESUNG[q] })),
+  };
+}
+
+// Mündliche Note: Anteil an der höchsten Punktzahl im Durchgang, gleicher Notenschlüssel
+export function notenVon(z, id, hoechste) {
+  const e = testErgebnis(z, id);
+  return {
+    muendlich: hoechste > 0 ? noteAusProzent(100 * punkteVon(z, id).gesamt / hoechste) : null,
+    schriftlich: e ? e.note : null,
+    test: e ? { richtig: e.richtig, von: e.von, prozent: e.prozent } : null,
+  };
+}
+
+function hoechstePunktzahl(z) {
+  return Math.max(0, ...z.reihenfolge.filter(id => z.tn[id]).map(id => punkteVon(z, id).gesamt));
 }
 
 /* ---------- Demo 8: Gruppen ---------- */
@@ -466,6 +511,25 @@ export function tnAktion(z, id, m, kx) {
     return true;
   }
 
+  if (modus === 'test' && (m.type === 'testBeginn' || m.type === 'testAntwort' || m.type === 'testAbgeben')) {
+    const vorbei = testVorbei(z, kx.jetzt);
+    let t = z.test[id];
+    if (!t) {
+      if (vorbei) return false;
+      t = z.test[id] = { antworten: TEST_FRAGEN.map(() => null), abgegeben: false, zeit: null };
+      if (m.type === 'testBeginn') return true;
+    }
+    if (t.abgegeben) return false;
+    if (m.type === 'testAbgeben') { t.abgegeben = true; t.zeit = kx.jetzt; return true; }
+    if (m.type !== 'testAntwort' || vorbei) return false;
+    const q = m.frage, o = m.option;
+    if (!Number.isInteger(q) || q < 0 || q >= TEST_FRAGEN.length) return false;
+    if (o !== null && (!Number.isInteger(o) || o < 0 || o >= TEST_FRAGEN[q].optionen.length)) return false;
+    if (t.antworten[q] === o) return false;
+    t.antworten[q] = o;
+    return true;
+  }
+
   if (m.type === 'spielstand' && modus === 'spiel' && laufend) {
     const p = Math.max(0, Math.min(1e7, Math.floor(Number(m.punkte) || 0)));
     if (m.ende) {
@@ -562,7 +626,7 @@ export function lehrerAktion(z, m, kx) {
       delete z.tn[id];
       z.reihenfolge = z.reihenfolge.filter(x => x !== id);
       delete z.umfrage[id]; delete z.wolke[id]; delete z.sortieren[id]; delete z.spiel[id];
-      delete z.sprachen[id]; delete z.grafik[id]; delete z.gruppen.zuordnung[id];
+      delete z.sprachen[id]; delete z.grafik[id]; delete z.gruppen.zuordnung[id]; delete z.test[id];
       z.vergaben = z.vergaben.filter(v => v.id !== id);
       if (z.aufgerufen === id) z.aufgerufen = null;
       if (laufend) laufend.delete(id);
@@ -662,11 +726,13 @@ function grafikAnsicht(z) {
 export function beamerAnsicht(z, kx) {
   const online = kx.online, jetzt = kx.jetzt;
   const modus = modusVon(z);
+  const hoechste = hoechstePunktzahl(z);
   const tn = z.reihenfolge.filter(id => z.tn[id]).map(id => {
     const t = z.tn[id];
     return {
       id, name: t.name, online: online.has(id), meldung: t.meldung,
       punkte: punkteVon(z, id), spiel: z.spiel[id] ?? null, ohnePasswort: !t.hash,
+      seit: t.seit, noten: notenVon(z, id, hoechste),   // seit + noten nur für die Lehrkraft (Export)
     };
   });
 
@@ -731,11 +797,39 @@ export function beamerAnsicht(z, kx) {
     gruppen: ['gruppen', 'puzzle', 'gruppensieg'].includes(modus) ? gruppenAnsicht(z, kx) : null,
     puzzle: ['puzzle', 'gruppensieg'].includes(modus) ? puzzleAnsicht(z, kx) : null,
     puzzleRangliste: modus === 'gruppensieg' ? puzzleRangliste(z) : null,
+    test: modus === 'test' ? testAnsicht(z, kx) : null,
+    notenspiegel: modus === 'notenspiegel' ? notenspiegel(z) : null,
   };
 }
 
+// Zuschauer sehen nichts, was nur die Lehrkraft braucht (Noten, Anmeldezeiten)
+export function ohneLehrerDaten(v) {
+  return Object.assign({}, v, { tn: v.tn.map(({ noten, seit, ...t }) => t) });
+}
+
+function testAnsicht(z, kx) {
+  const vorbei = testVorbei(z, kx.jetzt);
+  const liste = Object.entries(z.test).filter(([id]) => z.tn[id]).map(([, t]) => t);
+  return {
+    start: z.testStart, dauer: TEST_DAUER_MS, vorbei,
+    begonnen: liste.length, abgegeben: liste.filter(t => t.abgegeben || vorbei).length,
+  };
+}
+
+// Anonym: nur wie oft jede Note vorkommt
+function notenspiegel(z) {
+  const noten = [0, 0, 0, 0, 0, 0];
+  for (const id of Object.keys(z.test)) {
+    const e = z.tn[id] ? testErgebnis(z, id) : null;
+    if (e) noten[e.note - 1]++;
+  }
+  const n = noten.reduce((a, b) => a + b, 0);
+  const schnitt = n ? noten.reduce((s, x, i) => s + x * (i + 1), 0) / n : null;
+  return { noten, teilgenommen: n, schnitt };
+}
+
 // Reihenfolge der Schritte auf einem Handy: je Person anders, aber immer gleich
-function gemischt(seed) {
+function zufallsReihe(seed, n) {
   let h = 2166136261;
   for (const c of seed) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
   const zufall = () => {
@@ -744,11 +838,16 @@ function gemischt(seed) {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-  const a = PFLEGEPROZESS.map((_, i) => i);
+  const a = Array.from({ length: n }, (_, i) => i);
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(zufall() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
+  return a;
+}
+
+function gemischt(seed) {
+  const a = zufallsReihe(seed, PFLEGEPROZESS.length);
   if (a.every((x, i) => x === i)) a.push(a.shift());   // nie schon richtig sortiert
   return a;
 }
@@ -827,6 +926,23 @@ export function tnAnsicht(z, id, kx = kontext()) {
         abgabe: gs.abgaben[id] || null,
       };
     }
+  }
+  if (modus === 'test' || modus === 'notenspiegel') {
+    const t = z.test[id];
+    const abgegeben = (!!t && t.abgegeben) || testVorbei(z, kx.jetzt) || modus === 'notenspiegel';
+    const e = abgegeben ? testErgebnis(z, id) : null;
+    a.test = {
+      start: z.testStart, dauer: TEST_DAUER_MS,
+      // Fragen und Antworten je Person anders gemischt, aber nach Neuladen gleich
+      reihenfolge: zufallsReihe(z.epoche + id + 'test', TEST_FRAGEN.length),
+      optionen: TEST_FRAGEN.map((f, q) => zufallsReihe(z.epoche + id + 'frage' + q, f.optionen.length)),
+      begonnen: !!t, antworten: t ? t.antworten : null, abgegeben,
+      ergebnis: e ? { richtig: e.richtig, von: e.von, prozent: e.prozent, note: e.note, falsch: e.falsch } : null,
+    };
+  }
+  // Nach dem Export sieht jede*r die eigenen Noten (nur auf dem eigenen Handy)
+  if (z.exportiert && z.schritt >= ABLAUF.findIndex(s => s.final)) {
+    a.noten = notenVon(z, id, hoechstePunktzahl(z));
   }
   if (modus === 'gruppensieg' && z.puzzle) {
     const g = z.gruppen.zuordnung[id];

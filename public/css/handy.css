@@ -189,16 +189,16 @@ label small { font-weight: 500; color: var(--leise); }
 .sprach-titel { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
 .sprach-titel h1 { margin: 0; }
 .vorlese-knopf { flex: none; border: 2px solid var(--petrol); background: #fff; color: var(--dunkelpetrol); border-radius: 999px; padding: 7px 13px; font-size: 15px; font-weight: 800; }
-.frage { font-weight: 700; margin-bottom: 10px; }
-.antwort {
+p.frage { font-weight: 700; margin-bottom: 10px; }   /* nicht .melde-knopf.frage */
+.wahl {
   display: block; width: 100%; text-align: left; background: #fff; color: var(--text);
   border: 2px solid #C5D3D6; border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; font-size: 17px; font-weight: 600;
 }
-.antwort.richtig { border-color: var(--gruen); background: var(--gruen-hell); color: #1D7442; font-weight: 800; }
-.antwort.falsch { border-color: var(--rot); background: var(--rot-hell); color: #9B2C2C; text-decoration: line-through; }
-.antwort.gewaehlt { border-color: var(--petrol); background: #F0F7F8; box-shadow: inset 0 0 0 2px var(--petrol); font-weight: 800; }
-.antwort:disabled { opacity: 1; }
-.pz-frage .antwort:disabled:not(.gewaehlt) { opacity: .55; }
+.wahl.richtig { border-color: var(--gruen); background: var(--gruen-hell); color: #1D7442; font-weight: 800; }
+.wahl.falsch { border-color: var(--rot); background: var(--rot-hell); color: #9B2C2C; text-decoration: line-through; }
+.wahl.gewaehlt { border-color: var(--petrol); background: #F0F7F8; box-shadow: inset 0 0 0 2px var(--petrol); font-weight: 800; }
+.wahl:disabled { opacity: 1; }
+.pz-frage .wahl:disabled:not(.gewaehlt) { opacity: .55; }
 .rueck { font-weight: 800; margin: 4px 0 0; }
 .rueck.gut { color: var(--gruen); }
 .rueck.schlecht { color: var(--rot); }
@@ -270,3 +270,29 @@ body.gruppen-bunt { background: var(--gruppe, var(--hell)); transition: backgrou
 .pz-zahl { display: flex; align-items: center; gap: 10px; }
 .pz-zahl .feld { width: 130px; text-align: center; font-weight: 800; }
 .pz-zahl span { font-weight: 800; font-size: 20px; }
+
+/* ---------- Demo 10: Test mit Note ---------- */
+.test-kopf { display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: var(--leise); margin-bottom: 8px; }
+.test-uhr { background: var(--dunkelpetrol); color: #fff; border-radius: 999px; padding: 4px 12px; font-variant-numeric: tabular-nums; }
+.test-uhr.knapp { background: var(--rot); animation: puls 1s infinite; }
+.test-punkte { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-bottom: 12px; }
+.test-punkte button { aspect-ratio: 1; border-radius: 50%; border: 2px solid #C5D3D6; background: #fff; font-size: 14px; font-weight: 800; color: var(--leise); padding: 0; }
+.test-punkte button.beantwortet { background: var(--petrol); border-color: var(--petrol); color: #fff; }
+.test-punkte button.hier { box-shadow: 0 0 0 3px var(--akzent); }
+.test-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.test-nav .knopf { margin-top: 0; font-size: 18px; padding: 13px 10px; }
+.test-abgabe .knopf.zweit { margin-top: 10px; }
+.test-hinweis { text-align: center; margin-top: 14px; }
+.test-ergebnis { text-align: center; padding-top: 2vh; margin-bottom: 18px; }
+.note-kreis { width: 130px; height: 130px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center; font-size: 76px; font-weight: 900; color: #fff; }
+.note-kreis.note-1 { background: #2E9E5B; }
+.note-kreis.note-2 { background: #6FAE4D; }
+.note-kreis.note-3 { background: #D9A62E; }
+.note-kreis.note-4 { background: #E8833A; }
+.note-kreis.note-5 { background: #D9603F; }
+.note-kreis.note-6 { background: #C23B3B; }
+.test-ergebnis p.gross { font-size: 25px; font-weight: 800; color: var(--dunkelpetrol); margin-bottom: 4px; }
+.test-falsch .rueck { margin: 4px 0 0; }
+.noten-karte { text-align: left; margin-top: 22px; }
+.noten-zeile { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-top: 1px solid var(--hell); font-size: 19px; }
+.noten-zeile b { font-size: 30px; color: var(--dunkelpetrol); }

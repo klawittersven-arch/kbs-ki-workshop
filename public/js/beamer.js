@@ -4,7 +4,7 @@
  * Schritt, wird der Bildschirm neu aufgebaut, sonst nur aktualisiert (damit Animationen
  * und das Video weiterlaufen).
  */
-import { ABLAUF, UMFRAGE_FRAGE, UMFRAGE_OPTIONEN, PFLEGEPROZESS, GRAFIK_AUFGABEN, GRAFIK_BILDER, GRUPPENGROESSE, gruppeInfo } from './gemeinsam.js';
+import { ABLAUF, UMFRAGE_FRAGE, UMFRAGE_OPTIONEN, PFLEGEPROZESS, GRAFIK_AUFGABEN, GRAFIK_BILDER, GRUPPENGROESSE, gruppeInfo, NOTEN_NAMEN } from './gemeinsam.js';
 import { SPRACHEN, FLAGGEN, NIVEAU_NAMEN_DE } from './inhalte-sprachen.js';
 import { ABSCHNITTE } from './inhalte-puzzle.js';
 import { KOERPER, SKELETT, europaSvg } from './grafik-koerper.js';
@@ -62,6 +62,10 @@ const DEMOS = {
     nr: 9, titel: 'Minispielen', unter: '',
     prompt: 'Erstelle mir einen Endless Runner mit Highscore-Funktion.', bild: 'spiel',
   },
+  demo10: {
+    nr: 10, titel: 'automatisch korrigierten Tests', unter: '',
+    prompt: 'Erstelle mir einen Multiple-Choice-Test mit Notenberechnung, bei dem die Fragen für alle SuS anders gemischt sind und die Note nur auf dem eigenen Smartphone erscheint.', bild: 'test',
+  },
 };
 
 // Ausschnitt aus der Verlaufsbeschreibung (Folie „Und der Prompt?“)
@@ -74,21 +78,31 @@ const PROMPT_AUSZUG = [
 ];
 
 // Folie „Wünsch dir was!“ (gleich nach der Anmeldung): erst die Impulsfrage ans Kollegium,
-// dann die Karten nach und nach aufdecken – je eine für jede Demo der Stunde.
+// dann die Karten nach und nach aufdecken. „ort“ sagt, wo man es in der Stunde sieht.
 const WUNSCH = {
   frage: 'Stell dir vor, du hast einen Wunsch frei: eine Software für deinen Unterricht, die einfach alles kann.',
   nachfrage: 'Was soll sie können?',
   schluss: 'Heute live – alles in einer einzigen Anwendung.',
-  karten: [
-    { nr: 1, symbol: '📊', text: 'Umfragen live auswerten' },
-    { nr: 2, symbol: '☁️', text: 'Brainstorming als Wortwolke' },
-    { nr: 3, symbol: '✋', text: 'Mündliche Mitarbeit erfassen' },
-    { nr: 4, symbol: '📇', text: 'Mit Lernkarten üben' },
-    { nr: 5, symbol: '🎵', text: 'Lernsongs erstellen' },
-    { nr: 6, symbol: '🌍', text: 'Aufgaben in 6 Sprachen & 3 Niveaus' },
-    { nr: 7, symbol: '🗺️', text: 'Mit Grafiken lernen' },
-    { nr: 8, symbol: '👥', text: 'Gruppen einteilen & Gruppenpuzzle' },
-    { nr: 9, symbol: '🎮', text: 'Lernspiele mit Highscore' },
+  gruppen: [
+    {
+      titel: 'IM UNTERRICHT', art: 'unterricht', karten: [
+        { symbol: '🗳️', text: 'Abstimmen, Meinungen einholen, Feedback', ort: 'Demo 1 & 2' },
+        { symbol: '📈', text: 'Mitarbeit oder Lernstand sichtbar machen', ort: 'Demo 3' },
+        { symbol: '🔁', text: 'Üben, Wiederholen, Prüfungsvorbereitung', ort: 'Demo 4 & 5' },
+        { symbol: '🌍', text: 'Differenzieren, Sprachbarrieren/DaZ, Inklusion', ort: 'Demo 6' },
+        { symbol: '🖼️', text: 'Anschaulich erklären, visualisieren', ort: 'Demo 5 & 7' },
+        { symbol: '👥', text: 'Gruppen bilden, Zusammenarbeit fördern', ort: 'Demo 8' },
+        { symbol: '🎮', text: 'Motivieren, Spaß, Wettbewerb', ort: 'Demo 9 & Punktestand' },
+      ],
+    },
+    {
+      titel: 'RUND UM DEN UNTERRICHT', art: 'rund', karten: [
+        { symbol: '📱', text: 'Einfach & datensparsam: ohne App, ohne Konto, kostenlos', ort: 'ganze Stunde' },
+        { symbol: '✅', text: 'Korrigieren & benoten', ort: 'Demo 10' },
+        { symbol: '🗂️', text: 'Verwaltung: Anwesenheit, Noten, Excel-Export', ort: 'Anmeldung & Export' },
+        { symbol: '🤖', text: 'KI im Hintergrund: Planung, Material & Übersetzungen', ort: 'Vorbereitung' },
+      ],
+    },
   ],
 };
 
@@ -98,7 +112,7 @@ const SCHRITT_NAMEN = ABLAUF.map((s, i) => {
     punkte: 'Punktestand', lernkarten: 'Demo 4: Lernkarten', video: 'Demo 5: KI-Song',
     sortieren: 'Sortieraufgabe', sprachen: 'Demo 6: Sprachen', grafik: 'Demo 7: Grafiken',
     gruppen: 'Demo 8: Gruppen einteilen', puzzle: 'Demo 8: Gruppenpuzzle', gruppensieg: 'Demo 8: Siegerehrung der Gruppen',
-    spiel: 'Demo 9: Minispiel', siegerehrung: 'Siegerehrung',
+    spiel: 'Demo 9: Minispiel', siegerehrung: 'Siegerehrung', test: 'Demo 10: Test', notenspiegel: 'Demo 10: Notenspiegel',
   }[s.modus];
   if (n) return (i + 1) + '. ' + n + (s.fragerunde ? ' (Fragerunde + Export)' : '');
   const f = { wunsch: 'Wünsch dir was! (Übersicht)', wort: 'Im Anfang war das Wort', prompt: 'Und der Prompt?', fragerunde: 'Fragerunde', jetzt: 'Jetzt seid ihr dran!' }[s.folie];
@@ -420,6 +434,16 @@ const BILDER = {
     <svg x="235" y="32" width="185" height="316" viewBox="0 0 240 426">${SKELETT.svg}</svg>
     <g class="huepf"><circle cx="122" cy="207" r="9" fill="#2E9E5B" stroke="#fff" stroke-width="3"/><circle cx="152" cy="232" r="9" fill="#D64545" stroke="#fff" stroke-width="3"/>
     <circle cx="303" cy="300" r="9" fill="#2E9E5B" stroke="#fff" stroke-width="3"/><text x="160" y="196" font-size="34">👆</text></g></svg>`,
+  test: `<svg viewBox="0 0 440 380">
+    <g transform="rotate(-4 220 190)"><rect x="70" y="30" width="260" height="320" rx="16" fill="#fff" stroke="#DCE7E9" stroke-width="3"/>
+    <text x="96" y="78" font-size="24" font-weight="800" fill="#25434B">Test</text>
+    ${[0, 1, 2, 3].map(i => `<g class="wachs" style="animation-delay:${(0.2 + 0.25 * i).toFixed(2)}s">
+      <rect x="96" y="${108 + i * 52}" width="30" height="30" rx="7" fill="${i === 2 ? '#FBE3E3' : '#DDF3E6'}" stroke="${i === 2 ? '#D64545' : '#2E9E5B'}" stroke-width="3"/>
+      <text x="111" y="${131 + i * 52}" text-anchor="middle" font-size="22" font-weight="900" fill="${i === 2 ? '#D64545' : '#2E9E5B'}">${i === 2 ? '✗' : '✓'}</text>
+      <rect x="140" y="${117 + i * 52}" width="${[150, 120, 160, 100][i]}" height="12" rx="6" fill="#EAF2F4"/></g>`).join('')}</g>
+    <g class="huepf"><circle cx="340" cy="290" r="58" fill="#fff" stroke="#D64545" stroke-width="7"/>
+    <text x="340" y="318" text-anchor="middle" font-size="80" font-weight="900" fill="#D64545">2</text></g>
+    <g transform="translate(330 40)"><circle r="38" fill="#3F6C72"/><text y="13" text-anchor="middle" font-size="36">🔀</text></g></svg>`,
   gruppen: (() => {
     const g = [0, 1, 2].map(i => gruppeInfo(i));
     const pos = [[220, 95], [105, 285], [335, 285]];
@@ -475,16 +499,22 @@ function pixelSzene(canvas) {
 const FOLIEN_BAUER = {
   wunsch() {
     const inhalt = gerüst();
-    const n = WUNSCH.karten.length;
+    let nr = 0;
+    const karte = k => {
+      const i = nr++;
+      return `<button class="wunsch-karte" data-karte="${i}">
+        <span class="seite rueckseite"><b>?</b><small>${esc(k.ort)}</small></span>
+        <span class="seite vorderseite"><span class="symbol">${k.symbol}</span><span class="text">${esc(k.text)}</span><small>${esc(k.ort)}</small></span>
+      </button>`;
+    };
     inhalt.innerHTML = `<div class="folie-wunsch">
       <div class="wunsch-frage"><span class="kicker">✨ WÜNSCH DIR WAS!</span>
         <h1>${esc(WUNSCH.frage)}</h1><p class="nachfrage">${esc(WUNSCH.nachfrage)}</p>
         <p class="schluss">${esc(WUNSCH.schluss)}</p></div>
-      <div class="wunsch-karten">${WUNSCH.karten.map((k, i) => `<button class="wunsch-karte" data-karte="${i}">
-        <span class="seite rueckseite"><b>?</b><small>Demo ${k.nr}</small></span>
-        <span class="seite vorderseite"><span class="symbol">${k.symbol}</span><span class="text">${esc(k.text)}</span><small>Demo ${k.nr}</small></span>
-      </button>`).join('')}</div></div>`;
+      <div class="wunsch-bloecke">${WUNSCH.gruppen.map(g => `<section class="wunsch-block ${g.art}"><h2>${esc(g.titel)}</h2>
+        <div class="wunsch-karten">${g.karten.map(karte).join('')}</div></section>`).join('')}</div></div>`;
     const karten = [...inhalt.querySelectorAll('.wunsch-karte')];
+    const n = karten.length;
     let offen = [];
     function zeigen() {
       karten.forEach((k, i) => k.classList.toggle('offen', offen.includes(i)));
@@ -522,7 +552,7 @@ const FOLIEN_BAUER = {
     inhalt.innerHTML = `<div class="folie-wort"><blockquote>${zeichen}</blockquote><div class="strich"></div><cite>Johannes 1,1</cite></div>`;
   },
   demo1: demoFolie, demo2: demoFolie, demo3: demoFolie, demo4: demoFolie, demo5: demoFolie, demo6: demoFolie,
-  demo7: demoFolie, demo8: demoFolie, demo9: demoFolie,
+  demo7: demoFolie, demo8: demoFolie, demo9: demoFolie, demo10: demoFolie,
   prompt() {
     const inhalt = gerüst();
     inhalt.innerHTML = `<div class="folie-prompt">
@@ -537,7 +567,7 @@ const FOLIEN_BAUER = {
     inhalt.innerHTML = `<div class="folie-fragerunde"><span class="kicker">FRAGERUNDE</span>
       <p class="einleitung">Nach dieser Übersicht und Inspiration …</p>
       <div class="fragen">
-        <div class="frage-karte"><span class="symbol">💡</span><p>Welche <b>Ideen für Anwendungen</b> von Claude Code fallen euch ein?</p></div>
+        <div class="frage-karte"><span class="symbol">💡</span><p>Welche eurer <b>Wünsche vom Anfang</b> fehlen noch – und <b>was würdet ihr damit bauen</b>?</p></div>
         <div class="frage-karte"><span class="symbol">🛠️</span><p>Welche <b>Probleme</b> würdet ihr gerne damit <b>lösen</b>?</p></div>
         <div class="frage-karte warn"><span class="symbol">⚠️</span><p>Oder: Wo seht ihr <b>Probleme</b>, die durch die Verwendung solcher KI-generierten Webanwendungen <b>entstehen</b> könnten?</p></div>
       </div></div>`;
@@ -668,6 +698,72 @@ const BILDSCHIRME = {
   },
 
   punkte: punkteBildschirm,
+
+  /* ---------- Demo 10: Test mit Note ---------- */
+  test() {
+    const inhalt = gerüst({ miniQr: true });
+    const U = 2 * Math.PI * 200;
+    inhalt.innerHTML = `<div class="test-feld">
+      <div class="test-text"><h1>Test auf eurem Smartphone</h1>
+        <ul><li>🔀 Jede*r bekommt die Fragen in einer <b>eigenen Reihenfolge</b>.</li>
+        <li>🔒 Die Note siehst <b>nur du</b> – auf deinem Smartphone.</li>
+        <li>⏱ Wenn die Zeit um ist, wird automatisch abgegeben.</li></ul>
+        <div class="test-stand"><span class="gross">0</span> <small>von 0 abgegeben</small></div><div class="sprach-fortschritt"><i></i></div></div>
+      <div class="uhr"><svg viewBox="0 0 460 460"><circle cx="230" cy="230" r="200" fill="#fff" stroke="#EAF2F4" stroke-width="34"/>
+      <circle class="ring" cx="230" cy="230" r="200" fill="none" stroke="#3F6C72" stroke-width="34" stroke-linecap="round" stroke-dasharray="${U}" stroke-dashoffset="0"/></svg>
+      <div class="zeit">3:00</div></div></div>`;
+    const uhr = $('.uhr', inhalt), ring = $('.ring', inhalt), zeit = $('.zeit', inhalt);
+    let letzte = null;
+    function ticken() {
+      const t = letzte && letzte.test;
+      if (!t || !t.start) return;
+      const gesamt = t.dauer / 1000;
+      const rest = Math.max(0, gesamt - (Date.now() + zeitVersatz - t.start) / 1000);
+      ring.setAttribute('stroke-dashoffset', (U * (1 - rest / gesamt)).toFixed(1));
+      ring.setAttribute('stroke', rest < 20 ? '#D64545' : rest < 60 ? '#E8833A' : '#3F6C72');
+      if (rest <= 0) { uhr.classList.add('um'); zeit.textContent = 'Zeit um!'; return; }
+      const s = Math.ceil(rest);
+      zeit.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    }
+    const id = setInterval(ticken, 250);
+    return {
+      aktualisieren(z) {
+        letzte = z;
+        const t = z.test;
+        if (!t) return;
+        const gesamt = Math.max(t.begonnen, z.tn.filter(x => x.online).length);
+        $('.test-stand .gross', inhalt).textContent = t.abgegeben;
+        $('.test-stand small', inhalt).textContent = `von ${gesamt} abgegeben`;
+        $('.sprach-fortschritt i', inhalt).style.width = (gesamt ? 100 * t.abgegeben / gesamt : 0) + '%';
+        ticken();
+      },
+      abbauen() { clearInterval(id); },
+    };
+  },
+
+  notenspiegel() {
+    const inhalt = gerüst();
+    inhalt.innerHTML = `<div class="frage-kopf"><h1>Notenspiegel</h1><p>anonym – deine eigene Note siehst nur du auf deinem Smartphone</p></div>
+      <div class="noten-feld">${[1, 2, 3, 4, 5, 6].map(n => `<div class="noten-spalte"><div class="balken-raum"><div class="balken-zahl">0</div>
+        <div class="balken note-${n}"></div></div><div class="noten-name"><b>${n}</b><small>${esc(NOTEN_NAMEN[n])}</small></div></div>`).join('')}</div>
+      <div class="noten-schnitt"></div>`;
+    const spalten = [...inhalt.querySelectorAll('.noten-spalte')];
+    return {
+      aktualisieren(z) {
+        const d = z.notenspiegel;
+        if (!d) return;
+        const max = Math.max(1, ...d.noten);
+        const raum = $('.balken-raum', inhalt).clientHeight - 60;
+        spalten.forEach((s, i) => {
+          $('.balken-zahl', s).textContent = d.noten[i];
+          $('.balken', s).style.height = Math.max(6, raum * d.noten[i] / max) + 'px';
+        });
+        $('.noten-schnitt', inhalt).innerHTML = d.teilgenommen
+          ? `<b>${d.teilgenommen}</b> ${d.teilgenommen === 1 ? 'Test' : 'Tests'} · Durchschnitt <b>${d.schnitt.toFixed(1).replace('.', ',')}</b>`
+          : 'Niemand hat am Test teilgenommen.';
+      },
+    };
+  },
 
   /* ---------- Demo 6: Sprachen ---------- */
   sprachen() {
@@ -1024,7 +1120,7 @@ function punkteBildschirm(s) {
     <button class="knopf2" data-rueckgaengig hidden>↶ Rückgängig</button>
     ${s.final ? '<button class="knopf2 akzent" data-export>📥 FINALEN PUNKTESTAND EXPORTIEREN!</button>' : ''}`;
   const inhalt = gerüst({ links });
-  inhalt.innerHTML = `<div class="punkte-kopf"><h1>AKTUELLER PUNKTESTAND</h1>${s.fragerunde ? '<span class="fragerunde-hinweis">Fragerunde: 💡 Ideen · 🛠️ Probleme lösen · ⚠️ Bedenken</span>' : ''}
+  inhalt.innerHTML = `<div class="punkte-kopf"><h1>AKTUELLER PUNKTESTAND</h1>${s.fragerunde ? '<span class="fragerunde-hinweis">Fragerunde: 💡 Fehlende Wünsche · 🛠️ Probleme lösen · ⚠️ Bedenken</span>' : ''}
     <div class="legende"><span><i style="background:var(--rot)"></i>hat eine Frage</span><span><i style="background:var(--gruen)"></i>hat eine Antwort</span><span><i style="background:var(--gold)"></i>ist dran</span></div></div>
     <div class="punkte-raster"></div>`;
   const raster = $('.punkte-raster', inhalt);
@@ -1239,15 +1335,20 @@ function punkteBildschirm(s) {
 function exportieren() {
   if (!z) return;
   const sortiert = rangliste(z.tn);
-  const zeilen = [['Platz', 'Name', 'Punkte gesamt', 'davon Abstimmung', 'davon Wortwolke', 'davon Sortieraufgabe', 'davon Sprachen', 'davon Grafiken', 'davon Gruppenpuzzle', 'davon mündlich', 'KAROLINE-RUN! Highscore']];
+  const zwei = n => String(n).padStart(2, '0');
+  const uhrzeit = ms => { const d = new Date(ms); return zwei(d.getHours()) + ':' + zwei(d.getMinutes()); };
+  const zeilen = [['Platz', 'Name', 'angemeldet um', 'Punkte gesamt', 'davon Abstimmung', 'davon Wortwolke', 'davon Sortieraufgabe',
+    'davon Sprachen', 'davon Grafiken', 'davon Gruppenpuzzle', 'davon mündlich', 'mündliche Note',
+    'Test: richtig (von 8)', 'Test: Prozent', 'schriftliche Note', 'KAROLINE-RUN! Highscore']];
   for (const t of sortiert) {
-    zeilen.push([t.rang, t.name, t.punkte.gesamt, t.punkte.umfrage, t.punkte.wolke, t.punkte.sortieren,
-      t.punkte.sprachen, t.punkte.grafik, t.punkte.puzzle, t.punkte.muendlich, t.spiel ?? '']);
+    const n = t.noten || {};
+    zeilen.push([t.rang, t.name, t.seit ? uhrzeit(t.seit) : '', t.punkte.gesamt, t.punkte.umfrage, t.punkte.wolke, t.punkte.sortieren,
+      t.punkte.sprachen, t.punkte.grafik, t.punkte.puzzle, t.punkte.muendlich, n.muendlich ?? '',
+      n.test ? n.test.richtig : 'nicht teilgenommen', n.test ? n.test.prozent : '', n.schriftlich ?? '', t.spiel ?? '']);
   }
   const d = new Date();
-  const zwei = n => String(n).padStart(2, '0');
   const name = `Punktestand_Durchgang-${z.durchgang}_${d.getFullYear()}-${zwei(d.getMonth() + 1)}-${zwei(d.getDate())}_${zwei(d.getHours())}-${zwei(d.getMinutes())}.xlsx`;
-  const blob = xlsxErstellen(zeilen, 'Punktestand', [7, 22, 14, 18, 17, 21, 16, 16, 20, 15, 24]);
+  const blob = xlsxErstellen(zeilen, 'Punktestand', [7, 22, 15, 14, 18, 17, 21, 16, 16, 20, 15, 15, 20, 14, 17, 24]);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = name;

@@ -6,8 +6,9 @@
  */
 import {
   UMFRAGE_OPTIONEN, UMFRAGE_KEINE, WOLKE_MAX_BEGRIFFE, WOLKE_MAX_LAENGE, PFLEGEPROZESS, LERNKARTEN, PUNKTE_SICHTBAR_AB, begriffGueltig, sortierPunkte, PUNKTE,
-  SPRACHEN_LOESUNG, sprachPunkte, GRAFIK_AUFGABEN, GRAFIK_VERSUCHE, grafikPunkte, gruppeInfo, puzzlePunkte,
+  SPRACHEN_LOESUNG, sprachPunkte, GRAFIK_AUFGABEN, GRAFIK_VERSUCHE, grafikPunkte, gruppeInfo, puzzlePunkte, NOTEN_NAMEN,
 } from './gemeinsam.js';
+import { TEST_FRAGEN } from './inhalte-test.js';
 import { SPRACHEN, FLAGGEN, INHALT } from './inhalte-sprachen.js';
 import { FALL, EXPERTEN, PUZZLE_FRAGEN, ABSCHNITTE } from './inhalte-puzzle.js';
 import { KOERPER, SKELETT, TEILE, europaSvg } from './grafik-koerper.js';
@@ -171,15 +172,26 @@ function anmeldeFehler(code) {
 /* =====================================================================
    Bildschirme
    ===================================================================== */
+// Nach dem Export des Punktestands: die eigenen Noten (nur auf dem eigenen Handy)
+function notenHtml(a) {
+  if (!a.noten) return '';
+  const n = a.noten;
+  return `<div class="karte noten-karte"><h2>Deine Noten</h2>
+    <div class="noten-zeile"><span>mündlich</span><b>${n.muendlich ?? '–'}</b></div>
+    <div class="noten-zeile"><span>schriftlich (Test)</span><b>${n.schriftlich ?? '–'}</b></div>
+    <p class="leise klein">🔒 Nur du siehst deine Noten.${n.test ? ` Test: ${n.test.richtig} von ${n.test.von} richtig.` : ''}</p></div>`;
+}
+
 function warten({ symbol, modus, text, mitPunkten = true }) {
   app.innerHTML = `<div class="warten"><div class="symbol">${symbol}</div>${modus ? `<div class="modus">${esc(modus)}</div>` : ''}
-    <p class="gross">${text}</p><div class="stand"></div></div>`;
+    <p class="gross">${text}</p><div class="stand"></div><div class="noten"></div></div>`;
   return {
     aktualisieren(a) {
       const s = $('.stand', app);
       if (!s) return;
       s.innerHTML = mitPunkten && a.schritt >= PUNKTE_SICHTBAR_AB
         ? `Deine Punkte: <b>${a.punkte}</b> · Platz ${a.platz} von ${a.anzahl}` : '';
+      $('.noten', app).innerHTML = notenHtml(a);
     },
   };
 }
@@ -268,7 +280,7 @@ const BILDSCHIRME = {
       <div class="melden">
         <button class="melde-knopf frage" data-art="frage"><span>✋ Ich habe eine Frage</span><small></small></button>
         <button class="melde-knopf antwort" data-art="antwort"><span>💡 Ich habe eine Antwort</span><small></small></button>
-      </div><p class="stand-zeile"></p>`;
+      </div><p class="stand-zeile"></p><div class="noten"></div>`;
     let meldung = null;
     let zuletztGetippt = 0;
     app.querySelectorAll('.melde-knopf').forEach(b => b.addEventListener('click', () => {
@@ -304,6 +316,7 @@ const BILDSCHIRME = {
         if (a.dran && !warDran) vibrieren([100, 60, 100]);
         warDran = a.dran;
         $('.stand-zeile', app).innerHTML = `Deine Punkte: <b>${a.punkte}</b> · Platz ${a.platz} von ${a.anzahl}`;
+        $('.noten', app).innerHTML = notenHtml(a);
       },
     };
   },
@@ -505,7 +518,7 @@ const BILDSCHIRME = {
           ${f.optionen.map((o, i) => {
             const richtig = fragen[q].richtig && i === SPRACHEN_LOESUNG[q];
             const fehler = falsch[q].includes(i);
-            return `<button class="antwort${richtig ? ' richtig' : ''}${fehler ? ' falsch' : ''}" data-q="${q}" data-o="${i}" ${fragen[q].richtig || fehler ? 'disabled' : ''}>${richtig ? '✓ ' : fehler ? '✗ ' : ''}${esc(o)}</button>`;
+            return `<button class="wahl${richtig ? ' richtig' : ''}${fehler ? ' falsch' : ''}" data-q="${q}" data-o="${i}" ${fragen[q].richtig || fehler ? 'disabled' : ''}>${richtig ? '✓ ' : fehler ? '✗ ' : ''}${esc(o)}</button>`;
           }).join('')}
           ${fragen[q].richtig ? `<p class="rueck gut">${esc(ui.richtig)}</p>` : falsch[q].length ? `<p class="rueck schlecht">${esc(ui.falsch)}</p>` : ''}</div>`).join('')}`;
       if (!textNeu) window.scrollTo(0, scrollY);
@@ -802,7 +815,7 @@ const BILDSCHIRME = {
             const f = PUZZLE_FRAGEN[nr];
             const feld = f.art === 'zahl'
               ? `<div class="pz-zahl"><input class="feld" inputmode="decimal" maxlength="8" data-k="${k}" value="${esc(werte[k])}" ${fest ? 'disabled' : ''} aria-label="Antwort"><span>${esc(f.einheit)}</span></div>`
-              : f.optionen.map((o, i) => `<button class="antwort${String(werte[k]) === String(i) ? ' gewaehlt' : ''}" data-k="${k}" data-o="${i}" ${fest ? 'disabled' : ''}>${esc(o)}</button>`).join('');
+              : f.optionen.map((o, i) => `<button class="wahl${String(werte[k]) === String(i) ? ' gewaehlt' : ''}" data-k="${k}" data-o="${i}" ${fest ? 'disabled' : ''}>${esc(o)}</button>`).join('');
             return `<div class="karte pz-frage"><p class="frage"><b>${k + 1}.</b> ${esc(f.frage)}</p>${feld}</div>`;
           }).join('')}
           ${fest
@@ -822,7 +835,7 @@ const BILDSCHIRME = {
         w[+b.dataset.k] = +b.dataset.o;
         entwurf[p.abschnitt] = w;
         entwurfSpeichern();
-        b.parentElement.querySelectorAll('.antwort').forEach(x => x.classList.toggle('gewaehlt', x === b));
+        b.parentElement.querySelectorAll('.wahl').forEach(x => x.classList.toggle('gewaehlt', x === b));
         vibrieren(15);
         kopf();
         return;
@@ -890,6 +903,129 @@ const BILDSCHIRME = {
     const s = warten({ symbol: '🏆', modus: 'SIEGEREHRUNG', text: 'Richte deine Aufmerksamkeit nach vorne, leg dein Smartphone erstmal zur Seite.', mitPunkten: false });
     if (a.puzzle && a.puzzle.platz) $('.stand', app).insertAdjacentHTML('afterend', `<p class="leise" style="margin-top:20px">Eure Gruppe: <b>Platz ${a.puzzle.platz}</b> · +${puzzlePunkte(a.puzzle.platz)} Punkte</p>`);
     return s;
+  },
+
+  /* ---------- Demo 10: Test mit Note ---------- */
+  test(a) {
+    app.innerHTML = '<div class="test"></div>';
+    const wurzel = $('.test', app);
+    let antworten = a.test.antworten ? a.test.antworten.slice() : TEST_FRAGEN.map(() => null);
+    let pos = 0;                // angezeigte Frage (Position in der eigenen Reihenfolge)
+    let bestaetigen = false;    // „Wirklich abgeben?“ wird gezeigt
+    let abgabeGesendet = false;
+    let zuletztGetippt = 0;
+    let versatz = a.serverZeit - Date.now();
+    let t = a.test;
+    if (!t.begonnen && !t.abgegeben) senden({ type: 'testBeginn' });
+
+    const rest = () => Math.max(0, t.start + t.dauer - (Date.now() + versatz));
+    const mmss = ms => { const s = Math.ceil(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+
+    function frageZeigen() {
+      const q = t.reihenfolge[pos];
+      const f = TEST_FRAGEN[q];
+      const offen = antworten.filter(x => x === null).length;
+      const letzte = pos === TEST_FRAGEN.length - 1;
+      wurzel.innerHTML = `<div class="test-kopf"><span>Frage ${pos + 1} von ${TEST_FRAGEN.length}</span><span class="test-uhr">⏱ ${mmss(rest())}</span></div>
+        <div class="test-punkte">${t.reihenfolge.map((x, i) => `<button data-pos="${i}" class="${antworten[x] !== null ? 'beantwortet' : ''}${i === pos ? ' hier' : ''}" aria-label="Frage ${i + 1}">${i + 1}</button>`).join('')}</div>
+        ${bestaetigen
+          ? `<div class="karte test-abgabe"><h2>Test abgeben?</h2>
+              <p>${offen ? `<b>${offen} ${offen === 1 ? 'Frage ist' : 'Fragen sind'} noch offen</b> – sie zählen als falsch.` : 'Alle Fragen sind beantwortet.'} Danach kannst du nichts mehr ändern.</p>
+              <button class="knopf" data-abgeben>Ja, abgeben</button><button class="knopf zweit" data-zurueck-fragen>Zurück zu den Fragen</button></div>`
+          : `<div class="karte"><p class="frage">${esc(f.frage)}</p>
+              ${t.optionen[q].map(o => `<button class="wahl${antworten[q] === o ? ' gewaehlt' : ''}" data-o="${o}">${esc(f.optionen[o])}</button>`).join('')}</div>
+              <div class="test-nav"><button class="knopf zweit" data-zurueck ${pos === 0 ? 'disabled' : ''}>← Zurück</button>
+              ${letzte ? '<button class="knopf" data-fertig>Abgeben …</button>' : '<button class="knopf" data-weiter>Weiter →</button>'}</div>`}
+        <p class="leise klein test-hinweis">🔒 Deine Note siehst nur du.</p>`;
+    }
+
+    function ergebnisZeigen() {
+      const e = t.ergebnis;
+      if (!e) {
+        wurzel.innerHTML = `<div class="warten"><div class="symbol">📝</div><div class="modus">TEST</div>
+          <p class="gross">${abgabeGesendet ? 'Wird abgegeben …' : 'Du hast nicht am Test teilgenommen.'}</p></div>`;
+        return;
+      }
+      wurzel.innerHTML = `<div class="test-ergebnis"><div class="note-kreis note-${e.note}">${e.note}</div>
+        <p class="gross">Note ${e.note} – ${esc(NOTEN_NAMEN[e.note])}</p>
+        <p>${e.richtig} von ${e.von} richtig (${e.prozent} %)</p>
+        <p class="leise klein">🔒 Diese Note siehst nur du.</p></div>
+        ${e.falsch.length ? `<h2>Das war nicht richtig:</h2>${e.falsch.map(x => {
+          const f = TEST_FRAGEN[x.frage];
+          return `<div class="karte test-falsch"><p class="frage">${esc(f.frage)}</p>
+            <p class="rueck schlecht">✗ ${x.gewaehlt === null ? 'keine Antwort' : esc(f.optionen[x.gewaehlt])}</p>
+            <p class="rueck gut">✓ ${esc(f.optionen[x.richtig])}</p></div>`;
+        }).join('')}` : '<div class="geschafft">🎉 Alles richtig!</div>'}`;
+    }
+
+    function zeichnen() {
+      if (t.abgegeben) ergebnisZeigen(); else frageZeigen();
+    }
+
+    wurzel.addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b || b.disabled || t.abgegeben) return;
+      if (b.dataset.o !== undefined) {
+        const q = t.reihenfolge[pos];
+        antworten[q] = +b.dataset.o;
+        zuletztGetippt = Date.now();
+        senden({ type: 'testAntwort', frage: q, option: antworten[q] });
+        vibrieren(15);
+        frageZeigen();
+        return;
+      }
+      if (b.dataset.pos !== undefined) { pos = +b.dataset.pos; bestaetigen = false; }
+      else if ('weiter' in b.dataset) pos++;
+      else if ('zurueck' in b.dataset) pos--;
+      else if ('fertig' in b.dataset) bestaetigen = true;
+      else if ('zurueckFragen' in b.dataset) bestaetigen = false;
+      else if ('abgeben' in b.dataset) {
+        abgabeGesendet = true;
+        senden({ type: 'testAbgeben' });
+        b.disabled = true;
+        vibrieren(30);
+        return;
+      }
+      window.scrollTo(0, 0);
+      frageZeigen();
+    });
+
+    // Countdown; ist die Zeit um, wird automatisch abgegeben
+    const uhr = setInterval(() => {
+      if (t.abgegeben) return;
+      if (rest() <= 0 && !abgabeGesendet) {
+        abgabeGesendet = true;
+        senden({ type: 'testAbgeben' });
+        toast('⏱ Die Zeit ist um – dein Test wird abgegeben.', '', 3000);
+      }
+      const u = $('.test-uhr', wurzel);
+      if (u) { u.textContent = '⏱ ' + mmss(rest()); u.classList.toggle('knapp', rest() < 30000); }
+    }, 500);
+
+    zeichnen();
+    return {
+      aktualisieren(neu) {
+        versatz = neu.serverZeit - Date.now();
+        const warAbgegeben = t.abgegeben;
+        t = neu.test;
+        if (t.abgegeben) {
+          if (!warAbgegeben) { window.scrollTo(0, 0); vibrieren([60, 40, 60]); }
+          ergebnisZeigen();
+          return;
+        }
+        // Während getippt wird, gilt die eigene Auswahl (der Server zieht nach)
+        if (t.antworten && Date.now() - zuletztGetippt > 900) {
+          const geaendert = t.antworten.some((x, i) => x !== antworten[i]);
+          antworten = t.antworten.slice();
+          if (geaendert) frageZeigen();
+        }
+      },
+      abbauen() { clearInterval(uhr); },
+    };
+  },
+
+  notenspiegel(a) {
+    return BILDSCHIRME.test(a);
   },
 
   /* ---------- Demo 9: KAROLINE-RUN! ---------- */

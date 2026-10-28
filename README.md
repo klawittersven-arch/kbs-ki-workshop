@@ -39,7 +39,7 @@ Die Lehrkraft steuert alles am Laptop. Die Handys springen automatisch mit.
 | # | Beamer | Handys | Knopf am Beamer |
 |---|---|---|---|
 | 1 | Anmeldung: QR-Code, Anleitung, Namen der Angemeldeten | Vorname, Anfangsbuchstabe Nachname, Passwort | PRÄSENTATIONS-MODUS STARTEN (schaltet auch auf Vollbild) |
-| 2 | Folie **„Wünsch dir was!“**: Impulsfrage, dann 9 verdeckte Karten (je eine pro Demo) nach und nach aufdecken | „Präsentations-Modus …“ | AUFDECKEN (n/9), danach NÄCHSTE FOLIE |
+| 2 | Folie **„Wünsch dir was!“**: Impulsfrage, dann 11 verdeckte Karten (7 „Im Unterricht“, 4 „Rund um den Unterricht“) nach und nach aufdecken | „Präsentations-Modus …“ | AUFDECKEN (n/11), danach NÄCHSTE FOLIE |
 | 3 | Folie „Im Anfang war das Wort“ | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
 | 4 | Folie Demo 1 (Prompt wird „getippt“) | „Präsentations-Modus …“ | DEMO 1 STARTEN |
 | 5 | Balkendiagramm „Wozu nutzt du KI momentan schon?“ | Mehrfachauswahl | UMFRAGE ABSCHLIESSEN |
@@ -59,10 +59,12 @@ Die Lehrkraft steuert alles am Laptop. Die Handys springen automatisch mit.
 | 26–27 | Folie Demo 9 → Highscore KAROLINE-RUN! | Endless Runner, beliebig viele Runden | DEMO 9 STARTEN / SIEGEREHRUNG |
 | 28 | Siegerehrung mit Treppchen und Pokal | „Siegerehrung …“ | ZUM PUNKTESTAND |
 | 29 | Punktestand | Melde-Knöpfe | FORTFAHREN |
-| 30 | Folie „Und der Prompt für diese ganze Stunde?“ (Auszug aus der Verlaufsbeschreibung) | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
-| 31 | Folie **Fragerunde**: Ideen? Probleme lösen? Bedenken? | „Präsentations-Modus …“ | PUNKTESTAND-MODUS |
-| 32 | Punktestand der Fragerunde + **FINALEN PUNKTESTAND EXPORTIEREN!** (Excel) | Melde-Knöpfe | FORTFAHREN |
-| 33 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | „Präsentations-Modus …“ | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
+| 30–31 | Folie Demo 10 → **Test**: 3-Minuten-Countdown, „18 von 30 abgegeben“ (keine Namen, keine Noten) | 8 Multiple-Choice-Fragen, je Person anders gemischt; danach eigene Note | DEMO 10 STARTEN / TEST BEENDEN |
+| 32 | **Notenspiegel** (anonym) mit Durchschnitt | eigene Note und falsch beantwortete Fragen mit Lösung | FORTFAHREN |
+| 33 | Folie „Und der Prompt für diese ganze Stunde?“ (Auszug aus der Verlaufsbeschreibung) | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
+| 34 | Folie **Fragerunde**: Fehlende Wünsche vom Anfang? Probleme lösen? Bedenken? | „Präsentations-Modus …“ | PUNKTESTAND-MODUS |
+| 35 | Punktestand der Fragerunde + **FINALEN PUNKTESTAND EXPORTIEREN!** (Excel) | Melde-Knöpfe; nach dem Export die eigenen Noten | FORTFAHREN |
+| 36 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | „Präsentations-Modus …“ | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
 
 Jede Demo lässt sich jederzeit beenden („weiter“ oder Sprung über das Menü ⚙): Die Handys brechen
 die Aufgabe ab, alle bis dahin gesammelten Punkte bleiben erhalten.
@@ -80,9 +82,15 @@ Punkte gesammelt!“) eine Überraschung.
   ein neues) oder *Entfernen*.
 - **Folie „Wünsch dir was!“:** Erst die Frage stellen und Antworten aus dem Kollegium sammeln. Dann deckt
   jeder Klick auf den Weiter-Knopf (oder →) die nächste Karte auf; eine bestimmte Karte lässt sich auch direkt
-  anklicken, z. B. wenn jemand genau das genannt hat. Erst wenn alle 9 offen sind, geht es zur nächsten Folie.
-  Rückseiten: 1 Umfragen · 2 Wortwolke · 3 Mündliche Mitarbeit · 4 Lernkarten · 5 Lernsongs · 6 Sprachen · 7 Grafiken ·
-  8 Gruppen · 9 Lernspiele.
+  anklicken, z. B. wenn jemand genau das genannt hat. Erst wenn alle 11 offen sind, geht es zur nächsten Folie.
+  Auf den Rückseiten steht, wo man es in der Stunde sieht (z. B. „Demo 1 & 2“, „ganze Stunde“, „Vorbereitung“).
+  Im Unterricht: Abstimmen/Feedback · Mitarbeit sichtbar machen · Üben/Prüfungsvorbereitung · Differenzieren/DaZ/Inklusion ·
+  Visualisieren · Gruppen/Zusammenarbeit · Motivieren/Wettbewerb. Rund um den Unterricht: Einfach & datensparsam ·
+  Korrigieren & benoten · Verwaltung · KI im Hintergrund.
+- **Demo 10 (Test):** Der 3-Minuten-Countdown startet beim ersten Öffnen des Tests. Ist die Zeit um, geben die
+  Handys automatisch ab. *TEST BEENDEN* gibt alle noch offenen Tests ab (Unbeantwortetes zählt als falsch) und
+  zeigt den anonymen Notenspiegel. Die Note sieht jede*r nur auf dem eigenen Handy; der Test gibt keine Punkte,
+  damit sich die Note nicht aus dem Punktestand zurückrechnen lässt.
 - **Wortwolke:** Ein Wort anklicken blendet es aus (die 10 Punkte dafür werden abgezogen).
 - **Punktestand:** Namen anklicken = aufrufen. Dann Punkte vergeben (0, 10, 25, 50, 75, 100 oder
   eigene Zahl) oder *Abbrechen*. Hat die Person eine **Frage** (rot), gibt es keine Punkte, sondern
@@ -127,8 +135,19 @@ Punkte gesammelt!“) eine Überraschung.
 | Demo 8: Gruppenpuzzle | jede Person der Gruppe: Platz 1 = 50, Platz 2 = 40, Platz 3 = 30, alle anderen fertigen Gruppen 20 |
 | Punktestand | 0–100 je Vergabe durch die Lehrkraft |
 | KAROLINE-RUN! | zählt nur für die Spiel-Highscore, nicht für den Punktestand |
+| Demo 10: Test | keine Punkte (nur Note) |
 
-Die Excel-Datei enthält Platz, Name, Gesamtpunkte, die Punkte je Aufgabe und die Spiel-Highscore.
+### Noten
+
+- **Notenschlüssel** (IHK): ab 92 % = 1, ab 81 % = 2, ab 67 % = 3, ab 50 % = 4, ab 30 % = 5, darunter 6.
+- **Schriftliche Note:** Anteil richtiger Antworten im Test (8 Fragen).
+- **Mündliche Note:** Gesamtpunkte im Verhältnis zur höchsten Punktzahl im Durchgang (wer die meisten
+  Punkte hat, bekommt 100 % = 1), gleicher Schlüssel.
+- Beide Noten sieht jede*r nach dem Export des finalen Punktestands auf dem eigenen Handy – sonst niemand.
+  Zuschauer (Zuschauer-Link) bekommen keine Noten übertragen.
+
+Die Excel-Datei enthält Platz, Name, Anmeldezeit (Anwesenheit), Gesamtpunkte, die Punkte je Aufgabe,
+mündliche Note, Testergebnis (richtig von 8, Prozent), schriftliche Note und die Spiel-Highscore.
 
 ### Für die Teilnehmenden
 
@@ -156,7 +175,7 @@ Link z. B. per Messenger oder E-Mail schicken.
 ## Datenschutz
 
 - Gespeichert werden nur Vorname, Anfangsbuchstabe des Nachnamens, Passwort (nur als Prüfsumme,
-  nicht im Klartext) und die Punkte – im Speicher der Anwendung bei Cloudflare.
+  nicht im Klartext), die Punkte und die Testantworten – im Speicher der Anwendung bei Cloudflare.
   **Zurücksetzen löscht alles.** Die Excel-Datei entsteht nur auf dem Laptop der Lehrkraft.
 - Keine Cookies, keine Analyse, keine fremden Schriften oder Skripte. Einzige Ausnahme: Solange
   das Video nicht hochgeladen ist, wird es aus Google Drive eingebettet (nur am Beamer).
@@ -167,6 +186,7 @@ Link z. B. per Messenger oder E-Mail schicken.
 | Was | Wo |
 |---|---|
 | Ablauf, Umfrage-Frage und -Antworten, Lernkarten, Schritte der Sortieraufgabe, Punktwerte | `public/js/gemeinsam.js` |
+| Demo 10: Testfragen; richtige Antworten (nur auf dem Server); Notenschlüssel | `public/js/inhalte-test.js`; `worker/test-loesung.js`; `public/js/gemeinsam.js` (`NOTEN_GRENZEN`, `TEST_DAUER_MS`) |
 | Folientexte und Prompts der Demos, Impulsfrage und Karten der Folie „Wünsch dir was!“ (`WUNSCH`), Auszug auf der Folie „Und der Prompt?“, Countdown-Dauer | `public/js/beamer.js` (oben) |
 | Texte der Handy-Seite | `public/js/handy.js` |
 | Demo 6: Text, Fragen und Übersetzungen (6 Sprachen × 3 Niveaus) | `public/js/inhalte-sprachen.js` |
@@ -183,7 +203,8 @@ public/index.html      Handy-Seite          → js/handy.js, css/handy.css
 public/beamer.html     Beamer-Seite         → js/beamer.js, css/beamer.css
 public/handout.html    Handout mit QR-Code zum Drucken
 public/js/             gemeinsam.js, verbindung.js (WebSocket + Reserve), wortwolke.js, export.js (Excel),
-                       inhalte-sprachen.js, inhalte-puzzle.js, grafik-koerper.js, grafik-europa.js (Karte)
+                       inhalte-sprachen.js, inhalte-puzzle.js, inhalte-test.js, grafik-koerper.js, grafik-europa.js (Karte)
+worker/test-loesung.js Lösungen zum Test (nicht öffentlich abrufbar)
 public/spiel/          KAROLINE-RUN! (aus „Diabetes Run!“ der Lernkarten übernommen)
 public/video/          hier gehört pflegeprozess.mp4 hin
 public/vendor/         qrcode.min.js (MIT-Lizenz)
@@ -205,13 +226,15 @@ fragen alle 1,5 Sekunden per HTTP nach.
 cd tests
 npm install                      # installiert wrangler (lokaler Cloudflare-Server) und Playwright
 npx playwright install chromium
-node ablauf.test.js              # ganze Stunde mit 30 simulierten Handys (~5 Minuten); TN=12 für weniger
+node ablauf.test.js              # ganze Stunde mit 30 simulierten Handys (~6 Minuten); TN=12 für weniger
 ```
 
 Der Test startet den Workshop lokal mit leerem Speicher und prüft u. a.: PIN, Anmeldung mit
 30 Handys (eines im Reserve-Modus), falsches Passwort, Wiedereinstieg, alle Demos, Punkteberechnung,
 Zufallsauswahl, Rückgängig, Sprachen und Niveaus, Tipp-Aufgaben auf Karte und Körper, Gruppeneinteilung
 (selbst wählen, volle Gruppe gesperrt, Rest zufällig, Namen verschieben), Gruppenpuzzle mit falscher
-Abgabe (Sperre), ausgefallenem Handy (Text freigegeben) und Plätzen, Excel-Export und Zurücksetzen. Bildschirmfotos liegen in `tests/ergebnisse/`.
+Abgabe (Sperre), ausgefallenem Handy (Text freigegeben) und Plätzen, Test mit gemischter Reihenfolge,
+Noten nach Schlüssel und automatischer Abgabe, anonymer Notenspiegel, keine Noten beim Zuschauer-Link,
+Excel-Export mit Noten und Anmeldezeit, Noten auf dem Handy nach dem Export und Zurücksetzen. Bildschirmfotos liegen in `tests/ergebnisse/`.
 
 © 2026 Sven Klawitter

@@ -36,6 +36,9 @@ export const ABLAUF = [
   { modus: 'spiel', knopf: 'SIEGEREHRUNG' },
   { modus: 'siegerehrung', knopf: 'ZUM PUNKTESTAND' },
   { modus: 'punkte', knopf: 'FORTFAHREN' },
+  { modus: 'folie', folie: 'demo10', knopf: 'DEMO 10 STARTEN' },
+  { modus: 'test', knopf: 'TEST BEENDEN' },
+  { modus: 'notenspiegel', knopf: 'FORTFAHREN' },
   { modus: 'folie', folie: 'prompt', knopf: 'NÄCHSTE FOLIE' },
   { modus: 'folie', folie: 'fragerunde', knopf: 'PUNKTESTAND-MODUS' },
   { modus: 'punkte', final: true, fragerunde: true, knopf: 'FORTFAHREN' },
@@ -195,4 +198,14 @@ export function sortierPunkte(s) {
   if (!s) return 0;
   const richtig = s.richtig.filter(Boolean).length;
   return Math.max(0, richtig * PUNKTE.jeSchritt - s.fehler * PUNKTE.jeFehler);
+}
+
+/* ---------- Demo 10: Test mit Note, mündliche Note ---------- */
+export const TEST_DAUER_MS = 3 * 60 * 1000;
+// Notenschlüssel (IHK, an Berufsschulen gängig): ab so viel Prozent gibt es Note 1, 2, 3, 4, 5 – darunter 6
+export const NOTEN_GRENZEN = [92, 81, 67, 50, 30];
+export const NOTEN_NAMEN = ['', 'sehr gut', 'gut', 'befriedigend', 'ausreichend', 'mangelhaft', 'ungenügend'];
+export function noteAusProzent(prozent) {
+  const i = NOTEN_GRENZEN.findIndex(g => prozent >= g);
+  return i < 0 ? 6 : i + 1;
 }

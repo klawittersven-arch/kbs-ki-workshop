@@ -8,6 +8,7 @@ const { spawn, execFileSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { pathToFileURL } = require('url');
 const { chromium } = require('playwright');
 
 const WURZEL = path.resolve(__dirname, '..');
@@ -200,21 +201,21 @@ async function anmelden(page, vorname, initiale, passwort) {
     console.log('\nFolie „Wünsch dir was!“, Folien und Demo 1');
     await weiter(beamer, 'folie');
     await warte(1200);
-    pruefe(/Wunsch frei/.test(await beamer.textContent('.folie-wunsch h1')) && (await beamer.$$('.wunsch-karte')).length === 9 && !(await beamer.$('.wunsch-karte.offen')),
-      'Folie „Wünsch dir was!“: Impulsfrage, 9 Karten verdeckt');
+    pruefe(/Wunsch frei/.test(await beamer.textContent('.folie-wunsch h1')) && (await beamer.$$('.wunsch-karte')).length === 11 && !(await beamer.$('.wunsch-karte.offen')),
+      'Folie „Wünsch dir was!“: Impulsfrage, 11 Karten verdeckt');
     await foto(beamer, 'b-01a-wuensch-dir-was');
     await beamer.click('.wunsch-karte[data-karte="7"]');   // passt zu einer Antwort aus dem Kollegium
     await beamer.click('[data-weiter]');
     await beamer.keyboard.press('ArrowRight');
     await warteBis(async () => JSON.stringify((await zustand(beamer)).aufgedeckt) === '[7,0,1]', 'drei Karten aufgedeckt');
-    pruefe((await zustand(beamer)).schritt === 1 && /AUFDECKEN \(3\/9\)/.test(await beamer.textContent('[data-weiter]')),
+    pruefe((await zustand(beamer)).schritt === 1 && /AUFDECKEN \(3\/11\)/.test(await beamer.textContent('[data-weiter]')),
       'Klick auf eine Karte deckt genau diese auf; Weiter-Knopf und Pfeiltaste decken die nächste auf, ohne weiterzuschalten');
-    for (let i = 0; i < 6; i++) await beamer.keyboard.press('ArrowRight');
-    await warteBis(async () => (await zustand(beamer)).aufgedeckt.length === 9, 'alle Karten aufgedeckt');
+    for (let i = 0; i < 8; i++) await beamer.keyboard.press('ArrowRight');
+    await warteBis(async () => (await zustand(beamer)).aufgedeckt.length === 11, 'alle Karten aufgedeckt');
     await warte(900);
     pruefe((await zustand(beamer)).schritt === 1 && await beamer.isVisible('.folie-wunsch .schluss') && (await beamer.textContent('[data-weiter]')).trim() === 'NÄCHSTE FOLIE',
-      'Alle 9 Karten aufgedeckt, Schlusssatz sichtbar, Knopf wieder „NÄCHSTE FOLIE“');
-    await warteBis(async () => (await zuschauer.$$('.wunsch-karte.offen')).length === 9, 'Zuschauer sieht die aufgedeckten Karten');
+      'Alle 11 Karten aufgedeckt, Schlusssatz sichtbar, Knopf wieder „NÄCHSTE FOLIE“');
+    await warteBis(async () => (await zuschauer.$$('.wunsch-karte.offen')).length === 11, 'Zuschauer sieht die aufgedeckten Karten');
     pruefe(true, 'Zuschauer sieht die aufgedeckten Karten mit');
     await foto(beamer, 'b-01b-wuensch-dir-was-aufgedeckt');
     await weiter(beamer, 'folie');
@@ -498,9 +499,9 @@ async function anmelden(page, vorname, initiale, passwort) {
       let punkte = 0;
       for (let q = 0; q < fragen; q++) {
         const karte = h.page.locator('.sprach-frage').nth(q);
-        if ((i + q) % 4 === 1) await karte.locator(`.antwort[data-o="${(SPRACH_LOESUNG[q] + 1) % 3}"]`).click();
+        if ((i + q) % 4 === 1) await karte.locator(`.wahl[data-o="${(SPRACH_LOESUNG[q] + 1) % 3}"]`).click();
         else punkte += 10;
-        await karte.locator(`.antwort[data-o="${SPRACH_LOESUNG[q]}"]`).click();
+        await karte.locator(`.wahl[data-o="${SPRACH_LOESUNG[q]}"]`).click();
       }
       if (fragen === 3) sprachFertig++;
       sprachErwartet[i] = punkte;
@@ -638,7 +639,7 @@ async function anmelden(page, vorname, initiale, passwort) {
     pruefe(expertenOk, 'Jede Gruppe hat die Texte A, B und C (' + zg.puzzle.gruppen.map(g => g.mitglieder.map(m => m.experten.join('')).join('/')).join(' · ') + ')');
     // Eine Person einer Dreiergruppe fällt aus – ihr Text wird nach 30 s für die Gruppe freigegeben
     const ausfallGruppe = zg.puzzle.gruppen.find(g => g.mitglieder.length === 3 && g.mitglieder.every(m => handys.findIndex(h => h.name === m.name) >= 3));
-    const ausfall = handys.find(h => h.name === ausfallGruppe.mitglieder[2].name);
+    const ausfall = handys.find(h => h !== handys[5] && ausfallGruppe.mitglieder.some(m => m.name === h.name));   // Handy 5 wird gleich fotografiert
     await ausfall.page.close();
     const RICHTIG = [[1, 2], [0, '40'], [2, 0]];
     const fotoGemacht = {};
@@ -667,7 +668,7 @@ async function anmelden(page, vorname, initiale, passwort) {
         const antworten = falsch ? [0, 2] : RICHTIG[p.abschnitt];
         for (let k = 0; k < 2; k++) {
           const karte = h.page.locator('.pz-frage').nth(k);
-          if (typeof antworten[k] === 'number') await karte.locator(`.antwort[data-o="${antworten[k]}"]`).click();
+          if (typeof antworten[k] === 'number') await karte.locator(`.wahl[data-o="${antworten[k]}"]`).click();
           else await karte.locator('input').fill(h === handys[2] ? '40 g' : antworten[k]);
         }
         try {
@@ -752,12 +753,70 @@ async function anmelden(page, vorname, initiale, passwort) {
     await weiter(beamer, 'punkte');
     pruefe(!(await beamer.$('[data-export]')), 'Punktestand nach der Siegerehrung (Export erst nach der Fragerunde)');
     await foto(beamer, 'b-25-punktestand-nach-siegerehrung');
+
+    /* ---------- Demo 10: Test mit Note ---------- */
+    console.log('\nDemo 10: Test mit Note');
     await weiter(beamer, 'folie');
-    await foto(beamer, 'b-26-und-der-prompt');
+    await warte(6500);
+    await foto(beamer, 'b-26-demo10-folie');
+    await weiter(beamer, 'test');
+    const { TEST_LOESUNG } = await import(pathToFileURL(path.join(WURZEL, 'worker', 'test-loesung.js')).href);
+    const NOTE = p => [92, 81, 67, 50, 30].findIndex(g => p >= g) + 1 || 6;
+    const testErwartet = [];
+    const reihen = new Set();
+    await Promise.all(handys.map(async (h, i) => {
+      await handyModus(h, 'test');
+      await h.page.waitForSelector('.test .wahl');
+      const t = await h.page.evaluate(() => window.__handy.a.test);
+      reihen.add(t.reihenfolge.join(',') + '|' + t.optionen.map(o => o.join('')).join(','));
+      const fehler = i % 5;                 // 0–4 falsche Antworten
+      const unfertig = i % 7 === 6;         // beantwortet nur 3 Fragen und gibt nicht selbst ab
+      let richtig = 0;
+      for (let p = 0; p < 8; p++) {
+        if (unfertig && p >= 3) break;
+        const q = t.reihenfolge[p];
+        const o = p < fehler ? (TEST_LOESUNG[q] + 1) % 4 : TEST_LOESUNG[q];
+        if (o === TEST_LOESUNG[q]) richtig++;
+        await h.page.click(`.test .wahl[data-o="${o}"]`);
+        if (p < 7) await h.page.click('.test [data-weiter]');
+      }
+      if (!unfertig) {
+        await h.page.click('.test [data-fertig]');
+        await h.page.click('.test [data-abgeben]');
+      }
+      testErwartet[i] = { richtig, note: NOTE(100 * richtig / 8), unfertig };
+    }));
+    const sollAbgegeben = testErwartet.filter(e => !e.unfertig).length;
+    await warteBis(async () => (await zustand(beamer)).test.abgegeben === sollAbgegeben, 'Abgaben am Beamer');
+    pruefe(true, `Beamer zählt ${sollAbgegeben} Abgaben – ohne Namen und ohne Noten`);
+    pruefe(reihen.size === TN, `Fragen und Antworten auf jedem Handy anders gemischt (${reihen.size} verschiedene Reihenfolgen)`);
+    await warteBis(async () => /Note 1/.test(await handys[0].page.textContent('.test')), 'Ergebnis am Handy');
+    pruefe(true, 'Nach der Abgabe zeigt das Handy die eigene Note (8 von 8 → Note 1)');
+    pruefe(!(await zuschauer.evaluate(() => JSON.stringify(window.__workshop.z.tn).includes('schriftlich'))), 'Zuschauer-Link bekommt keine Noten');
+    await foto(handys[6].page, 'h-22-test-frage');
+    await foto(handys[3].page, 'h-23-test-ergebnis', true);
+    await foto(beamer, 'b-27-demo10-test');
+    await weiter(beamer, 'notenspiegel');
+    const zT = await zustand(beamer);
+    const notenFalsch = zT.tn.filter(t => {
+      const e = testErwartet[handys.findIndex(h => h.name === t.name)];
+      return !t.noten.test || t.noten.schriftlich !== e.note || t.noten.test.richtig !== e.richtig;
+    });
+    pruefe(!notenFalsch.length, 'Schriftliche Noten nach IHK-Schlüssel richtig, auch bei automatisch abgegebenen Tests' + (notenFalsch.length ? ' – falsch bei ' + notenFalsch.map(t => t.name).join(', ') : ''));
+    const spiegel = [0, 0, 0, 0, 0, 0];
+    testErwartet.forEach(e => spiegel[e.note - 1]++);
+    pruefe(JSON.stringify(zT.notenspiegel.noten) === JSON.stringify(spiegel), 'Anonymer Notenspiegel (Note 1–6): ' + spiegel.join(' / '));
+    await warteBis(async () => /Note \d/.test(await handys[6].page.textContent('.test')), 'unfertiges Handy zeigt Ergebnis');
+    pruefe(true, 'Nicht abgegebener Test wird beim Beenden automatisch abgegeben, das Handy zeigt die Note');
+    await warte(1200);
+    await foto(beamer, 'b-28-notenspiegel');
+
+    await weiter(beamer, 'folie');
+    await foto(beamer, 'b-29-und-der-prompt');
     await weiter(beamer, 'folie');
     await warte(1200);
     pruefe(/FRAGERUNDE/.test(await beamer.textContent('.inhalt')) && /PUNKTESTAND-MODUS/.test(await beamer.textContent('[data-weiter]')), 'Folie Fragerunde mit Knopf PUNKTESTAND-MODUS');
-    await foto(beamer, 'b-27-fragerunde');
+    await foto(beamer, 'b-30-fragerunde');
     await weiter(beamer, 'punkte');
     pruefe(/Fragerunde/.test(await beamer.textContent('.punkte-kopf')), 'Punktestand der Fragerunde');
     const [download] = await Promise.all([beamer.waitForEvent('download'), beamer.click('[data-export]')]);
@@ -768,10 +827,15 @@ async function anmelden(page, vorname, initiale, passwort) {
     const zEnde = await zustand(beamer);
     const alleDrin = zEnde.tn.every(t => blatt.includes(`<t xml:space="preserve">${t.name}</t>`) && blatt.includes(`<v>${t.punkte.gesamt}</v>`));
     pruefe(alleDrin && (blatt.match(/<row /g) || []).length === TN + 1, `Excel-Datei gültig: ${TN} Namen mit Endpunktestand`);
-    await foto(beamer, 'b-28-punktestand-final');
+    pruefe(['angemeldet um', 'mündliche Note', 'Test: richtig (von 8)', 'schriftliche Note'].every(k => blatt.includes(`>${k}</t>`)),
+      'Excel enthält Anmeldezeit, mündliche Note, Testergebnis und schriftliche Note');
+    await warteBis(async () => /Deine Noten/.test(await handys[0].page.textContent('#app')), 'Noten am Handy');
+    pruefe(true, 'Nach dem Export sieht jede*r die eigenen Noten auf dem Handy');
+    await foto(handys[0].page, 'h-24-noten', true);
+    await foto(beamer, 'b-31-punktestand-final');
     await weiter(beamer, 'folie');
     await warte(800);
-    await foto(beamer, 'b-29-jetzt-seid-ihr-dran');
+    await foto(beamer, 'b-32-jetzt-seid-ihr-dran');
 
     // Zurücksetzen
     await beamer.click('[data-zuruecksetzen]');
@@ -789,7 +853,7 @@ async function anmelden(page, vorname, initiale, passwort) {
     await warteBis(async () => /nicht \(mehr\) gültig/.test(await zuschauer.textContent('#buehne')), 'Zuschauer-Link abgelaufen');
     pruefe(true, 'Nach dem Zurücksetzen ist der Zuschauer-Link ungültig');
     await foto(zuschauer, 'z-02-zuschauer-abgelaufen');
-    await foto(beamer, 'b-30-nach-zuruecksetzen');
+    await foto(beamer, 'b-33-nach-zuruecksetzen');
   } catch (e) {
     fehler++;
     console.log('  ✗ Abbruch: ' + e.message);

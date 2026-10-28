@@ -327,7 +327,7 @@ export class Workshop extends DurableObject {
     const zuschauer = this.ctx.getWebSockets('zuschauer').filter(ws => anhang(ws).rolle === 'zuschauer').length;
     return {
       lehrer: JSON.stringify({ type: 'zustand', z: Object.assign({}, v, { zuschauer: { code: this.z.zuschauerCode || null, verbunden: zuschauer } }) }),
-      zuschauer: JSON.stringify({ type: 'zustand', z: Object.assign({}, v, { zuschauer: { verbunden: zuschauer } }) }),
+      zuschauer: JSON.stringify({ type: 'zustand', z: Object.assign(L.ohneLehrerDaten(v), { zuschauer: { verbunden: zuschauer } }) }),
     };
   }
 
