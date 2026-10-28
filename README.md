@@ -81,8 +81,7 @@ Punkte gesammelt!“) eine Überraschung.
 - **Folie „Wünsch dir was!“:** Erst die Frage stellen und Antworten aus dem Kollegium sammeln. Dann deckt
   jeder Klick auf den Weiter-Knopf (oder →) die nächste Karte auf; eine bestimmte Karte lässt sich auch direkt
   anklicken, z. B. wenn jemand genau das genannt hat. Erst wenn alle 9 offen sind, geht es zur nächsten Folie.
-  Karte 3 bleibt eine „Überraschung“ – der Punktestand wird erst in Demo 3 verraten.
-  Rückseiten: 1 Umfragen · 2 Wortwolke · 3 Überraschung · 4 Lernkarten · 5 Lernsongs · 6 Sprachen · 7 Grafiken ·
+  Rückseiten: 1 Umfragen · 2 Wortwolke · 3 Mündliche Mitarbeit · 4 Lernkarten · 5 Lernsongs · 6 Sprachen · 7 Grafiken ·
   8 Gruppen · 9 Lernspiele.
 - **Wortwolke:** Ein Wort anklicken blendet es aus (die 10 Punkte dafür werden abgezogen).
 - **Punktestand:** Namen anklicken = aufrufen. Dann Punkte vergeben (0, 10, 25, 50, 75, 100 oder

@@ -335,7 +335,12 @@ async function anmelden(page, vorname, initiale, passwort) {
     await handys[7].page.click('.melde-knopf.frage');
     await handys[8].page.click('.melde-knopf.frage');
     await handys[8].page.click('.melde-knopf.frage');   // zurücknehmen
-    await warteBis(async () => (await zustand(beamer)).tn.filter(t => t.meldung).length === 3, '3 Meldungen');
+    // Die Klicks der vier Handys kommen in beliebiger Reihenfolge an – auf genau den Endstand warten
+    const meldungVon = (z, i) => (z.tn.find(t => t.name === handys[i].name) || {}).meldung;
+    await warteBis(async () => {
+      const z = await zustand(beamer);
+      return meldungVon(z, 5) === 'antwort' && meldungVon(z, 6) === 'antwort' && meldungVon(z, 7) === 'frage' && !meldungVon(z, 8) && z.tn.filter(t => t.meldung).length === 3;
+    }, '3 Meldungen');
     pruefe(await beamer.$$eval('.tn-karte.antwort', e => e.length) === 2 && await beamer.$$eval('.tn-karte.frage', e => e.length) === 1, 'Am Beamer: 2 Namen grün (Antwort), 1 rot (Frage), Zurücknehmen klappt');
     await foto(beamer, 'b-06-punktestand-meldungen');
     await foto(handys[5].page, 'h-04-melden');

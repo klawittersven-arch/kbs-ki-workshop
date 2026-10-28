@@ -82,7 +82,7 @@ const WUNSCH = {
   karten: [
     { nr: 1, symbol: '📊', text: 'Umfragen live auswerten' },
     { nr: 2, symbol: '☁️', text: 'Brainstorming als Wortwolke' },
-    { nr: 3, symbol: '🎁', text: 'Überraschung!', klein: 'kommt in Demo 3' },   // Punktestand bleibt bis Demo 3 geheim
+    { nr: 3, symbol: '✋', text: 'Mündliche Mitarbeit erfassen' },
     { nr: 4, symbol: '📇', text: 'Mit Lernkarten üben' },
     { nr: 5, symbol: '🎵', text: 'Lernsongs erstellen' },
     { nr: 6, symbol: '🌍', text: 'Aufgaben in 6 Sprachen & 3 Niveaus' },
@@ -482,7 +482,7 @@ const FOLIEN_BAUER = {
         <p class="schluss">${esc(WUNSCH.schluss)}</p></div>
       <div class="wunsch-karten">${WUNSCH.karten.map((k, i) => `<button class="wunsch-karte" data-karte="${i}">
         <span class="seite rueckseite"><b>?</b><small>Demo ${k.nr}</small></span>
-        <span class="seite vorderseite"><span class="symbol">${k.symbol}</span><span class="text">${esc(k.text)}</span><small>${esc(k.klein || 'Demo ' + k.nr)}</small></span>
+        <span class="seite vorderseite"><span class="symbol">${k.symbol}</span><span class="text">${esc(k.text)}</span><small>Demo ${k.nr}</small></span>
       </button>`).join('')}</div></div>`;
     const karten = [...inhalt.querySelectorAll('.wunsch-karte')];
     let offen = [];
