@@ -197,7 +197,26 @@ async function anmelden(page, vorname, initiale, passwort) {
     await foto(beamer, 'b-01-anmeldung');
 
     /* ---------- Folien ---------- */
-    console.log('\nFolien und Demo 1');
+    console.log('\nFolie „Wünsch dir was!“, Folien und Demo 1');
+    await weiter(beamer, 'folie');
+    await warte(1200);
+    pruefe(/Wunsch frei/.test(await beamer.textContent('.folie-wunsch h1')) && (await beamer.$$('.wunsch-karte')).length === 9 && !(await beamer.$('.wunsch-karte.offen')),
+      'Folie „Wünsch dir was!“: Impulsfrage, 9 Karten verdeckt');
+    await foto(beamer, 'b-01a-wuensch-dir-was');
+    await beamer.click('.wunsch-karte[data-karte="7"]');   // passt zu einer Antwort aus dem Kollegium
+    await beamer.click('[data-weiter]');
+    await beamer.keyboard.press('ArrowRight');
+    await warteBis(async () => JSON.stringify((await zustand(beamer)).aufgedeckt) === '[7,0,1]', 'drei Karten aufgedeckt');
+    pruefe((await zustand(beamer)).schritt === 1 && /AUFDECKEN \(3\/9\)/.test(await beamer.textContent('[data-weiter]')),
+      'Klick auf eine Karte deckt genau diese auf; Weiter-Knopf und Pfeiltaste decken die nächste auf, ohne weiterzuschalten');
+    for (let i = 0; i < 6; i++) await beamer.keyboard.press('ArrowRight');
+    await warteBis(async () => (await zustand(beamer)).aufgedeckt.length === 9, 'alle Karten aufgedeckt');
+    await warte(900);
+    pruefe((await zustand(beamer)).schritt === 1 && await beamer.isVisible('.folie-wunsch .schluss') && (await beamer.textContent('[data-weiter]')).trim() === 'NÄCHSTE FOLIE',
+      'Alle 9 Karten aufgedeckt, Schlusssatz sichtbar, Knopf wieder „NÄCHSTE FOLIE“');
+    await warteBis(async () => (await zuschauer.$$('.wunsch-karte.offen')).length === 9, 'Zuschauer sieht die aufgedeckten Karten');
+    pruefe(true, 'Zuschauer sieht die aufgedeckten Karten mit');
+    await foto(beamer, 'b-01b-wuensch-dir-was-aufgedeckt');
     await weiter(beamer, 'folie');
     await warte(2500);
     await foto(beamer, 'b-02-im-anfang-war-das-wort');

@@ -77,6 +77,7 @@ export function neuerZustand(durchgang = 1, jetzt = Date.now()) {
     aufgerufen: null,       // id der Person, die gerade dran ist
     exportiert: false,
     zuschauerCode: null,    // Code des Zuschauer-Links (nur anschauen); gilt bis zum Zurücksetzen
+    aufgedeckt: [],         // Folie „Wünsch dir was!“: aufgedeckte Karten (in Reihenfolge)
     sprachen: {},           // id → { sprache, niveau, fragen: [{ versuche, richtig }×3] }
     grafik: {},             // id → { aufgaben: [{ versuche: [{ x, y, teil, ok }] }×9] }
     gruppen: { anzahl: 0, zuordnung: {}, selbstWahl: false, version: 0 },   // zuordnung: id → Gruppennummer
@@ -580,6 +581,11 @@ export function lehrerAktion(z, m, kx) {
     case 'exportiert':
       if (!z.exportiert) { z.exportiert = true; r.geaendert = true; }
       break;
+    case 'aufdecken':
+      if (!Number.isInteger(m.karte) || m.karte < 0 || m.karte > 15 || z.aufgedeckt.includes(m.karte)) break;
+      z.aufgedeckt.push(m.karte);
+      r.geaendert = true;
+      break;
   }
   return r;
 }
@@ -719,6 +725,7 @@ export function beamerAnsicht(z, kx) {
     sortieren: { fertig: sortierFertig, begonnen: sortierBegonnen },
     spiel: siegerListe(z),
     exportiert: z.exportiert,
+    aufgedeckt: z.aufgedeckt,
     sprachen: modus === 'sprachen' ? sprachenAnsicht(z) : null,
     grafik: modus === 'grafik' ? grafikAnsicht(z) : null,
     gruppen: ['gruppen', 'puzzle', 'gruppensieg'].includes(modus) ? gruppenAnsicht(z, kx) : null,

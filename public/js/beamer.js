@@ -73,6 +73,25 @@ const PROMPT_AUSZUG = [
   '[DEMO 9: MINISPIEL – Auf den Smartphones startet der Endless Runner … umbenannt in „KAROLINE-RUN!“ …]',
 ];
 
+// Folie „Wünsch dir was!“ (gleich nach der Anmeldung): erst die Impulsfrage ans Kollegium,
+// dann die Karten nach und nach aufdecken – je eine für jede Demo der Stunde.
+const WUNSCH = {
+  frage: 'Stell dir vor, du hast einen Wunsch frei: eine Software für deinen Unterricht, die einfach alles kann.',
+  nachfrage: 'Was soll sie können?',
+  schluss: 'Heute live – alles in einer einzigen Anwendung.',
+  karten: [
+    { nr: 1, symbol: '📊', text: 'Umfragen live auswerten' },
+    { nr: 2, symbol: '☁️', text: 'Brainstorming als Wortwolke' },
+    { nr: 3, symbol: '🎁', text: 'Überraschung!', klein: 'kommt in Demo 3' },   // Punktestand bleibt bis Demo 3 geheim
+    { nr: 4, symbol: '📇', text: 'Mit Lernkarten üben' },
+    { nr: 5, symbol: '🎵', text: 'Lernsongs erstellen' },
+    { nr: 6, symbol: '🌍', text: 'Aufgaben in 6 Sprachen & 3 Niveaus' },
+    { nr: 7, symbol: '🗺️', text: 'Mit Grafiken lernen' },
+    { nr: 8, symbol: '👥', text: 'Gruppen einteilen & Gruppenpuzzle' },
+    { nr: 9, symbol: '🎮', text: 'Lernspiele mit Highscore' },
+  ],
+};
+
 const SCHRITT_NAMEN = ABLAUF.map((s, i) => {
   const n = {
     login: 'Anmeldung', umfrage: 'Demo 1: Balkendiagramm', wortwolke: 'Demo 2: Wortwolke',
@@ -82,7 +101,7 @@ const SCHRITT_NAMEN = ABLAUF.map((s, i) => {
     spiel: 'Demo 9: Minispiel', siegerehrung: 'Siegerehrung',
   }[s.modus];
   if (n) return (i + 1) + '. ' + n + (s.fragerunde ? ' (Fragerunde + Export)' : '');
-  const f = { wort: 'Im Anfang war das Wort', prompt: 'Und der Prompt?', fragerunde: 'Fragerunde', jetzt: 'Jetzt seid ihr dran!' }[s.folie];
+  const f = { wunsch: 'Wünsch dir was! (Übersicht)', wort: 'Im Anfang war das Wort', prompt: 'Und der Prompt?', fragerunde: 'Fragerunde', jetzt: 'Jetzt seid ihr dran!' }[s.folie];
   return (i + 1) + '. Folie: ' + (f || 'Demo ' + DEMOS[s.folie].nr);
 });
 
@@ -326,6 +345,7 @@ function aufbauen() {
 
 function weiter() {
   if (z && z.schritt === 0) vollbild(true);
+  if (bildschirm && bildschirm.weiter && bildschirm.weiter()) return;   // z. B. erst die nächste Karte aufdecken
   senden({ type: 'weiter' });
 }
 
@@ -453,6 +473,48 @@ function pixelSzene(canvas) {
    Folien
    ===================================================================== */
 const FOLIEN_BAUER = {
+  wunsch() {
+    const inhalt = gerüst();
+    const n = WUNSCH.karten.length;
+    inhalt.innerHTML = `<div class="folie-wunsch">
+      <div class="wunsch-frage"><span class="kicker">✨ WÜNSCH DIR WAS!</span>
+        <h1>${esc(WUNSCH.frage)}</h1><p class="nachfrage">${esc(WUNSCH.nachfrage)}</p>
+        <p class="schluss">${esc(WUNSCH.schluss)}</p></div>
+      <div class="wunsch-karten">${WUNSCH.karten.map((k, i) => `<button class="wunsch-karte" data-karte="${i}">
+        <span class="seite rueckseite"><b>?</b><small>Demo ${k.nr}</small></span>
+        <span class="seite vorderseite"><span class="symbol">${k.symbol}</span><span class="text">${esc(k.text)}</span><small>${esc(k.klein || 'Demo ' + k.nr)}</small></span>
+      </button>`).join('')}</div></div>`;
+    const karten = [...inhalt.querySelectorAll('.wunsch-karte')];
+    let offen = [];
+    function zeigen() {
+      karten.forEach((k, i) => k.classList.toggle('offen', offen.includes(i)));
+      const alle = offen.length >= n;
+      $('.schluss', inhalt).classList.toggle('sichtbar', alle);   // Platz ist reserviert, nichts verrutscht
+      const knopf = $('[data-weiter]', buehne);
+      if (knopf) knopf.textContent = alle ? ABLAUF[z.schritt].knopf : `AUFDECKEN (${offen.length}/${n})`;
+    }
+    function aufdecken(i) {
+      if (offen.includes(i)) return;
+      offen = offen.concat(i);
+      zeigen();
+      senden({ type: 'aufdecken', karte: i });
+    }
+    // Karte anklicken = genau diese aufdecken (passend zu einer Antwort aus dem Kollegium)
+    karten.forEach((k, i) => k.addEventListener('click', () => { if (!ZUSCHAUER) aufdecken(i); }));
+    return {
+      aktualisieren(z) {
+        offen = offen.concat((z.aufgedeckt || []).filter(i => !offen.includes(i)));
+        zeigen();
+      },
+      // Weiter-Knopf und Pfeiltaste decken erst die nächste verdeckte Karte auf
+      weiter() {
+        const i = karten.findIndex((_, k) => !offen.includes(k));
+        if (i < 0) return false;
+        aufdecken(i);
+        return true;
+      },
+    };
+  },
   wort() {
     const inhalt = gerüst({ dunkel: true });
     const text = '„Im Anfang war das Wort“';

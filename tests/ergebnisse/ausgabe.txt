@@ -1,4 +1,4 @@
-Starte lokalen Workshop auf Port 8815 …
+Starte lokalen Workshop auf Port 8872 …
 
 Beamer und PIN
   ✓ Beim ersten Öffnen wird eine PIN festgelegt
@@ -8,7 +8,7 @@ Beamer und PIN
   ✓ Falsche PIN wird abgelehnt
 
 Zuschauer-Link
-  ✓ Zuschauer-Link erstellt: http://127.0.0.1:8815/beamer?zuschauen=…
+  ✓ Zuschauer-Link erstellt: http://127.0.0.1:8872/beamer?zuschauen=…
   ✓ Zuschauer sieht den Anmeldebildschirm ohne PIN, ohne Weiter-Knopf und ohne Menü
   ✓ Zuschauer-Ansicht ist gekennzeichnet und hat einen Vollbild-Knopf
   ✓ Menü der Lehrkraft zählt 1 verbundenen Zuschauer
@@ -21,17 +21,22 @@ Anmeldung von 30 Handys
   ✓ Gleicher Name mit falschem Passwort wird abgelehnt
   ✓ Wiedereinstieg mit richtigem Passwort (Groß-/Kleinschreibung egal) – kein neuer Name
 
-Folien und Demo 1
+Folie „Wünsch dir was!“, Folien und Demo 1
   ✓ Beamer zeigt „folie“ (Schritt 2)
+  ✓ Folie „Wünsch dir was!“: Impulsfrage, 9 Karten verdeckt
+  ✓ Klick auf eine Karte deckt genau diese auf; Weiter-Knopf und Pfeiltaste decken die nächste auf, ohne weiterzuschalten
+  ✓ Alle 9 Karten aufgedeckt, Schlusssatz sichtbar, Knopf wieder „NÄCHSTE FOLIE“
+  ✓ Zuschauer sieht die aufgedeckten Karten mit
+  ✓ Beamer zeigt „folie“ (Schritt 3)
   ✓ Handy zeigt den Präsentations-Modus
   ✓ Punkte auf dem Handy noch verborgen (Überraschung in Demo 3)
-  ✓ Beamer zeigt „folie“ (Schritt 3)
-  ✓ Beamer zeigt „umfrage“ (Schritt 4)
+  ✓ Beamer zeigt „folie“ (Schritt 4)
+  ✓ Beamer zeigt „umfrage“ (Schritt 5)
   ✓ Balkendiagramm zählt alle Stimmen richtig, auch Abwählen und „Noch gar nicht“
 
 Demo 2: Wortwolke
-  ✓ Beamer zeigt „folie“ (Schritt 5)
-  ✓ Beamer zeigt „wortwolke“ (Schritt 6)
+  ✓ Beamer zeigt „folie“ (Schritt 6)
+  ✓ Beamer zeigt „wortwolke“ (Schritt 7)
   ✓ Alle Begriffe sind angekommen
   ✓ Handy bestätigt: Begriffe erfolgreich abgeschickt
   ✓ Häufigster Begriff „Kreativität“ (7×) steht waagerecht in der Mitte
@@ -42,12 +47,12 @@ Demo 2: Wortwolke
   ✓ Begriff „Kreativität“ per Klick ausgeblendet
 
 Demo 3: Punktestand
-  ✓ Beamer zeigt „folie“ (Schritt 7)
-  ✓ Beamer zeigt „punkte“ (Schritt 8)
+  ✓ Beamer zeigt „folie“ (Schritt 8)
+  ✓ Beamer zeigt „punkte“ (Schritt 9)
   ✓ Punkte = 1 je Stimme + 10 je Begriff (ausgeblendeter Begriff abgezogen)
   ✓ Handy zeigt jetzt die eigenen Punkte
   ✓ Am Beamer: 2 Namen grün (Antwort), 1 rot (Frage), Zurücknehmen klappt
-  ✓ „Zufällig aufrufen: NUR MIT MELDUNG“ wählt Paul J. (hat sich mit Antwort gemeldet)
+  ✓ „Zufällig aufrufen: NUR MIT MELDUNG“ wählt Sofia Q. (hat sich mit Antwort gemeldet)
   ✓ Aufgerufenes Handy zeigt „Du bist dran!“
   ✓ 50 Punkte vergeben und addiert, Meldung danach gelöscht
   ✓ Handy zeigt „+50 Punkte!“
@@ -62,76 +67,76 @@ Demo 3: Punktestand
   ✓ Neues Gerät mit Name + Passwort: gleicher Punktestand, gleicher Modus
 
 Demo 4: Lernkarten
-  ✓ Beamer zeigt „folie“ (Schritt 9)
-  ✓ Beamer zeigt „lernkarten“ (Schritt 10)
+  ✓ Beamer zeigt „folie“ (Schritt 10)
+  ✓ Beamer zeigt „lernkarten“ (Schritt 11)
   ✓ Lernkarte umdrehen und bewerten, weiter zu Karte 2
   ✓ Countdown am Beamer läuft: 1:58
-  ✓ Beamer zeigt „punkte“ (Schritt 11)
+  ✓ Beamer zeigt „punkte“ (Schritt 12)
   ✓ Nach „ABFRAGEN!“: Handys zeigen wieder die Melde-Knöpfe
 
 Demo 5: KI-Song und Sortieraufgabe
-  ✓ Beamer zeigt „folie“ (Schritt 12)
-  ✓ Beamer zeigt „video“ (Schritt 13)
+  ✓ Beamer zeigt „folie“ (Schritt 13)
+  ✓ Beamer zeigt „video“ (Schritt 14)
   ✓ Video wurde beim Start vorgeladen und läuft aus dem Speicher des Laptops
   ✓ Überschrift über dem Video einzeilig: Die 6 Schritte im Pflegeprozess
-  ✓ Beamer zeigt „sortieren“ (Schritt 14)
+  ✓ Beamer zeigt „sortieren“ (Schritt 15)
   ✓ Sortierpunkte: 10 je richtigem Schritt − 10 je Fehler, nie unter 0, Unfertige nur anteilig
   ✓ Beamer: 27 von 30 fertig
-  ✓ Beamer zeigt „punkte“ (Schritt 15)
+  ✓ Beamer zeigt „punkte“ (Schritt 16)
 
 Demo 6: Sprachen
-  ✓ Beamer zeigt „folie“ (Schritt 16)
-  ✓ Beamer zeigt „sprachen“ (Schritt 17)
+  ✓ Beamer zeigt „folie“ (Schritt 17)
+  ✓ Beamer zeigt „sprachen“ (Schritt 18)
   ✓ Beamer zählt Sprachen (de:5 tr:5 ru:5 uk:5 fr:5 es:5), Niveaus und 27 Fertige
   ✓ 10 Punkte je Frage, die beim ersten Versuch stimmt
   ✓ Ukrainische Fassung mit lang="uk"
   ✓ Vorlesen-Knopf lässt sich antippen
 
 Demo 7: Grafiken
-  ✓ Beamer zeigt „folie“ (Schritt 18)
-  ✓ Beamer zeigt „grafik“ (Schritt 19)
+  ✓ Beamer zeigt „folie“ (Schritt 19)
+  ✓ Beamer zeigt „grafik“ (Schritt 20)
   ✓ Beamer zeigt alle 357 Tipps (grün/rot)
   ✓ Grafik-Punkte: 10 beim ersten, 5 beim zweiten Versuch
   ✓ Europakarte am Beamer mit 126 Punkten
 
 Demo 8: Gruppen und Gruppenpuzzle
-  ✓ Beamer zeigt „folie“ (Schritt 20)
-  ✓ Beamer zeigt „gruppen“ (Schritt 21)
+  ✓ Beamer zeigt „folie“ (Schritt 21)
+  ✓ Beamer zeigt „gruppen“ (Schritt 22)
   ✓ Selbst wählen: volle Gruppe (3) ist gesperrt
   ✓ Rest zufällig verteilt, die selbst gewählte Gruppe bleibt
   ✓ Gruppengrößen: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
-  ✓ Paul J. per Klick von Gruppe 2 in Gruppe 3 verschoben
-  ✓ Beamer zeigt „puzzle“ (Schritt 22)
-  ✓ Jede Gruppe hat die Texte A, B und C (A/C/B · B/AC · A/C/A/B · C/B/A · A/B/C · C/A/B · B/C/A · C/A/B · A/B/C · C/B/A)
+  ✓ Mehmet V. per Klick von Gruppe 2 in Gruppe 3 verschoben
+  ✓ Beamer zeigt „puzzle“ (Schritt 23)
+  ✓ Jede Gruppe hat die Texte A, B und C (B/C/A · B/AC · A/B/C/A · C/B/A · C/B/A · B/C/A · B/C/A · B/C/A · C/B/A · B/A/C)
   ✓ Falsche Antwort in der Gruppe → Gruppe 15 s gesperrt
   ✓ Alle Handys der Gruppe sehen die Sperre, ohne dass verraten wird, wer falsch lag
   ✓ Alle 10 Gruppen fertig, Plätze 1–10
   ✓ Text der ausgefallenen Person wurde für ihre Gruppe freigegeben
   ✓ Puzzle-Punkte 50/40/30, alle anderen fertigen Gruppen 20
-  ✓ Beamer zeigt „gruppensieg“ (Schritt 23)
+  ✓ Beamer zeigt „gruppensieg“ (Schritt 24)
   ✓ Siegerehrung: Gewinnergruppe auf Platz 1
-  ✓ Beamer zeigt „punkte“ (Schritt 24)
+  ✓ Beamer zeigt „punkte“ (Schritt 25)
 
 Demo 9: KAROLINE-RUN!
-  ✓ Beamer zeigt „folie“ (Schritt 25)
-  ✓ Beamer zeigt „spiel“ (Schritt 26)
-  ✓ Highscores von 11 Spielenden am Beamer
-  ✓ Beamer zeigt „siegerehrung“ (Schritt 27)
+  ✓ Beamer zeigt „folie“ (Schritt 26)
+  ✓ Beamer zeigt „spiel“ (Schritt 27)
+  ✓ Highscores von 12 Spielenden am Beamer
+  ✓ Beamer zeigt „siegerehrung“ (Schritt 28)
   ✓ Handys zeigen „SIEGEREHRUNG“, Spiel ist beendet
   ✓ Spiel auf dem Handy geschlossen
   ✓ Platz 1 auf dem Treppchen: Anna A. (33 Punkte)
 
 Abschluss: Fragerunde, Export und Zurücksetzen
-  ✓ Beamer zeigt „punkte“ (Schritt 28)
+  ✓ Beamer zeigt „punkte“ (Schritt 29)
   ✓ Punktestand nach der Siegerehrung (Export erst nach der Fragerunde)
-  ✓ Beamer zeigt „folie“ (Schritt 29)
   ✓ Beamer zeigt „folie“ (Schritt 30)
+  ✓ Beamer zeigt „folie“ (Schritt 31)
   ✓ Folie Fragerunde mit Knopf PUNKTESTAND-MODUS
-  ✓ Beamer zeigt „punkte“ (Schritt 31)
+  ✓ Beamer zeigt „punkte“ (Schritt 32)
   ✓ Punktestand der Fragerunde
-  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-28_17-19.xlsx
+  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-28_17-44.xlsx
   ✓ Excel-Datei gültig: 30 Namen mit Endpunktestand
-  ✓ Beamer zeigt „folie“ (Schritt 32)
+  ✓ Beamer zeigt „folie“ (Schritt 33)
   ✓ Zurückgesetzt: Durchgang 2, Anmeldung, keine Namen
   ✓ Handys wurden abgemeldet und zeigen wieder die Anmeldung
   ✓ Alte Anmeldung gilt nach dem Zurücksetzen nicht mehr

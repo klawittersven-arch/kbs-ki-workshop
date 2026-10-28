@@ -39,29 +39,30 @@ Die Lehrkraft steuert alles am Laptop. Die Handys springen automatisch mit.
 | # | Beamer | Handys | Knopf am Beamer |
 |---|---|---|---|
 | 1 | Anmeldung: QR-Code, Anleitung, Namen der Angemeldeten | Vorname, Anfangsbuchstabe Nachname, Passwort | PRÄSENTATIONS-MODUS STARTEN (schaltet auch auf Vollbild) |
-| 2 | Folie „Im Anfang war das Wort“ | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
-| 3 | Folie Demo 1 (Prompt wird „getippt“) | „Präsentations-Modus …“ | DEMO 1 STARTEN |
-| 4 | Balkendiagramm „Wozu nutzt du KI momentan schon?“ | Mehrfachauswahl | UMFRAGE ABSCHLIESSEN |
-| 5–6 | Folie Demo 2 → Wortwolke | bis zu 5 Begriffe | DEMO 2 STARTEN / WORTWOLKE ABSCHLIESSEN |
-| 7–8 | Folie Demo 3 → **Punktestand** | „Ich habe eine Frage“ / „Ich habe eine Antwort“ | DEMO 3 STARTEN / FORTFAHREN |
-| 9–10 | Folie Demo 4 → Lernkarten mit 2-Minuten-Countdown | 15 Lernkarten (Latein → Deutsch) | DEMO 4 STARTEN / ABFRAGEN! |
-| 11 | Punktestand (Vokabeln abfragen) | Melde-Knöpfe | FORTFAHREN |
-| 12–13 | Folie Demo 5 → KI-Song „Die 6 Schritte im Pflegeprozess“ (Video) | „Präsentations-Modus …“ | DEMO 5 STARTEN / SORTIERAUFGABE! |
-| 14 | Sortieraufgabe mit Fortschritt („18 von 25 fertig“) | 6 Schritte des Pflegeprozesses ordnen | PUNKTESTAND |
-| 15 | Punktestand | Melde-Knöpfe | FORTFAHREN |
-| 16–17 | Folie Demo 6 „unterschiedlichen Sprachen“ → Balken je Sprache (mit Flaggen) und je Niveau, „27 von 30 fertig“ | Text Händehygiene + 3 Fragen in 6 Sprachen × 3 Niveaus, 🔊 Vorlesen | DEMO 6 STARTEN / AUFGABE ABSCHLIESSEN |
-| 18–19 | Folie Demo 7 „Grafiken“ → Europakarte, Organe, Skelett mit allen Tipps live (grün/rot) | 9 Tipp-Aufgaben im eigenen Tempo (Länder, Organe, Knochen) | DEMO 7 STARTEN / GRAFIK-QUIZ ABSCHLIESSEN |
-| 20–21 | Folie Demo 8 „Gruppenarbeiten“ → **Gruppen einteilen** (Dreiergruppen) | Gruppenfarbe + Tier im Vollbild bzw. Gruppenwahl | DEMO 8 STARTEN / GRUPPENPUZZLE STARTEN |
-| 22 | **Gruppenpuzzle** Diabetes als Rennen: Fortschritt jeder Gruppe, Sperren, Plätze | Expertentext A, B oder C + gemeinsame Aufgaben | SIEGEREHRUNG |
-| 23 | Siegerehrung der Gruppen (Treppchen) | „Siegerehrung …“ | ZUM PUNKTESTAND |
-| 24 | Punktestand | Melde-Knöpfe | FORTFAHREN |
-| 25–26 | Folie Demo 9 → Highscore KAROLINE-RUN! | Endless Runner, beliebig viele Runden | DEMO 9 STARTEN / SIEGEREHRUNG |
-| 27 | Siegerehrung mit Treppchen und Pokal | „Siegerehrung …“ | ZUM PUNKTESTAND |
-| 28 | Punktestand | Melde-Knöpfe | FORTFAHREN |
-| 29 | Folie „Und der Prompt für diese ganze Stunde?“ (Auszug aus der Verlaufsbeschreibung) | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
-| 30 | Folie **Fragerunde**: Ideen? Probleme lösen? Bedenken? | „Präsentations-Modus …“ | PUNKTESTAND-MODUS |
-| 31 | Punktestand der Fragerunde + **FINALEN PUNKTESTAND EXPORTIEREN!** (Excel) | Melde-Knöpfe | FORTFAHREN |
-| 32 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | „Präsentations-Modus …“ | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
+| 2 | Folie **„Wünsch dir was!“**: Impulsfrage, dann 9 verdeckte Karten (je eine pro Demo) nach und nach aufdecken | „Präsentations-Modus …“ | AUFDECKEN (n/9), danach NÄCHSTE FOLIE |
+| 3 | Folie „Im Anfang war das Wort“ | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
+| 4 | Folie Demo 1 (Prompt wird „getippt“) | „Präsentations-Modus …“ | DEMO 1 STARTEN |
+| 5 | Balkendiagramm „Wozu nutzt du KI momentan schon?“ | Mehrfachauswahl | UMFRAGE ABSCHLIESSEN |
+| 6–7 | Folie Demo 2 → Wortwolke | bis zu 5 Begriffe | DEMO 2 STARTEN / WORTWOLKE ABSCHLIESSEN |
+| 8–9 | Folie Demo 3 → **Punktestand** | „Ich habe eine Frage“ / „Ich habe eine Antwort“ | DEMO 3 STARTEN / FORTFAHREN |
+| 10–11 | Folie Demo 4 → Lernkarten mit 2-Minuten-Countdown | 15 Lernkarten (Latein → Deutsch) | DEMO 4 STARTEN / ABFRAGEN! |
+| 12 | Punktestand (Vokabeln abfragen) | Melde-Knöpfe | FORTFAHREN |
+| 13–14 | Folie Demo 5 → KI-Song „Die 6 Schritte im Pflegeprozess“ (Video) | „Präsentations-Modus …“ | DEMO 5 STARTEN / SORTIERAUFGABE! |
+| 15 | Sortieraufgabe mit Fortschritt („18 von 25 fertig“) | 6 Schritte des Pflegeprozesses ordnen | PUNKTESTAND |
+| 16 | Punktestand | Melde-Knöpfe | FORTFAHREN |
+| 17–18 | Folie Demo 6 „unterschiedlichen Sprachen“ → Balken je Sprache (mit Flaggen) und je Niveau, „27 von 30 fertig“ | Text Händehygiene + 3 Fragen in 6 Sprachen × 3 Niveaus, 🔊 Vorlesen | DEMO 6 STARTEN / AUFGABE ABSCHLIESSEN |
+| 19–20 | Folie Demo 7 „Grafiken“ → Europakarte, Organe, Skelett mit allen Tipps live (grün/rot) | 9 Tipp-Aufgaben im eigenen Tempo (Länder, Organe, Knochen) | DEMO 7 STARTEN / GRAFIK-QUIZ ABSCHLIESSEN |
+| 21–22 | Folie Demo 8 „Gruppenarbeiten“ → **Gruppen einteilen** (Dreiergruppen) | Gruppenfarbe + Tier im Vollbild bzw. Gruppenwahl | DEMO 8 STARTEN / GRUPPENPUZZLE STARTEN |
+| 23 | **Gruppenpuzzle** Diabetes als Rennen: Fortschritt jeder Gruppe, Sperren, Plätze | Expertentext A, B oder C + gemeinsame Aufgaben | SIEGEREHRUNG |
+| 24 | Siegerehrung der Gruppen (Treppchen) | „Siegerehrung …“ | ZUM PUNKTESTAND |
+| 25 | Punktestand | Melde-Knöpfe | FORTFAHREN |
+| 26–27 | Folie Demo 9 → Highscore KAROLINE-RUN! | Endless Runner, beliebig viele Runden | DEMO 9 STARTEN / SIEGEREHRUNG |
+| 28 | Siegerehrung mit Treppchen und Pokal | „Siegerehrung …“ | ZUM PUNKTESTAND |
+| 29 | Punktestand | Melde-Knöpfe | FORTFAHREN |
+| 30 | Folie „Und der Prompt für diese ganze Stunde?“ (Auszug aus der Verlaufsbeschreibung) | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
+| 31 | Folie **Fragerunde**: Ideen? Probleme lösen? Bedenken? | „Präsentations-Modus …“ | PUNKTESTAND-MODUS |
+| 32 | Punktestand der Fragerunde + **FINALEN PUNKTESTAND EXPORTIEREN!** (Excel) | Melde-Knöpfe | FORTFAHREN |
+| 33 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | „Präsentations-Modus …“ | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
 
 Jede Demo lässt sich jederzeit beenden („weiter“ oder Sprung über das Menü ⚙): Die Handys brechen
 die Aufgabe ab, alle bis dahin gesammelten Punkte bleiben erhalten.
@@ -77,6 +78,12 @@ Punkte gesammelt!“) eine Überraschung.
   **alles zurücksetzen**.
 - **Anmeldung:** Name anklicken → *Passwort zurücksetzen* (die Person vergibt beim nächsten Anmelden
   ein neues) oder *Entfernen*.
+- **Folie „Wünsch dir was!“:** Erst die Frage stellen und Antworten aus dem Kollegium sammeln. Dann deckt
+  jeder Klick auf den Weiter-Knopf (oder →) die nächste Karte auf; eine bestimmte Karte lässt sich auch direkt
+  anklicken, z. B. wenn jemand genau das genannt hat. Erst wenn alle 9 offen sind, geht es zur nächsten Folie.
+  Karte 3 bleibt eine „Überraschung“ – der Punktestand wird erst in Demo 3 verraten.
+  Rückseiten: 1 Umfragen · 2 Wortwolke · 3 Überraschung · 4 Lernkarten · 5 Lernsongs · 6 Sprachen · 7 Grafiken ·
+  8 Gruppen · 9 Lernspiele.
 - **Wortwolke:** Ein Wort anklicken blendet es aus (die 10 Punkte dafür werden abgezogen).
 - **Punktestand:** Namen anklicken = aufrufen. Dann Punkte vergeben (0, 10, 25, 50, 75, 100 oder
   eigene Zahl) oder *Abbrechen*. Hat die Person eine **Frage** (rot), gibt es keine Punkte, sondern
@@ -161,7 +168,7 @@ Link z. B. per Messenger oder E-Mail schicken.
 | Was | Wo |
 |---|---|
 | Ablauf, Umfrage-Frage und -Antworten, Lernkarten, Schritte der Sortieraufgabe, Punktwerte | `public/js/gemeinsam.js` |
-| Folientexte und Prompts der Demos, Auszug auf der Folie „Und der Prompt?“, Countdown-Dauer | `public/js/beamer.js` (oben) |
+| Folientexte und Prompts der Demos, Impulsfrage und Karten der Folie „Wünsch dir was!“ (`WUNSCH`), Auszug auf der Folie „Und der Prompt?“, Countdown-Dauer | `public/js/beamer.js` (oben) |
 | Texte der Handy-Seite | `public/js/handy.js` |
 | Demo 6: Text, Fragen und Übersetzungen (6 Sprachen × 3 Niveaus) | `public/js/inhalte-sprachen.js` |
 | Demo 7: Tipp-Aufgaben | `public/js/gemeinsam.js` (`GRAFIK_AUFGABEN`); Körper und Skelett in `public/js/grafik-koerper.js` |

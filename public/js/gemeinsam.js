@@ -8,6 +8,7 @@
 // des Weiter-Knopfs am Beamer, der zum nächsten Eintrag führt.
 export const ABLAUF = [
   { modus: 'login', knopf: 'PRÄSENTATIONS-MODUS STARTEN' },
+  { modus: 'folie', folie: 'wunsch', knopf: 'NÄCHSTE FOLIE' },   // Weiter deckt erst alle Karten auf
   { modus: 'folie', folie: 'wort', knopf: 'NÄCHSTE FOLIE' },
   { modus: 'folie', folie: 'demo1', knopf: 'DEMO 1 STARTEN' },
   { modus: 'umfrage', knopf: 'UMFRAGE ABSCHLIESSEN' },
