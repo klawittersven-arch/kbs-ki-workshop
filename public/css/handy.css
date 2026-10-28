@@ -172,3 +172,101 @@ label small { font-weight: 500; color: var(--leise); }
 @keyframes puls { 50% { transform: scale(1.07); } }
 @keyframes wackeln { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
 .schritt-karte .zahlen button.loesung, .schritt-karte .zahlen button.loesung:disabled { opacity: 1; background: #fff; border-color: var(--gruen); color: #1D7442; }
+
+/* ---------- Demo 6: Sprachen ---------- */
+.klein { font-size: 14px; }
+.sprach-wahl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 10px; }
+.sprach-wahl button {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px;
+  background: #fff; border: 3px solid #D3E0E3; border-radius: 14px; font-size: 14px; font-weight: 700; color: var(--text);
+}
+.sprach-wahl .flagge svg { width: 38px; height: 23px; display: block; border-radius: 3px; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
+.sprach-wahl button.an { border-color: var(--petrol); background: #F0F7F8; box-shadow: inset 0 0 0 1px var(--petrol); }
+.niveau-wahl { display: grid; grid-template-columns: repeat(3, 1fr); background: #fff; border-radius: 14px; padding: 4px; gap: 4px; margin-bottom: 10px; }
+.niveau-wahl button { border: 0; background: none; border-radius: 10px; padding: 9px 4px; font-size: 14px; font-weight: 700; color: var(--petrol); line-height: 1.2; }
+.niveau-wahl button.an { background: var(--petrol); color: #fff; }
+.sprach-text p { margin-bottom: 9px; }
+.sprach-titel { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.sprach-titel h1 { margin: 0; }
+.vorlese-knopf { flex: none; border: 2px solid var(--petrol); background: #fff; color: var(--dunkelpetrol); border-radius: 999px; padding: 7px 13px; font-size: 15px; font-weight: 800; }
+.frage { font-weight: 700; margin-bottom: 10px; }
+.antwort {
+  display: block; width: 100%; text-align: left; background: #fff; color: var(--text);
+  border: 2px solid #C5D3D6; border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; font-size: 17px; font-weight: 600;
+}
+.antwort.richtig { border-color: var(--gruen); background: var(--gruen-hell); color: #1D7442; font-weight: 800; }
+.antwort.falsch { border-color: var(--rot); background: var(--rot-hell); color: #9B2C2C; text-decoration: line-through; }
+.antwort.gewaehlt { border-color: var(--petrol); background: #F0F7F8; box-shadow: inset 0 0 0 2px var(--petrol); font-weight: 800; }
+.antwort:disabled { opacity: 1; }
+.pz-frage .antwort:disabled:not(.gewaehlt) { opacity: .55; }
+.rueck { font-weight: 800; margin: 4px 0 0; }
+.rueck.gut { color: var(--gruen); }
+.rueck.schlecht { color: var(--rot); }
+.rueck-box { border-radius: 14px; padding: 12px 14px; font-weight: 700; margin: 10px 0; }
+.rueck-box.gut { background: var(--gruen-hell); color: #1D7442; }
+.rueck-box.schlecht { background: var(--rot-hell); color: #9B2C2C; }
+
+/* ---------- Demo 7: Grafiken ---------- */
+.grafik-aufgabe { font-size: 23px; margin-bottom: 2px; }
+.grafik-versuch { margin-bottom: 8px; }
+.grafik-bild { background: #fff; border-radius: 18px; padding: 8px; box-shadow: 0 4px 16px rgba(20, 45, 52, .08); }
+.grafik-bild svg { display: block; width: 100%; height: auto; max-height: 64vh; -webkit-user-select: none; user-select: none; }
+.grafik-bild .meer { fill: #D7E9F1; }
+.grafik-bild .land { fill: #F3EEDF; stroke: #A39D8A; stroke-width: 1.2; }
+.grafik-bild .land.falsch { fill: #F2B8B8; }
+.grafik-bild .land.treffer, .grafik-bild .land.ziel { fill: var(--gruen); }
+.grafik-bild .land.ziel { animation: blinken 1s infinite; }
+.grafik-bild g.treffer, .grafik-bild g.ziel { filter: drop-shadow(0 0 2px #2E9E5B) drop-shadow(0 0 4px #2E9E5B); }
+.grafik-bild g.ziel { animation: blinken 1s infinite; }
+.grafik-bild g.falsch { filter: drop-shadow(0 0 2px #D64545); }
+.grafik-bild .tipps { pointer-events: none; }
+.tipp { stroke: #fff; stroke-width: 1.5; }
+.bild-europa .tipp { stroke-width: 3; }
+.tipp.ok { fill: var(--gruen); }
+.tipp.nein { fill: var(--rot); }
+@keyframes blinken { 50% { opacity: .45; } }
+
+/* ---------- Demo 8: Gruppen ---------- */
+body.gruppen-bunt { background: var(--gruppe, var(--hell)); transition: background .4s; }
+.gruppen-gross { text-align: center; color: #fff; padding-top: 4vh; text-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.gruppen-gross .tier { font-size: 110px; line-height: 1.1; text-shadow: none; }
+.gruppen-gross .klein { font-size: 17px; font-weight: 700; opacity: .9; letter-spacing: .08em; text-transform: uppercase; margin-top: 8px; }
+.gruppen-gross h1 { color: #fff; font-size: 38px; margin: 2px 0 14px; }
+.gruppen-gross ul { list-style: none; padding: 0; margin: 0 auto 16px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.gruppen-gross li { background: rgba(255,255,255,.95); color: var(--text); text-shadow: none; border-radius: 999px; padding: 7px 16px; font-weight: 800; }
+.gruppen-gross p { font-size: 20px; font-weight: 700; }
+.gruppen-bunt .warten .symbol, .gruppen-bunt .wahl-titel { color: var(--dunkelpetrol); }
+.gruppen-bunt[style*="--gruppe"] .wahl-titel { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.3); margin-top: 18px; }
+.gruppen-wahl { display: grid; gap: 8px; }
+.gruppen-wahl button {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; text-align: left;
+  background: #fff; border: 0; border-left: 10px solid var(--farbe); border-radius: 14px; padding: 10px 14px; color: var(--text);
+  box-shadow: 0 3px 10px rgba(20, 45, 52, .1);
+}
+.gruppen-wahl .tier { font-size: 30px; }
+.gruppen-wahl .name { font-weight: 800; }
+.gruppen-wahl small { color: var(--leise); font-weight: 700; }
+.gruppen-wahl button.meine { box-shadow: inset 0 0 0 3px var(--farbe); }
+.gruppen-wahl button:disabled:not(.meine) { opacity: .45; }
+
+/* ---------- Demo 8: Gruppenpuzzle ---------- */
+.pz-kopf { background: var(--farbe, var(--petrol)); color: #fff; border-radius: 16px; padding: 10px 12px; margin-bottom: 10px; position: sticky; top: 52px; z-index: 3; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+.pz-gruppe { display: flex; align-items: center; gap: 8px; font-size: 17px; }
+.pz-gruppe .tier { font-size: 26px; line-height: 1; }
+.pz-gruppe .uhr { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 800; }
+.pz-mitglieder { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.pz-mitglieder span { background: rgba(255,255,255,.95); color: var(--text); border-radius: 999px; padding: 3px 10px; font-size: 14px; font-weight: 700; }
+.pz-mitglieder span.weg { opacity: .55; }
+.pz-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 10px; padding-bottom: 2px; }
+.pz-tabs button { flex: none; border: 2px solid #C5D3D6; background: #fff; border-radius: 999px; padding: 8px 14px; font-size: 15px; font-weight: 800; color: var(--dunkelpetrol); }
+.pz-tabs button.an { background: var(--dunkelpetrol); border-color: var(--dunkelpetrol); color: #fff; }
+.pz-experte { font-weight: 800; color: var(--petrol); margin-bottom: 8px; font-size: 17px; }
+.pz-text p { margin-bottom: 9px; }
+.pz-fall { background: var(--akzent-hell); }
+.pz-fall summary { font-weight: 800; color: #7A3A0C; cursor: pointer; }
+.pz-fall p { margin: 8px 0 0; }
+.pz-abschnitt { font-size: 21px; font-weight: 800; color: var(--dunkelpetrol); margin: 4px 0 10px; }
+.pz-abschnitt small { font-size: 15px; color: var(--leise); }
+.pz-zahl { display: flex; align-items: center; gap: 10px; }
+.pz-zahl .feld { width: 130px; text-align: center; font-weight: 800; }
+.pz-zahl span { font-weight: 800; font-size: 20px; }

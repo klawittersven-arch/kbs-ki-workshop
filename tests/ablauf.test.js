@@ -80,8 +80,8 @@ async function handyModus(handy, modus) {
   return warteBis(() => handy.page.evaluate(m => window.__handy.a && window.__handy.a.modus === m, modus), handy.name + ' in ' + modus);
 }
 
-async function foto(seite, name) {
-  await seite.screenshot({ path: path.join(ERGEBNISSE, name + '.jpg'), type: 'jpeg', quality: 80 });
+async function foto(seite, name, ganzeSeite = false) {
+  await seite.screenshot({ path: path.join(ERGEBNISSE, name + '.jpg'), type: 'jpeg', quality: 80, fullPage: ganzeSeite });
 }
 
 async function anmelden(page, vorname, initiale, passwort) {
@@ -450,11 +450,253 @@ async function anmelden(page, vorname, initiale, passwort) {
     await weiter(beamer, 'punkte');
     await foto(beamer, 'b-12-punktestand-nach-sortieren');
 
-    /* ---------- Demo 6: KAROLINE-RUN! ---------- */
-    console.log('\nDemo 6: KAROLINE-RUN!');
+    /* ---------- Demo 6: Sprachen ---------- */
+    console.log('\nDemo 6: Sprachen');
+    await weiter(beamer, 'folie');
+    await warte(6500);
+    await foto(beamer, 'b-13-demo6-folie');
+    await weiter(beamer, 'sprachen');
+    const SPRACH_CODES = ['de', 'tr', 'ru', 'uk', 'fr', 'es'];
+    const SPRACH_LOESUNG = [1, 2, 0];
+    const sprachErwartet = [];
+    const jeSprache = Object.fromEntries(SPRACH_CODES.map(c => [c, 0]));
+    const jeNiveau = [0, 0, 0];
+    let sprachFertig = 0;
+    await Promise.all(handys.map(async (h, i) => {
+      await handyModus(h, 'sprachen');
+      await h.page.waitForSelector('.sprach-frage');
+      const code = SPRACH_CODES[i % 6], niveau = (i + Math.floor(i / 6)) % 3;
+      if (code !== 'de') await h.page.click(`.sprach-wahl [data-sprache="${code}"]`);
+      await h.page.click(`.niveau-wahl [data-niveau="${niveau}"]`);
+      jeSprache[code]++;
+      jeNiveau[niveau]++;
+      const fragen = i % 10 === 9 ? 1 : 3;     // manche hören nach der ersten Frage auf
+      let punkte = 0;
+      for (let q = 0; q < fragen; q++) {
+        const karte = h.page.locator('.sprach-frage').nth(q);
+        if ((i + q) % 4 === 1) await karte.locator(`.antwort[data-o="${(SPRACH_LOESUNG[q] + 1) % 3}"]`).click();
+        else punkte += 10;
+        await karte.locator(`.antwort[data-o="${SPRACH_LOESUNG[q]}"]`).click();
+      }
+      if (fragen === 3) sprachFertig++;
+      sprachErwartet[i] = punkte;
+    }));
+    await warteBis(async () => {
+      const s = (await zustand(beamer)).sprachen;
+      return JSON.stringify(s.je) === JSON.stringify(jeSprache) && JSON.stringify(s.niveaus) === JSON.stringify(jeNiveau) && s.fertig === sprachFertig;
+    }, 'Sprachen am Beamer');
+    pruefe(true, `Beamer zählt Sprachen (${SPRACH_CODES.map(c => c + ':' + jeSprache[c]).join(' ')}), Niveaus und ${sprachFertig} Fertige`);
+    const z6s = await zustand(beamer);
+    const sprachFalsch = z6s.tn.filter(t => t.punkte.sprachen !== sprachErwartet[handys.findIndex(h => h.name === t.name)]);
+    pruefe(!sprachFalsch.length, '10 Punkte je Frage, die beim ersten Versuch stimmt' + (sprachFalsch.length ? ' – falsch bei ' + sprachFalsch.map(t => t.name).join(', ') : ''));
+    const uk = handys[3];
+    const ukText = await uk.page.textContent('.sprach-text');
+    pruefe(/[іїєґ]/.test(ukText) && await uk.page.getAttribute('.sprach-text', 'lang') === 'uk', 'Ukrainische Fassung mit lang="uk"');
+    await handys[0].page.click('[data-vorlesen]');
+    await warte(300);
+    pruefe(true, 'Vorlesen-Knopf lässt sich antippen');
+    await warte(800);
+    await foto(beamer, 'b-14-demo6-sprachen');
+    await foto(uk.page, 'h-11-sprachen-ukrainisch', true);
+    await foto(handys[1].page, 'h-12-sprachen-tuerkisch', true);
+
+    /* ---------- Demo 7: Grafiken ---------- */
+    console.log('\nDemo 7: Grafiken');
+    await weiter(beamer, 'folie');
+    await warte(6500);
+    await foto(beamer, 'b-15-demo7-folie');
+    await weiter(beamer, 'grafik');
+    const ZIELE = ['UA', 'TR', 'ES', 'leber', 'magen', 'niere', 'femur', 'clavicula', 'wirbelsaeule'];
+    const DANEBEN = ['DE', 'GR', 'FR', 'herz', 'lunge', 'darm', 'becken', 'costa', 'schaedel'];
+    // Tippt auf einen Punkt, an dem das gewünschte Teil wirklich oben liegt
+    async function antippen(page, teil) {
+      await page.waitForSelector(`.grafik-bild [data-teil="${teil}"]`);
+      await page.locator('.grafik-bild svg').scrollIntoViewIfNeeded();
+      const p = await page.evaluate(t => {
+        const ziele = [...document.querySelectorAll(`.grafik-bild [data-teil="${t}"]`)];
+        for (const el of ziele) {
+          const r = el.getBoundingClientRect();
+          const cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2;
+          for (let s = 0; s <= 1; s += 0.1) for (let w = 0; w < 6.3; w += 0.5) {
+            const x = cx + Math.cos(w) * s * r.width / 2, y = cy + Math.sin(w) * s * r.height / 2;
+            const e = document.elementFromPoint(x, y);
+            if (e && e.closest('[data-teil]') && e.closest('[data-teil]').dataset.teil === t) return { x, y };
+            if (s === 0) break;
+          }
+        }
+        return null;
+      }, teil);
+      if (!p) throw new Error('Kein Tipp-Punkt für ' + teil);
+      await page.touchscreen.tap(p.x, p.y);
+    }
+    const grafikErwartet = [];
+    let grafikTipps = 0, grafikFertig = 0;
+    await Promise.all(handys.map(async (h, i) => {
+      await handyModus(h, 'grafik');
+      const bis = i % 8 === 7 ? 4 : 9;       // manche schaffen nur 4 Aufgaben
+      let punkte = 0;
+      for (let k = 0; k < bis; k++) {
+        await warteBis(async () => (await h.page.textContent('.nr')) === `Aufgabe ${k + 1} von 9`, h.name + ' Aufgabe ' + (k + 1));
+        const art = (i + k) % 5;            // 0, 1, 2: Treffer; 3: einmal daneben; 4: zweimal daneben
+        if (art >= 3) { await antippen(h.page, DANEBEN[k]); grafikTipps++; }
+        if (art === 4) {
+          await warte(200);
+          await antippen(h.page, DANEBEN[k]);
+          grafikTipps++;
+          await h.page.waitForSelector('.grafik-rueck [data-weiter]');
+          if (i === 4 && k === 0) await foto(h.page, 'h-13-grafik-daneben');
+          await h.page.click('.grafik-rueck [data-weiter]');
+          continue;
+        }
+        await warte(200);
+        await antippen(h.page, ZIELE[k]);
+        grafikTipps++;
+        punkte += art === 3 ? 5 : 10;
+        if (i === 0 && k === 7) { await warte(300); await foto(h.page, 'h-14-grafik-skelett'); }
+      }
+      if (bis === 9) { grafikFertig++; await h.page.waitForSelector('.grafik .warten'); }
+      grafikErwartet[i] = punkte;
+    }));
+    await warteBis(async () => (await zustand(beamer)).grafik.fertig === grafikFertig, 'Grafik fertig');
+    const z7 = await zustand(beamer);
+    const tippsBeamer = Object.values(z7.grafik.punkte).reduce((s, l) => s + l.length, 0);
+    pruefe(tippsBeamer === grafikTipps, `Beamer zeigt alle ${grafikTipps} Tipps (grün/rot)`);
+    const grafikFalsch = z7.tn.filter(t => t.punkte.grafik !== grafikErwartet[handys.findIndex(h => h.name === t.name)]);
+    pruefe(!grafikFalsch.length, 'Grafik-Punkte: 10 beim ersten, 5 beim zweiten Versuch' + (grafikFalsch.length ? ' – falsch bei ' + grafikFalsch.map(t => t.name).join(', ') : ''));
+    const europaPunkte = await beamer.$$eval('.grafik-karte[data-bild="europa"] .tipp', e => e.length);
+    pruefe(europaPunkte === z7.grafik.punkte.europa.length && europaPunkte > 0, `Europakarte am Beamer mit ${europaPunkte} Punkten`);
+    await foto(beamer, 'b-16-demo7-grafik');
+
+    /* ---------- Demo 8: Gruppen und Gruppenpuzzle ---------- */
+    console.log('\nDemo 8: Gruppen und Gruppenpuzzle');
+    await weiter(beamer, 'folie');
+    await warte(6500);
+    await foto(beamer, 'b-17-demo8-folie');
+    await weiter(beamer, 'gruppen');
+    await handyModus(handys[0], 'gruppen');
+    await beamer.click('[data-gruppen-wahl]');
+    await warteBis(() => handys[0].page.$('.gruppen-wahl button'), 'Gruppenwahl auf dem Handy');
+    for (const i of [0, 1, 2]) {
+      await handys[i].page.click('.gruppen-wahl [data-g="0"]');
+      await warteBis(() => handys[i].page.evaluate(() => window.__handy.a.gruppe.g === 0), handys[i].name + ' in Gruppe 0');
+    }
+    await warteBis(() => handys[3].page.evaluate(() => window.__handy.a.gruppe.belegung[0] === 3), 'Gruppe 0 voll');
+    await warte(300);
+    pruefe(await handys[3].page.isDisabled('.gruppen-wahl [data-g="0"]'), 'Selbst wählen: volle Gruppe (3) ist gesperrt');
+    await foto(handys[3].page, 'h-15-gruppenwahl');
+    await beamer.click('[data-gruppen-wahl]');
+    await beamer.click('[data-gruppen-rest]');
+    await warteBis(async () => (await zustand(beamer)).gruppen.ohne.length === 0, 'alle eingeteilt');
+    let zg = await zustand(beamer);
+    const groessen = zg.gruppen.liste.map(g => g.mitglieder.length);
+    pruefe(zg.gruppen.liste[0].mitglieder.length === 3 && [0, 1, 2].every(i => zg.gruppen.liste[0].mitglieder.some(m => m.name === handys[i].name)),
+      'Rest zufällig verteilt, die selbst gewählte Gruppe bleibt');
+    pruefe(groessen.every(n => n >= 3 && n <= 4), `Gruppengrößen: ${groessen.join(', ')}`);
+    // Lehrkraft verschiebt eine Person per Klick in die nächste Gruppe
+    const verschoben = zg.gruppen.liste[1].mitglieder[0];
+    await beamer.click(`.gk-name[data-id="${verschoben.id}"]`);
+    await warteBis(async () => (await zustand(beamer)).gruppen.liste[2].mitglieder.some(m => m.id === verschoben.id), 'verschoben');
+    pruefe(true, `${verschoben.name} per Klick von Gruppe 2 in Gruppe 3 verschoben`);
+    zg = await zustand(beamer);
+    const meinHandy = handys.find(h => h.name === zg.gruppen.liste[1].mitglieder[0].name);
+    await warteBis(() => meinHandy.page.$('.gruppen-gross'), 'Gruppenbildschirm');
+    await warte(500);
+    await foto(meinHandy.page, 'h-16-gruppe');
+    await foto(beamer, 'b-18-demo8-gruppen');
+
+    await weiter(beamer, 'puzzle');
+    zg = await zustand(beamer);
+    const gruppeVon = name => zg.puzzle.gruppen.find(g => g.mitglieder.some(m => m.name === name));
+    const expertenOk = zg.puzzle.gruppen.every(g => {
+      const alle = g.mitglieder.flatMap(m => m.experten);
+      return ['A', 'B', 'C'].every(x => alle.includes(x));
+    });
+    pruefe(expertenOk, 'Jede Gruppe hat die Texte A, B und C (' + zg.puzzle.gruppen.map(g => g.mitglieder.map(m => m.experten.join('')).join('/')).join(' · ') + ')');
+    // Eine Person einer Dreiergruppe fällt aus – ihr Text wird nach 30 s für die Gruppe freigegeben
+    const ausfallGruppe = zg.puzzle.gruppen.find(g => g.mitglieder.length === 3 && g.mitglieder.every(m => handys.findIndex(h => h.name === m.name) >= 3));
+    const ausfall = handys.find(h => h.name === ausfallGruppe.mitglieder[2].name);
+    await ausfall.page.close();
+    const RICHTIG = [[1, 2], [0, '40'], [2, 0]];
+    const fotoGemacht = {};
+    async function puzzleSpielen(h, falschImAbschnitt0) {
+      let falschGemacht = false;
+      const ende = Date.now() + 150000;
+      while (Date.now() < ende) {
+        const p = await h.page.evaluate(() => { const a = window.__handy.a; return a && a.puzzle ? a.puzzle : null; });
+        if (!p) { await warte(300); continue; }
+        if (p.phase === 'fertig') { await h.page.waitForSelector('.pz .warten'); return; }
+        if (p.phase === 'lesen') {
+          const knopf = await h.page.$('[data-gelesen]:not([disabled])');
+          if (knopf) await knopf.click().catch(() => {});
+          await warte(300);
+          continue;
+        }
+        if (p.freigegeben.length && !fotoGemacht.frei) {
+          fotoGemacht.frei = true;
+          await h.page.click('.pz-tabs [data-tab="frei0"]');
+          await warte(300);
+          await foto(h.page, 'h-19-puzzle-freigegeben');
+          await h.page.click('.pz-tabs [data-tab="aufgaben"]');
+        }
+        if (p.abgabe || !(await h.page.$('[data-abgeben]'))) { await warte(300); continue; }
+        const falsch = falschImAbschnitt0 && p.abschnitt === 0 && !falschGemacht;
+        const antworten = falsch ? [0, 2] : RICHTIG[p.abschnitt];
+        for (let k = 0; k < 2; k++) {
+          const karte = h.page.locator('.pz-frage').nth(k);
+          if (typeof antworten[k] === 'number') await karte.locator(`.antwort[data-o="${antworten[k]}"]`).click();
+          else await karte.locator('input').fill(h === handys[2] ? '40 g' : antworten[k]);
+        }
+        try {
+          await h.page.waitForSelector('[data-abgeben]:not([disabled])', { timeout: 20000 });
+          await h.page.click('[data-abgeben]');
+        } catch (e) { continue; }
+        if (falsch) falschGemacht = true;
+        await warte(400);
+      }
+      throw new Error('Gruppenpuzzle nicht fertig: ' + h.name);
+    }
+    await handyModus(handys[5], 'puzzle');
+    await handys[5].page.waitForSelector('[data-gelesen]');
+    await foto(handys[5].page, 'h-17-puzzle-lesen');
+    const spielen = Promise.all(handys.filter(h => h !== ausfall).map(h => puzzleSpielen(h, h === handys[0])));
+    spielen.catch(() => {});   // Fehler werden unten beim Warten gemeldet
+    // Gruppe 1 (Anna, Jonas, Lea) gibt in Abschnitt 1 eine falsche Antwort ab → 15 s gesperrt
+    await warteBis(async () => { const z = await zustand(beamer); return z.puzzle.gruppen[0].sperreBis > z.serverZeit; }, 'Sperre nach falscher Abgabe', 40000);
+    pruefe(true, 'Falsche Antwort in der Gruppe → Gruppe 15 s gesperrt');
+    for (const i of [0, 1, 2]) await warteBis(async () => /noch falsch/.test(await handys[i].page.textContent('.pz-meldung')), handys[i].name + ' sieht die Sperre', 8000);
+    pruefe(true, 'Alle Handys der Gruppe sehen die Sperre, ohne dass verraten wird, wer falsch lag');
+    await foto(handys[1].page, 'h-18-puzzle-gesperrt');
+    await foto(beamer, 'b-19-demo8-puzzle');
+    await spielen;
+    zg = await zustand(beamer);
+    const plaetze = zg.puzzle.gruppen.map(g => g.platz).sort((a, b) => a - b);
+    pruefe(plaetze.every((p, k) => p === k + 1), `Alle ${plaetze.length} Gruppen fertig, Plätze 1–${plaetze.length}`);
+    pruefe(fotoGemacht.frei, 'Text der ausgefallenen Person wurde für ihre Gruppe freigegeben');
+    const PUZZLE_PUNKTE = [50, 40, 30];
+    const puzzleFalsch = zg.tn.filter(t => {
+      const g = gruppeVon(t.name);
+      return t.punkte.puzzle !== (PUZZLE_PUNKTE[g.platz - 1] ?? 20);
+    });
+    pruefe(!puzzleFalsch.length, 'Puzzle-Punkte 50/40/30, alle anderen fertigen Gruppen 20' + (puzzleFalsch.length ? ' – falsch bei ' + puzzleFalsch.map(t => t.name).join(', ') : ''));
+    await foto(handys[0].page, 'h-20-puzzle-fertig');
+    await weiter(beamer, 'gruppensieg');
+    await warte(3500);
+    await foto(beamer, 'b-20-gruppensieg');
+    const sieger = zg.puzzle.gruppen.find(g => g.platz === 1);
+    pruefe((await beamer.textContent('.stufe.p1 .wer')).includes(sieger.mitglieder[0].name), 'Siegerehrung: Gewinnergruppe auf Platz 1');
+    // Die ausgefallene Person kommt zurück
+    ausfall.page = await ausfall.ctx.newPage();
+    beobachten(ausfall.page, ausfall.name);
+    await ausfall.page.goto(B + '/');
+    await handyModus(ausfall, 'gruppensieg');
+    await weiter(beamer, 'punkte');
+    await foto(beamer, 'b-21-punktestand-nach-demo8');
+
+    /* ---------- Demo 9: KAROLINE-RUN! ---------- */
+    console.log('\nDemo 9: KAROLINE-RUN!');
     await weiter(beamer, 'folie');
     await warte(3000);
-    await foto(beamer, 'b-13-demo6-folie');
+    await foto(beamer, 'b-22-demo9-folie');
     await weiter(beamer, 'spiel');
     const spieler = handys.slice(0, Math.min(TN, 12));
     await Promise.all(spieler.map(async h => {
@@ -465,18 +707,18 @@ async function anmelden(page, vorname, initiale, passwort) {
     // ohne Eingabe läuft die Figur ins erste Hindernis → Game over → Punkte an den Beamer
     await warteBis(async () => (await zustand(beamer)).spiel.length >= spieler.length - 1, 'Highscores angekommen', 60000);
     pruefe(true, `Highscores von ${(await zustand(beamer)).spiel.length} Spielenden am Beamer`);
-    await foto(spieler[0].page, 'h-10-spiel-ende');
+    await foto(spieler[0].page, 'h-21-spiel-ende');
     // Eine Person startet einen neuen Lauf; die Lehrkraft beendet das Spiel mittendrin
     const laeufer = spieler[0];
     const f0 = laeufer.page.frameLocator('#spiel-rahmen');
     await f0.locator('#knopf-nochmal').click();
     await warte(2500);
-    await foto(beamer, 'b-14-demo6-highscore');
+    await foto(beamer, 'b-23-demo9-highscore');
     await weiter(beamer, 'siegerehrung');
     pruefe(/SIEGEREHRUNG/.test(await laeufer.page.textContent('#app')), 'Handys zeigen „SIEGEREHRUNG“, Spiel ist beendet');
     pruefe(!(await laeufer.page.$('#spiel-rahmen')), 'Spiel auf dem Handy geschlossen');
     await warte(3500);
-    await foto(beamer, 'b-15-siegerehrung');
+    await foto(beamer, 'b-24-siegerehrung');
     const z6 = await zustand(beamer);
     const podest = await beamer.$$eval('.stufe .wer b', e => e.map(x => x.textContent));
     pruefe(podest[1] === z6.spiel[0].name, `Platz 1 auf dem Treppchen: ${z6.spiel[0].name} (${z6.spiel[0].punkte} Punkte)`);
@@ -485,13 +727,13 @@ async function anmelden(page, vorname, initiale, passwort) {
     console.log('\nAbschluss: Fragerunde, Export und Zurücksetzen');
     await weiter(beamer, 'punkte');
     pruefe(!(await beamer.$('[data-export]')), 'Punktestand nach der Siegerehrung (Export erst nach der Fragerunde)');
-    await foto(beamer, 'b-16-punktestand-nach-siegerehrung');
+    await foto(beamer, 'b-25-punktestand-nach-siegerehrung');
     await weiter(beamer, 'folie');
-    await foto(beamer, 'b-17-und-der-prompt');
+    await foto(beamer, 'b-26-und-der-prompt');
     await weiter(beamer, 'folie');
     await warte(1200);
     pruefe(/FRAGERUNDE/.test(await beamer.textContent('.inhalt')) && /PUNKTESTAND-MODUS/.test(await beamer.textContent('[data-weiter]')), 'Folie Fragerunde mit Knopf PUNKTESTAND-MODUS');
-    await foto(beamer, 'b-18-fragerunde');
+    await foto(beamer, 'b-27-fragerunde');
     await weiter(beamer, 'punkte');
     pruefe(/Fragerunde/.test(await beamer.textContent('.punkte-kopf')), 'Punktestand der Fragerunde');
     const [download] = await Promise.all([beamer.waitForEvent('download'), beamer.click('[data-export]')]);
@@ -502,10 +744,10 @@ async function anmelden(page, vorname, initiale, passwort) {
     const zEnde = await zustand(beamer);
     const alleDrin = zEnde.tn.every(t => blatt.includes(`<t xml:space="preserve">${t.name}</t>`) && blatt.includes(`<v>${t.punkte.gesamt}</v>`));
     pruefe(alleDrin && (blatt.match(/<row /g) || []).length === TN + 1, `Excel-Datei gültig: ${TN} Namen mit Endpunktestand`);
-    await foto(beamer, 'b-19-punktestand-final');
+    await foto(beamer, 'b-28-punktestand-final');
     await weiter(beamer, 'folie');
     await warte(800);
-    await foto(beamer, 'b-20-jetzt-seid-ihr-dran');
+    await foto(beamer, 'b-29-jetzt-seid-ihr-dran');
 
     // Zurücksetzen
     await beamer.click('[data-zuruecksetzen]');
@@ -523,7 +765,7 @@ async function anmelden(page, vorname, initiale, passwort) {
     await warteBis(async () => /nicht \(mehr\) gültig/.test(await zuschauer.textContent('#buehne')), 'Zuschauer-Link abgelaufen');
     pruefe(true, 'Nach dem Zurücksetzen ist der Zuschauer-Link ungültig');
     await foto(zuschauer, 'z-02-zuschauer-abgelaufen');
-    await foto(beamer, 'b-21-nach-zuruecksetzen');
+    await foto(beamer, 'b-30-nach-zuruecksetzen');
   } catch (e) {
     fehler++;
     console.log('  ✗ Abbruch: ' + e.message);

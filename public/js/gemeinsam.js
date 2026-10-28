@@ -23,6 +23,15 @@ export const ABLAUF = [
   { modus: 'sortieren', knopf: 'PUNKTESTAND' },
   { modus: 'punkte', knopf: 'FORTFAHREN' },
   { modus: 'folie', folie: 'demo6', knopf: 'DEMO 6 STARTEN' },
+  { modus: 'sprachen', knopf: 'AUFGABE ABSCHLIESSEN' },
+  { modus: 'folie', folie: 'demo7', knopf: 'DEMO 7 STARTEN' },
+  { modus: 'grafik', knopf: 'GRAFIK-QUIZ ABSCHLIESSEN' },
+  { modus: 'folie', folie: 'demo8', knopf: 'DEMO 8 STARTEN' },
+  { modus: 'gruppen', knopf: 'GRUPPENPUZZLE STARTEN' },
+  { modus: 'puzzle', knopf: 'SIEGEREHRUNG' },
+  { modus: 'gruppensieg', knopf: 'ZUM PUNKTESTAND' },
+  { modus: 'punkte', knopf: 'FORTFAHREN' },
+  { modus: 'folie', folie: 'demo9', knopf: 'DEMO 9 STARTEN' },
   { modus: 'spiel', knopf: 'SIEGEREHRUNG' },
   { modus: 'siegerehrung', knopf: 'ZUM PUNKTESTAND' },
   { modus: 'punkte', knopf: 'FORTFAHREN' },
@@ -87,7 +96,79 @@ export const PUNKTE = {
   jeSchritt: 10,        // Sortieraufgabe: je richtig eingeordnetem Schritt
   jeFehler: 10,         // Sortieraufgabe: Abzug je falscher Zahl (nie unter 0)
   vergabeMax: 100,      // mündliche Punktvergabe: 0 bis 100
+  sprachFrage: 10,      // Demo 6: je Frage, die beim ersten Versuch stimmt
+  grafikErster: 10,     // Demo 7: Treffer beim ersten Antippen
+  grafikZweiter: 5,     // Demo 7: Treffer beim zweiten Antippen
+  puzzlePlatz: [50, 40, 30],  // Demo 8: je Person einer Gruppe auf Platz 1, 2, 3
+  puzzleFertig: 20,     // Demo 8: je Person jeder weiteren Gruppe, die fertig wird
 };
+
+/* ---------- Demo 6: Sprachen ---------- */
+export const SPRACH_CODES = ['de', 'tr', 'ru', 'uk', 'fr', 'es'];
+export const SPRACHEN_LOESUNG = [1, 2, 0];   // richtige Antwort je Frage (in allen Sprachen und Niveaus gleich)
+
+export function sprachPunkte(s) {
+  if (!s) return 0;
+  return s.fragen.filter(f => f.richtig && f.versuche === 1).length * PUNKTE.sprachFrage;
+}
+
+/* ---------- Demo 7: Grafiken (jeder im eigenen Tempo, höchstens 2 Versuche je Aufgabe) ---------- */
+export const GRAFIK_AUFGABEN = [
+  { bild: 'europa', ziel: 'UA', kurz: 'Ukraine', text: 'Wo spricht man Ukrainisch? Tippe auf das Land.' },
+  { bild: 'europa', ziel: 'TR', kurz: 'Türkei', text: 'Wo spricht man Türkisch? Tippe auf das Land.' },
+  { bild: 'europa', ziel: 'ES', kurz: 'Spanien', text: 'Wo spricht man Spanisch? Tippe auf das Land.' },
+  { bild: 'koerper', ziel: 'leber', kurz: 'Leber', text: 'Tippe auf die Leber.' },
+  { bild: 'koerper', ziel: 'magen', kurz: 'Magen', text: 'Tippe auf den Magen.' },
+  { bild: 'koerper', ziel: 'niere', kurz: 'Niere (Ren)', text: 'Tippe auf eine Niere (Ren).' },
+  { bild: 'skelett', ziel: 'femur', kurz: 'Femur', text: 'Tippe auf den Oberschenkelknochen (Femur).' },
+  { bild: 'skelett', ziel: 'clavicula', kurz: 'Clavicula', text: 'Tippe auf das Schlüsselbein (Clavicula).' },
+  { bild: 'skelett', ziel: 'wirbelsaeule', kurz: 'Wirbelsäule', text: 'Tippe auf die Wirbelsäule.' },
+];
+export const GRAFIK_BILDER = [
+  { bild: 'europa', titel: 'Europakarte' },
+  { bild: 'koerper', titel: 'Organe' },
+  { bild: 'skelett', titel: 'Knochen' },
+];
+export const GRAFIK_VERSUCHE = 2;
+
+export function grafikPunkte(g) {
+  if (!g) return 0;
+  let p = 0;
+  for (const a of g.aufgaben) {
+    const treffer = a.versuche.findIndex(v => v.ok);
+    if (treffer === 0) p += PUNKTE.grafikErster;
+    else if (treffer === 1) p += PUNKTE.grafikZweiter;
+  }
+  return p;
+}
+
+/* ---------- Demo 8: Gruppen und Gruppenpuzzle ---------- */
+export const GRUPPENGROESSE = 3;
+export const PUZZLE_SPERRE_MS = 15000;     // Sperre nach einer falschen Gruppenprüfung
+export const OFFLINE_FREIGABE_MS = 30000;  // so lange darf jemand weg sein, bevor sein Text für die Gruppe frei wird
+export const GRUPPEN = [
+  { tier: '🐘', name: 'Blaue Elefanten', farbe: '#2B7BB9' },
+  { tier: '🐝', name: 'Gelbe Bienen', farbe: '#D99A0B' },
+  { tier: '🦊', name: 'Rote Füchse', farbe: '#D64545' },
+  { tier: '🐸', name: 'Grüne Frösche', farbe: '#2E9E5B' },
+  { tier: '🦄', name: 'Lila Einhörner', farbe: '#7B5EA7' },
+  { tier: '🐯', name: 'Orange Tiger', farbe: '#E07020' },
+  { tier: '🐬', name: 'Türkise Delfine', farbe: '#159A9C' },
+  { tier: '🦩', name: 'Rosa Flamingos', farbe: '#E05A9B' },
+  { tier: '🐻', name: 'Braune Bären', farbe: '#8B5A3C' },
+  { tier: '🐧', name: 'Schwarze Pinguine', farbe: '#2F3A40' },
+  { tier: '🦉', name: 'Graue Eulen', farbe: '#6F7F86' },
+  { tier: '🐢', name: 'Olivgrüne Schildkröten', farbe: '#5F7F1F' },
+];
+export function gruppeInfo(g) {
+  const basis = GRUPPEN[g % GRUPPEN.length];
+  const runde = Math.floor(g / GRUPPEN.length);
+  return Object.assign({}, basis, { name: basis.name + (runde ? ' ' + (runde + 1) : '') });
+}
+export function puzzlePunkte(platz) {
+  if (!platz) return 0;
+  return PUNKTE.puzzlePlatz[platz - 1] ?? PUNKTE.puzzleFertig;
+}
 
 // Wortwolke: Begriffe zusammenführen (Groß-/Kleinschreibung, Leerzeichen, Satzzeichen am Rand)
 export function begriffSchluessel(text) {

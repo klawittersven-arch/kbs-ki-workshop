@@ -4,7 +4,13 @@
  * Bei einem neuen Modus wird der Bildschirm neu aufgebaut, sonst nur aktualisiert –
  * so gehen angefangene Eingaben nicht verloren.
  */
-import { UMFRAGE_OPTIONEN, UMFRAGE_KEINE, WOLKE_MAX_BEGRIFFE, WOLKE_MAX_LAENGE, PFLEGEPROZESS, LERNKARTEN, PUNKTE_SICHTBAR_AB, begriffGueltig, sortierPunkte, PUNKTE } from './gemeinsam.js';
+import {
+  UMFRAGE_OPTIONEN, UMFRAGE_KEINE, WOLKE_MAX_BEGRIFFE, WOLKE_MAX_LAENGE, PFLEGEPROZESS, LERNKARTEN, PUNKTE_SICHTBAR_AB, begriffGueltig, sortierPunkte, PUNKTE,
+  SPRACHEN_LOESUNG, sprachPunkte, GRAFIK_AUFGABEN, GRAFIK_VERSUCHE, grafikPunkte, gruppeInfo, puzzlePunkte,
+} from './gemeinsam.js';
+import { SPRACHEN, FLAGGEN, INHALT } from './inhalte-sprachen.js';
+import { FALL, EXPERTEN, PUZZLE_FRAGEN, ABSCHNITTE } from './inhalte-puzzle.js';
+import { KOERPER, SKELETT, TEILE, europaSvg } from './grafik-koerper.js';
 import { handyVerbindung } from './verbindung.js';
 
 const $ = (sel, wurzel = document) => wurzel.querySelector(sel);
@@ -423,7 +429,470 @@ const BILDSCHIRME = {
     };
   },
 
-  /* ---------- Demo 6: KAROLINE-RUN! ---------- */
+  /* ---------- Demo 6: Sprachen ---------- */
+  sprachen(a) {
+    const tts = 'speechSynthesis' in window ? window.speechSynthesis : null;
+    let sprache, niveau;
+    let fragen = SPRACHEN_LOESUNG.map(() => ({ versuche: 0, richtig: false }));
+    const falsch = SPRACHEN_LOESUNG.map(() => []);   // falsch getippte Antworten (nur auf diesem Handy)
+    let zuletztGetippt = 0;
+    let liest = false;
+    let sig = '';
+    if (a.sprachen) {
+      sprache = a.sprachen.sprache;
+      niveau = a.sprachen.niveau;
+    } else {
+      // Erster Aufruf: Sprache des Handys vorschlagen, sonst Deutsch
+      const vorschlag = String(navigator.language || 'de').slice(0, 2).toLowerCase();
+      sprache = SPRACHEN.some(s => s.code === vorschlag) ? vorschlag : 'de';
+      niveau = 1;
+      senden({ type: 'sprachwahl', sprache, niveau, erstes: true });
+    }
+    app.innerHTML = `<div class="sprachen">
+      <div class="sprach-wahl">${SPRACHEN.map(sp => `<button data-sprache="${sp.code}" lang="${sp.code}"><span class="flagge">${FLAGGEN[sp.code]}</span><span>${esc(sp.eigen)}</span></button>`).join('')}</div>
+      <div class="niveau-wahl"></div><div class="sprach-inhalt"></div></div>`;
+    const wurzel = $('.sprachen', app);
+
+    function stoppen() {
+      if (tts) tts.cancel();
+      liest = false;
+      const k = $('[data-vorlesen]', wurzel);
+      if (k) k.textContent = INHALT[sprache].ui.vorlesen;
+    }
+    function vorlesen() {
+      const ui = INHALT[sprache].ui;
+      if (liest) { stoppen(); return; }
+      if (!tts) { toast(ui.keineStimme, 'schlecht', 3500); return; }
+      const sp = SPRACHEN.find(s => s.code === sprache);
+      const stimmen = tts.getVoices();
+      const passend = l => String(l).replace('_', '-').toLowerCase();
+      const stimme = stimmen.find(v => passend(v.lang) === sp.stimme.toLowerCase()) || stimmen.find(v => passend(v.lang).startsWith(sp.code));
+      if (stimmen.length && !stimme) { toast(ui.keineStimme, 'schlecht', 3500); return; }
+      // In kurzen Stücken vorlesen – manche Handys brechen lange Texte sonst ab
+      const text = INHALT[sprache].titel + '.\n' + INHALT[sprache].texte[niveau];
+      const saetze = (text.match(/[^.!?…\n]+[.!?…]*/g) || []).map(s => s.trim()).filter(Boolean);
+      tts.cancel();
+      liest = true;
+      $('[data-vorlesen]', wurzel).textContent = ui.stopp;
+      saetze.forEach((satz, i) => {
+        const u = new SpeechSynthesisUtterance(satz);
+        u.lang = sp.stimme;
+        if (stimme) u.voice = stimme;
+        u.rate = niveau === 0 ? 0.85 : 0.95;
+        if (i === saetze.length - 1) u.onend = stoppen;
+        u.onerror = stoppen;
+        tts.speak(u);
+      });
+    }
+    function zeichnen() {
+      const neu = JSON.stringify([sprache, niveau, fragen, falsch]);
+      if (neu === sig) return;
+      const textNeu = !sig || JSON.parse(sig)[0] !== sprache || JSON.parse(sig)[1] !== niveau;
+      sig = neu;
+      const inhalt = INHALT[sprache];
+      const ui = inhalt.ui;
+      wurzel.querySelectorAll('[data-sprache]').forEach(b => b.classList.toggle('an', b.dataset.sprache === sprache));
+      $('.niveau-wahl', wurzel).innerHTML = inhalt.niveaus.map((n, i) => `<button data-niveau="${i}" class="${i === niveau ? 'an' : ''}">${esc(n)}</button>`).join('');
+      const fertig = fragen.every(f => f.richtig);
+      const scrollY = window.scrollY;
+      $('.sprach-inhalt', wurzel).innerHTML = `<article class="karte sprach-text" lang="${sprache}">
+          <div class="sprach-titel"><h1>${esc(inhalt.titel)}</h1><button class="vorlese-knopf" data-vorlesen>${esc(liest ? ui.stopp : ui.vorlesen)}</button></div>
+          ${inhalt.texte[niveau].split('\n').map(t => `<p>${esc(t)}</p>`).join('')}
+        </article>
+        <h2 lang="${sprache}">${esc(ui.fragen)}</h2><p class="leise" lang="${sprache}">${esc(ui.hinweis)}</p>
+        ${fertig ? `<div class="geschafft" lang="${sprache}">🎉 ${esc(ui.fertig)}<br><small>+${sprachPunkte({ fragen })} P.</small></div>` : ''}
+        ${inhalt.fragen[niveau].map((f, q) => `<div class="karte sprach-frage" lang="${sprache}"><p class="frage"><b>${q + 1}.</b> ${esc(f.frage)}</p>
+          ${f.optionen.map((o, i) => {
+            const richtig = fragen[q].richtig && i === SPRACHEN_LOESUNG[q];
+            const fehler = falsch[q].includes(i);
+            return `<button class="antwort${richtig ? ' richtig' : ''}${fehler ? ' falsch' : ''}" data-q="${q}" data-o="${i}" ${fragen[q].richtig || fehler ? 'disabled' : ''}>${richtig ? '✓ ' : fehler ? '✗ ' : ''}${esc(o)}</button>`;
+          }).join('')}
+          ${fragen[q].richtig ? `<p class="rueck gut">${esc(ui.richtig)}</p>` : falsch[q].length ? `<p class="rueck schlecht">${esc(ui.falsch)}</p>` : ''}</div>`).join('')}`;
+      if (!textNeu) window.scrollTo(0, scrollY);
+    }
+    wurzel.addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b || b.disabled) return;
+      if (b.dataset.sprache || b.dataset.niveau) {
+        if (b.dataset.sprache) sprache = b.dataset.sprache;
+        if (b.dataset.niveau) niveau = +b.dataset.niveau;
+        stoppen();
+        zuletztGetippt = Date.now();
+        zeichnen();
+        senden({ type: 'sprachwahl', sprache, niveau });
+        vibrieren(15);
+      } else if ('vorlesen' in b.dataset) {
+        vorlesen();
+      } else if (b.dataset.q) {
+        const q = +b.dataset.q, o = +b.dataset.o;
+        zuletztGetippt = Date.now();
+        fragen[q].versuche++;
+        if (o === SPRACHEN_LOESUNG[q]) {
+          fragen[q].richtig = true;
+          vibrieren(25);
+          if (fragen.every(f => f.richtig)) { toast('🎉 ' + INHALT[sprache].ui.fertig, 'gut', 2600); vibrieren([60, 40, 60, 40, 120]); }
+        } else {
+          falsch[q].push(o);
+          vibrieren([80, 50, 80]);
+        }
+        zeichnen();
+        senden({ type: 'sprachantwort', frage: q, option: o });
+      }
+    });
+    zeichnen();
+    return {
+      aktualisieren(a) {
+        // Während getippt wird, gilt die eigene Auswahl (der Server zieht nach)
+        if (!a.sprachen || Date.now() - zuletztGetippt < 900) return;
+        sprache = a.sprachen.sprache;
+        niveau = a.sprachen.niveau;
+        fragen = a.sprachen.fragen.map(f => ({ versuche: f.versuche, richtig: f.richtig }));
+        zeichnen();
+      },
+      abbauen() { if (tts) tts.cancel(); },
+    };
+  },
+
+  /* ---------- Demo 7: Grafiken ---------- */
+  grafik(a) {
+    let europa = null;
+    let aufgaben = a.grafik.aufgaben.map(x => ({ versuche: x.versuche.slice() }));
+    let nr = -1;              // angezeigte Aufgabe
+    let bild = null;          // angezeigte Grafik
+    let svg = null;
+    let rueckmeldung = false; // während der Rückmeldung zählen keine Tipps
+    let zuletztGetippt = 0;
+    let weiterTimer = null;
+    const erledigt = x => x.versuche.some(v => v.ok) || x.versuche.length >= GRAFIK_VERSUCHE;
+    app.innerHTML = `<div class="grafik">
+      <div class="lern-kopf"><span class="nr"></span><span class="pkt"></span></div><div class="lern-balken"><i></i></div>
+      <h1 class="grafik-aufgabe"></h1><p class="grafik-versuch leise"></p><div class="grafik-bild"></div><div class="grafik-rueck"></div></div>`;
+    const wurzel = $('.grafik', app);
+    import('./grafik-europa.js').then(m => {
+      europa = m.EUROPA;
+      if (nr >= 0 && GRAFIK_AUFGABEN[nr].bild === 'europa' && !rueckmeldung) zeigen();
+    }).catch(() => { $('.grafik-bild', wurzel).innerHTML = '<p class="leise">Die Karte konnte nicht geladen werden – lade die Seite neu.</p>'; });
+
+    function teilName(teil) {
+      if (!teil) return '';
+      if (bild === 'europa') { const l = europa && europa.laender.find(x => x.id === teil); return l ? l.name : ''; }
+      return TEILE[teil] || '';
+    }
+    function bildBauen() {
+      const art = GRAFIK_AUFGABEN[nr].bild;
+      if (art === bild) {
+        svg.querySelectorAll('.treffer, .falsch, .ziel').forEach(e => e.classList.remove('treffer', 'falsch', 'ziel'));
+        $('.tipps', svg).innerHTML = '';
+        return;
+      }
+      const ort = $('.grafik-bild', wurzel);
+      if (art === 'europa' && !europa) { bild = null; ort.innerHTML = '<p class="laden" style="margin:60px 0">Karte wird geladen …</p>'; return; }
+      bild = art;
+      const quelle = art === 'europa' ? { viewBox: europa.viewBox, svg: europaSvg(europa) } : art === 'koerper' ? KOERPER : SKELETT;
+      ort.innerHTML = `<svg class="bild-${art}" viewBox="${quelle.viewBox}" preserveAspectRatio="xMidYMid meet">${quelle.svg}<g class="tipps"></g></svg>`;
+      svg = $('svg', ort);
+      svg.addEventListener('click', tippen);
+    }
+    function markieren(teil, klasse) {
+      if (teil) svg.querySelectorAll(`[data-teil="${teil}"]`).forEach(e => e.classList.add(klasse));
+    }
+    function zeigen() {
+      clearTimeout(weiterTimer);
+      rueckmeldung = false;
+      nr = aufgaben.findIndex(x => !erledigt(x));
+      const p = grafikPunkte({ aufgaben });
+      if (nr < 0) {
+        const getroffen = aufgaben.filter(x => x.versuche.some(v => v.ok)).length;
+        wurzel.innerHTML = `<div class="warten"><div class="symbol">🗺️</div><div class="modus">GESCHAFFT!</div>
+          <p class="gross">Du hast ${getroffen} von ${GRAFIK_AUFGABEN.length} getroffen und bekommst ${p} Punkte.</p>
+          <p class="leise">Richte deine Aufmerksamkeit nach vorne – dort siehst du, wo alle hingetippt haben.</p></div>`;
+        return;
+      }
+      $('.nr', wurzel).textContent = `Aufgabe ${nr + 1} von ${GRAFIK_AUFGABEN.length}`;
+      $('.pkt', wurzel).textContent = `${p} Punkte`;
+      $('.lern-balken i', wurzel).style.width = (100 * nr / GRAFIK_AUFGABEN.length) + '%';
+      $('.grafik-aufgabe', wurzel).textContent = GRAFIK_AUFGABEN[nr].text;
+      const v = aufgaben[nr].versuche.length;
+      $('.grafik-versuch', wurzel).textContent = v ? `Noch ein Versuch (für ${PUNKTE.grafikZweiter} Punkte)!` : `Treffer beim ersten Versuch: ${PUNKTE.grafikErster} Punkte`;
+      $('.grafik-rueck', wurzel).innerHTML = '';
+      bildBauen();
+      if (svg && bild) aufgaben[nr].versuche.forEach(x => { if (x.teil && !x.ok) markieren(x.teil, 'falsch'); });
+    }
+    function tippen(e) {
+      if (rueckmeldung || nr < 0 || !svg) return;
+      const ctm = svg.getScreenCTM();
+      if (!ctm) return;
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX; pt.y = e.clientY;
+      const p = pt.matrixTransform(ctm.inverse());
+      const el = e.target.closest('[data-teil]');
+      const teil = el ? el.dataset.teil : '';
+      const aufgabe = GRAFIK_AUFGABEN[nr];
+      const ok = teil === aufgabe.ziel;
+      const x = Math.round(p.x * 10) / 10, y = Math.round(p.y * 10) / 10;
+      aufgaben[nr].versuche.push({ ok, teil });
+      zuletztGetippt = Date.now();
+      senden({ type: 'tippen', aufgabe: nr, x, y, teil });
+      const r = bild === 'europa' ? 11 : 4.5;
+      $('.tipps', svg).insertAdjacentHTML('beforeend', `<circle class="tipp ${ok ? 'ok' : 'nein'}" cx="${x}" cy="${y}" r="${r}"/>`);
+      const rueck = $('.grafik-rueck', wurzel);
+      if (ok) {
+        rueckmeldung = true;
+        markieren(teil, 'treffer');
+        const punkte = aufgaben[nr].versuche.length === 1 ? PUNKTE.grafikErster : PUNKTE.grafikZweiter;
+        rueck.innerHTML = `<div class="rueck-box gut">✓ Richtig! +${punkte} Punkte</div>`;
+        vibrieren(30);
+        weiterTimer = setTimeout(zeigen, 1300);
+        return;
+      }
+      vibrieren([80, 50, 80]);
+      const name = teilName(teil);
+      const daneben = name ? `✗ Daneben – das ist ${esc(name)}.` : '✗ Daneben.';
+      markieren(teil, 'falsch');
+      if (aufgaben[nr].versuche.length >= GRAFIK_VERSUCHE) {
+        rueckmeldung = true;
+        markieren(aufgabe.ziel, 'ziel');
+        rueck.innerHTML = `<div class="rueck-box schlecht">${daneben}<br>Hier wäre es gewesen: <b>grün</b> markiert.</div><button class="knopf" data-weiter>Weiter →</button>`;
+        $('[data-weiter]', rueck).addEventListener('click', zeigen);
+      } else {
+        rueck.innerHTML = `<div class="rueck-box schlecht">${daneben} Noch ein Versuch!</div>`;
+        $('.grafik-versuch', wurzel).textContent = `Noch ein Versuch (für ${PUNKTE.grafikZweiter} Punkte)!`;
+      }
+    }
+    zeigen();
+    return {
+      aktualisieren(a) {
+        // Der Server zählt mit; während einer Rückmeldung oder kurz nach dem Tippen gilt die eigene Anzeige
+        if (rueckmeldung || Date.now() - zuletztGetippt < 900) return;
+        const neu = a.grafik.aufgaben.map(x => ({ versuche: x.versuche.slice() }));
+        if (JSON.stringify(neu) === JSON.stringify(aufgaben)) return;
+        aufgaben = neu;
+        zeigen();
+      },
+      abbauen() { clearTimeout(weiterTimer); },
+    };
+  },
+
+  /* ---------- Demo 8: Gruppen ---------- */
+  gruppen() {
+    app.innerHTML = '<div class="gruppen"></div>';
+    const wurzel = $('.gruppen', app);
+    document.body.classList.add('gruppen-bunt');
+    let sig = '';
+    let gruppeVorher;
+    wurzel.addEventListener('click', e => {
+      const b = e.target.closest('[data-g]');
+      if (!b || b.disabled) return;
+      senden({ type: 'gruppeWaehlen', g: +b.dataset.g });
+      vibrieren(20);
+    });
+    return {
+      aktualisieren(a) {
+        const gr = a.gruppe;
+        const neu = JSON.stringify(gr);
+        if (neu === sig) return;
+        sig = neu;
+        let html = '';
+        if (gr.g !== null) {
+          const info = gruppeInfo(gr.g);
+          document.body.style.setProperty('--gruppe', info.farbe);
+          html += `<div class="gruppen-gross"><div class="tier">${info.tier}</div><div class="klein">Deine Gruppe</div><h1>${esc(info.name)}</h1>
+            <ul>${gr.mitglieder.map(n => `<li>${esc(n)}${n === a.name ? ' (du)' : ''}</li>`).join('')}</ul>
+            <p>Findet euch und setzt euch zusammen!</p></div>`;
+          if (gruppeVorher !== undefined && gruppeVorher !== gr.g) vibrieren([60, 40, 60]);
+        } else {
+          document.body.style.removeProperty('--gruppe');
+          if (!gr.selbstWahl) html += `<div class="warten"><div class="symbol">⏳</div><div class="modus">GRUPPEN-MODUS</div><p class="gross">Gleich bekommst du deine Gruppe – schau nach vorne.</p></div>`;
+        }
+        gruppeVorher = gr.g;
+        if (gr.selbstWahl && gr.anzahl) {
+          html += `<h2 class="wahl-titel">${gr.g === null ? 'Wähle deine Gruppe:' : 'Gruppe wechseln:'}</h2><div class="gruppen-wahl">${Array.from({ length: gr.anzahl }, (_, i) => {
+            const info = gruppeInfo(i);
+            const meine = gr.g === i;
+            const voll = !meine && gr.belegung[i] >= gr.kapazitaet;
+            return `<button data-g="${i}" style="--farbe:${info.farbe}" class="${meine ? 'meine' : ''}" ${meine || voll ? 'disabled' : ''}>
+              <span class="tier">${info.tier}</span><span class="name">${esc(info.name)}</span><small>${meine ? 'deine Gruppe' : voll ? 'voll' : `${gr.belegung[i]} von ${gr.kapazitaet}`}</small></button>`;
+          }).join('')}</div>`;
+        }
+        wurzel.innerHTML = html;
+      },
+      abbauen() {
+        document.body.classList.remove('gruppen-bunt');
+        document.body.style.removeProperty('--gruppe');
+      },
+    };
+  },
+
+  /* ---------- Demo 8: Gruppenpuzzle ---------- */
+  puzzle() {
+    app.innerHTML = '<div class="pz"><div class="pz-kopf"></div><div class="pz-meldung"></div><div class="pz-koerper"></div></div>';
+    const wurzel = $('.pz', app);
+    let p = null;               // letzter Puzzle-Stand vom Server
+    let versatz = 0;            // Serverzeit − eigene Zeit
+    let tab = 'aufgaben';
+    let sig = '';
+    let meldungZeit = null;
+    let phaseVorher = null;
+    let entwurf = {};           // Antworten je Abschnitt (übersteht Neuladen)
+    const mmss = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+    const textKarte = (k, von) => {
+      const e = EXPERTEN[k];
+      return `<article class="karte pz-text"><div class="pz-experte">${e.symbol} ${esc(e.titel)}</div>
+        ${von ? `<p class="leise klein">Text von ${esc(von)} – ist gerade nicht verbunden, deshalb seht ihr ihn alle.</p>` : ''}
+        ${e.text.map(t => `<p>${esc(t)}</p>`).join('')}</article>`;
+    };
+    const fallKarte = offen => `<details class="karte pz-fall" ${offen ? 'open' : ''}><summary>📋 Der Fall: Herr Brenner</summary><p>${esc(FALL)}</p></details>`;
+    function entwurfSpeichern() { sitzung('puzzle', { start: p.start, entwurf }); }
+
+    function kopf() {
+      const jetzt = Date.now() + versatz;
+      const info = gruppeInfo(ansicht.gruppe.g);
+      wurzel.style.setProperty('--farbe', info.farbe);
+      const status = m => {
+        if (!m.aktiv) return '📵';
+        if (p.phase === 'lesen') return m.gelesen ? '✓' : '📖';
+        if (p.phase === 'fertig') return '🎉';
+        return m.abgegeben ? '📨' : '✏️';
+      };
+      $('.pz-kopf', wurzel).innerHTML = `<div class="pz-gruppe"><span class="tier">${info.tier}</span><b>${esc(info.name)}</b><span class="uhr">⏱ ${mmss((p.fertigNach ?? jetzt - p.start))}</span></div>
+        <div class="pz-mitglieder">${p.mitglieder.map(m => `<span class="${m.aktiv ? '' : 'weg'}">${status(m)} ${m.ich ? 'Du' : esc(m.name)}</span>`).join('')}</div>`;
+      const gesperrt = p.phase === 'aufgaben' && p.sperreBis > jetzt;
+      $('.pz-meldung', wurzel).innerHTML = gesperrt
+        ? `<div class="rueck-box schlecht">🔒 Mindestens eine Antwort in eurer Gruppe ist noch falsch. Besprecht euch und vergleicht eure Texte! Neuer Versuch in <b>${Math.ceil((p.sperreBis - jetzt) / 1000)} s</b>.</div>`
+        : '';
+      const lesestand = $('.pz-lese-status', wurzel);
+      if (lesestand) {
+        const warten = p.mitglieder.filter(m => m.aktiv && !m.gelesen && !m.ich).map(m => esc(m.name));
+        lesestand.innerHTML = `✓ Gelesen! ${warten.length ? `Warte noch auf: ${warten.join(', ')}` : 'Gleich geht’s los …'}`;
+      }
+      const abgeben = $('[data-abgeben]', wurzel);
+      if (abgeben) abgeben.disabled = gesperrt || !vollstaendig();
+    }
+    function antworten() { return entwurf[p.abschnitt] || ABSCHNITTE[p.abschnitt].fragen.map(() => ''); }
+    function vollstaendig() { return antworten().every(x => String(x).trim() !== ''); }
+
+    function koerper() {
+      const k = $('.pz-koerper', wurzel);
+      if (p.phase === 'lesen') {
+        k.innerHTML = `<h1>Lies deinen Expertentext</h1>
+          <p class="leise">Nur du hast ${p.experten.length > 1 ? 'diese Texte' : 'diesen Text'}. Merk dir das Wichtigste – deine Gruppe braucht dein Wissen! Später kannst du jederzeit wieder reinschauen.</p>
+          ${fallKarte(true)}${p.experten.map(x => textKarte(x)).join('')}${p.freigegeben.map(f => f.experten.map(x => textKarte(x, f.name)).join('')).join('')}
+          ${p.gelesen ? '<div class="rueck-box gut pz-lese-status"></div>' : '<button class="knopf" data-gelesen>Text gelesen ✓</button>'}`;
+        return;
+      }
+      if (p.phase === 'fertig') {
+        const medaille = ['🥇', '🥈', '🥉'][p.platz - 1] || '🏁';
+        k.innerHTML = `<div class="warten"><div class="symbol">${medaille}</div><div class="modus">FALL GELÖST!</div>
+          <p class="gross">Ihr seid Platz ${p.platz} – nach ${mmss(p.fertigNach)} Minuten.</p>
+          <p>Dafür bekommt jede*r von euch <b>${puzzlePunkte(p.platz)} Punkte</b>.</p>
+          <p class="leise">Richte deine Aufmerksamkeit nach vorne.</p></div>`;
+        return;
+      }
+      const tabs = [['aufgaben', '✏️ Aufgaben'], ['text', '📄 Mein Text']].concat(p.freigegeben.map((f, i) => ['frei' + i, '📄 ' + f.name]));
+      if (!tabs.some(t => t[0] === tab)) tab = 'aufgaben';
+      let inhalt;
+      if (tab === 'text') inhalt = p.experten.map(x => textKarte(x)).join('');
+      else if (tab.startsWith('frei')) { const f = p.freigegeben[+tab.slice(4)]; inhalt = f.experten.map(x => textKarte(x, f.name)).join(''); }
+      else {
+        const ab = ABSCHNITTE[p.abschnitt];
+        const werte = p.abgabe || antworten();
+        const fest = !!p.abgabe;
+        inhalt = `<div class="pz-abschnitt">${esc(ab.titel)} <small>(${p.abschnitt + 1} von ${ABSCHNITTE.length})</small></div>${fallKarte(p.abschnitt === 0)}
+          ${ab.fragen.map((nr, k) => {
+            const f = PUZZLE_FRAGEN[nr];
+            const feld = f.art === 'zahl'
+              ? `<div class="pz-zahl"><input class="feld" inputmode="decimal" maxlength="8" data-k="${k}" value="${esc(werte[k])}" ${fest ? 'disabled' : ''} aria-label="Antwort"><span>${esc(f.einheit)}</span></div>`
+              : f.optionen.map((o, i) => `<button class="antwort${String(werte[k]) === String(i) ? ' gewaehlt' : ''}" data-k="${k}" data-o="${i}" ${fest ? 'disabled' : ''}>${esc(o)}</button>`).join('');
+            return `<div class="karte pz-frage"><p class="frage"><b>${k + 1}.</b> ${esc(f.frage)}</p>${feld}</div>`;
+          }).join('')}
+          ${fest
+            ? `<div class="rueck-box gut">📨 Abgegeben – warte auf die anderen.</div><button class="knopf zweit" data-zurueck>Abgabe ändern</button>`
+            : '<p class="leise klein">Weiter geht es erst, wenn alle abgegeben haben und bei allen alles richtig ist. Besprecht euch!</p><button class="knopf" data-abgeben>Abschnitt abgeben</button>'}`;
+      }
+      k.innerHTML = `<div class="pz-tabs">${tabs.map(t => `<button data-tab="${t[0]}" class="${t[0] === tab ? 'an' : ''}">${esc(t[1])}</button>`).join('')}</div>${inhalt}`;
+    }
+
+    wurzel.addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b || b.disabled || !p) return;
+      if ('gelesen' in b.dataset) { senden({ type: 'gelesen' }); b.disabled = true; vibrieren(20); return; }
+      if (b.dataset.tab) { tab = b.dataset.tab; sig = ''; zeichnen(); window.scrollTo(0, 0); return; }
+      if (b.dataset.o !== undefined) {
+        const w = antworten().slice();
+        w[+b.dataset.k] = +b.dataset.o;
+        entwurf[p.abschnitt] = w;
+        entwurfSpeichern();
+        b.parentElement.querySelectorAll('.antwort').forEach(x => x.classList.toggle('gewaehlt', x === b));
+        vibrieren(15);
+        kopf();
+        return;
+      }
+      if ('abgeben' in b.dataset) {
+        const w = antworten().map((x, k) => PUZZLE_FRAGEN[ABSCHNITTE[p.abschnitt].fragen[k]].art === 'zahl' ? String(x).trim() : x);
+        senden({ type: 'abgeben', abschnitt: p.abschnitt, antworten: w });
+        b.disabled = true;
+        vibrieren(25);
+        return;
+      }
+      if ('zurueck' in b.dataset) { senden({ type: 'abgabeZurueck' }); b.disabled = true; }
+    });
+    wurzel.addEventListener('input', e => {
+      if (!e.target.matches('input[data-k]') || !p) return;
+      const w = antworten().slice();
+      w[+e.target.dataset.k] = e.target.value;
+      entwurf[p.abschnitt] = w;
+      entwurfSpeichern();
+      kopf();
+    });
+
+    let ansicht = null;
+    function zeichnen() {
+      if (!p) return;
+      // Neu aufbauen nur, wenn sich der Inhalt ändert – sonst gehen Eingaben verloren
+      const neu = JSON.stringify([p.phase, p.abschnitt, tab, p.experten, p.freigegeben, p.gelesen, p.abgabe, p.platz]);
+      if (neu !== sig) { sig = neu; koerper(); }
+      kopf();
+    }
+    const uhr = setInterval(() => { if (p) kopf(); }, 500);
+    return {
+      aktualisieren(a) {
+        ansicht = a;
+        if (!a.puzzle) {
+          p = null;
+          sig = '';
+          wurzel.innerHTML = `<div class="warten"><div class="symbol">🧩</div><div class="modus">GRUPPENPUZZLE</div>
+            <p class="gross">Du bist noch in keiner Gruppe. Melde dich kurz bei der Lehrkraft.</p></div>`;
+          return;
+        }
+        if (!$('.pz-kopf', wurzel)) wurzel.innerHTML = '<div class="pz-kopf"></div><div class="pz-meldung"></div><div class="pz-koerper"></div>';
+        versatz = a.serverZeit - Date.now();
+        p = a.puzzle;
+        if (!Object.keys(entwurf).length) {
+          const gemerkt = sitzung('puzzle');
+          if (gemerkt && gemerkt.start === p.start) entwurf = gemerkt.entwurf || {};
+        }
+        const m = p.meldung;
+        if (m && meldungZeit !== null && m.zeit !== meldungZeit) {
+          if (m.art === 'falsch') { toast('✗ Noch nicht alles richtig – besprecht euch!', 'schlecht', 3000); vibrieren([120, 60, 120]); }
+          if (m.art === 'weiter') { toast(`✓ Alles richtig! Weiter mit Abschnitt ${p.abschnitt + 1}`, 'gut', 2600); vibrieren([40, 30, 40]); tab = 'aufgaben'; window.scrollTo(0, 0); }
+          if (m.art === 'fertig') vibrieren([60, 40, 60, 40, 200]);
+        }
+        meldungZeit = m ? m.zeit : 0;
+        if (phaseVorher === 'lesen' && p.phase === 'aufgaben') { toast('Alle haben gelesen – los geht’s!', 'gut', 2400); tab = 'aufgaben'; window.scrollTo(0, 0); }
+        phaseVorher = p.phase;
+        zeichnen();
+      },
+      abbauen() { clearInterval(uhr); },
+    };
+  },
+
+  gruppensieg(a) {
+    const s = warten({ symbol: '🏆', modus: 'SIEGEREHRUNG', text: 'Richte deine Aufmerksamkeit nach vorne, leg dein Smartphone erstmal zur Seite.', mitPunkten: false });
+    if (a.puzzle && a.puzzle.platz) $('.stand', app).insertAdjacentHTML('afterend', `<p class="leise" style="margin-top:20px">Eure Gruppe: <b>Platz ${a.puzzle.platz}</b> · +${puzzlePunkte(a.puzzle.platz)} Punkte</p>`);
+    return s;
+  },
+
+  /* ---------- Demo 9: KAROLINE-RUN! ---------- */
   spiel() {
     app.innerHTML = '';
     const rahmen = document.createElement('iframe');

@@ -11,6 +11,7 @@
  */
 import { DurableObject } from 'cloudflare:workers';
 import * as L from './logik.js';
+import { OFFLINE_FREIGABE_MS } from '../public/js/gemeinsam.js';
 
 const OBJEKT_NAME = 'kbs-ki-workshop';
 const POLL_ONLINE_MS = 8000;      // so lange gilt ein Handy im Abfrage-Modus nach der letzten Abfrage als verbunden
@@ -56,15 +57,32 @@ export class Workshop extends DurableObject {
     this.pinFehler = 0;
     this.pinSperreBis = 0;
     this.namensSperre = new Map();  // Name → { n, bis }
+    this.offlineSeit = new Map();   // id → seit wann das Handy getrennt ist (Gruppenpuzzle)
     this.sendeTimer = null;
     ctx.blockConcurrencyWhile(async () => {
-      this.z = (await ctx.storage.get('zustand')) || L.neuerZustand(1);
+      this.z = L.zustandErgaenzen((await ctx.storage.get('zustand')) || L.neuerZustand(1));
       this.pinHash = (await ctx.storage.get('pin')) || null;
     });
   }
 
   speichern() {
     this.ctx.storage.put('zustand', this.z);
+  }
+
+  kontext() {
+    return L.kontext({ jetzt: Date.now(), laufend: this.laufend, online: this.onlineSet(), offlineSeit: this.offlineSeit });
+  }
+
+  // Handy (wieder) da: nicht mehr als getrennt führen; wer noch keine Gruppe hat, bekommt eine
+  verbunden(id) {
+    this.offlineSeit.delete(id);
+    if (L.nachzueglerEinteilen(this.z, id, this.kontext())) this.speichern();
+  }
+
+  // Länger getrennte Gruppenmitglieder zählen im Puzzle nicht mehr mit – Gruppen neu prüfen
+  offlinePruefen() {
+    if (L.puzzleAktualisieren(this.z, this.kontext())) this.speichern();
+    this.planeSenden();
   }
 
   /* ---------- Verbindungen ---------- */
@@ -96,8 +114,9 @@ export class Workshop extends DurableObject {
         const tn = L.tnZuToken(this.z, url.searchParams.get('token'));
         if (tn) {
           anhangSetzen(server, { rolle: 'tn', id: tn.id });
+          this.verbunden(tn.id);
           senden(server, { type: 'angemeldet', token: tn.token, name: tn.name });
-          senden(server, { type: 'ansicht', a: L.tnAnsicht(this.z, tn.id) });
+          senden(server, { type: 'ansicht', a: L.tnAnsicht(this.z, tn.id, this.kontext()) });
           this.planeSenden();
         } else {
           anhangSetzen(server, { rolle: 'gast' });
@@ -135,17 +154,17 @@ export class Workshop extends DurableObject {
         }
         continue;
       }
-      if (L.tnAktion(this.z, id, m, Date.now(), this.laufend)) geaendert = true;
+      if (L.tnAktion(this.z, id, m, this.kontext())) geaendert = true;
     }
     if (id && !this.z.tn[id]) id = null;
     if (id) {
       const warOnline = this.onlineSet().has(id);
       this.letzterPoll.set(id, Date.now());
-      if (!warOnline) this.planeSenden();
+      if (!warOnline) { this.verbunden(id); this.planeSenden(); }
     }
     if (geaendert) { this.speichern(); this.planeSenden(); }
     if (!id && body.token) antworten.push({ type: 'abgemeldet' });
-    return { msgs: antworten, ansicht: id ? L.tnAnsicht(this.z, id) : null };
+    return { msgs: antworten, ansicht: id ? L.tnAnsicht(this.z, id, this.kontext()) : null };
   }
 
   async webSocketMessage(ws, daten) {
@@ -161,7 +180,7 @@ export class Workshop extends DurableObject {
     if (a.rolle === 'gast') {
       if (m.type !== 'anmelden') return;
       const r = await this.anmelden(m);
-      if (r.id) anhangSetzen(ws, { rolle: 'tn', id: r.id });
+      if (r.id) { anhangSetzen(ws, { rolle: 'tn', id: r.id }); this.verbunden(r.id); }
       senden(ws, r.antwort);
       if (r.id) { this.speichern(); this.planeSenden(); }
       return;
@@ -172,7 +191,7 @@ export class Workshop extends DurableObject {
         senden(ws, { type: 'abgemeldet' });
         return;
       }
-      if (L.tnAktion(this.z, a.id, m, Date.now(), this.laufend)) { this.speichern(); this.planeSenden(); }
+      if (L.tnAktion(this.z, a.id, m, this.kontext())) { this.speichern(); this.planeSenden(); }
     }
   }
 
@@ -188,6 +207,10 @@ export class Workshop extends DurableObject {
   geschlossen(ws) {
     const a = anhang(ws);
     anhangSetzen(ws, { rolle: 'zu' });
+    if (a.rolle === 'tn' && !this.onlineSet().has(a.id)) {
+      this.offlineSeit.set(a.id, Date.now());
+      setTimeout(() => this.offlinePruefen(), OFFLINE_FREIGABE_MS + 500);
+    }
     if (a.rolle === 'tn' || a.rolle === 'zuschauer') this.planeSenden();
   }
 
@@ -256,7 +279,7 @@ export class Workshop extends DurableObject {
       return;
     }
     if (m.type === 'zuruecksetzen') { this.zuruecksetzen(); return; }
-    const r = L.lehrerAktion(this.z, m, Date.now(), this.laufend);
+    const r = L.lehrerAktion(this.z, m, this.kontext());
     for (const id of r.abmelden) this.abmelden(id);
     if (m.type === 'zuschauerErstellen' || m.type === 'zuschauerLoeschen') this.zuschauerPruefen();
     if (r.geaendert) { this.speichern(); this.planeSenden(); }
@@ -278,6 +301,7 @@ export class Workshop extends DurableObject {
     this.z = L.neuerZustand((this.z.durchgang || 0) + 1);
     this.laufend.clear();
     this.namensSperre.clear();
+    this.offlineSeit.clear();
     this.abmelden(null);
     this.zuschauerPruefen();
     this.speichern();
@@ -299,7 +323,7 @@ export class Workshop extends DurableObject {
 
   // Beamer-Ansicht für die Lehrkraft (mit Zuschauer-Code) und für Zuschauer (ohne)
   beamerNachrichten() {
-    const v = L.beamerAnsicht(this.z, this.onlineSet());
+    const v = L.beamerAnsicht(this.z, this.kontext());
     const zuschauer = this.ctx.getWebSockets('zuschauer').filter(ws => anhang(ws).rolle === 'zuschauer').length;
     return {
       lehrer: JSON.stringify({ type: 'zustand', z: Object.assign({}, v, { zuschauer: { code: this.z.zuschauerCode || null, verbunden: zuschauer } }) }),
@@ -318,7 +342,13 @@ export class Workshop extends DurableObject {
     const jetzt = Date.now();
     for (const [id, t] of this.letzterPoll) {
       if (jetzt - t < POLL_ONLINE_MS) s.add(id);
-      else this.letzterPoll.delete(id);
+      else {
+        this.letzterPoll.delete(id);
+        if (!s.has(id) && !this.offlineSeit.has(id)) {
+          this.offlineSeit.set(id, t + POLL_ONLINE_MS);
+          setTimeout(() => this.offlinePruefen(), OFFLINE_FREIGABE_MS + 500);
+        }
+      }
     }
     return s;
   }
@@ -334,13 +364,14 @@ export class Workshop extends DurableObject {
 
   allesSenden() {
     let beamer = null;
+    let kx = null;
     for (const ws of this.ctx.getWebSockets()) {
       const a = anhang(ws);
       if ((a.rolle === 'lehrer' && a.ok) || a.rolle === 'zuschauer') {
         if (!beamer) beamer = this.beamerNachrichten();
         senden(ws, a.rolle === 'lehrer' ? beamer.lehrer : beamer.zuschauer);
       } else if (a.rolle === 'tn') {
-        const v = L.tnAnsicht(this.z, a.id);
+        const v = L.tnAnsicht(this.z, a.id, kx || (kx = this.kontext()));
         if (v) senden(ws, { type: 'ansicht', a: v });
       }
     }

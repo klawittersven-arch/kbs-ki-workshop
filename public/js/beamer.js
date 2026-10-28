@@ -4,7 +4,10 @@
  * Schritt, wird der Bildschirm neu aufgebaut, sonst nur aktualisiert (damit Animationen
  * und das Video weiterlaufen).
  */
-import { ABLAUF, UMFRAGE_FRAGE, UMFRAGE_OPTIONEN, PFLEGEPROZESS } from './gemeinsam.js';
+import { ABLAUF, UMFRAGE_FRAGE, UMFRAGE_OPTIONEN, PFLEGEPROZESS, GRAFIK_AUFGABEN, GRAFIK_BILDER, GRUPPENGROESSE, gruppeInfo } from './gemeinsam.js';
+import { SPRACHEN, FLAGGEN, NIVEAU_NAMEN_DE } from './inhalte-sprachen.js';
+import { ABSCHNITTE } from './inhalte-puzzle.js';
+import { KOERPER, SKELETT, europaSvg } from './grafik-koerper.js';
 import { beamerVerbindung, zuschauerVerbindung } from './verbindung.js';
 import { Wortwolke } from './wortwolke.js';
 import { xlsxErstellen } from './export.js';
@@ -44,7 +47,19 @@ const DEMOS = {
     prompt: 'Erstelle mir einen kurzen Merksong, der den SuS hilft, sich die 6 Schritte des Pflegeprozesses (nach Fiechter und Meier) einzuprägen, und eine passende Aufgabe dazu.', bild: 'song',
   },
   demo6: {
-    nr: 6, titel: 'Minispielen', unter: '',
+    nr: 6, titel: 'unterschiedlichen Sprachen', unter: '',
+    prompt: 'Erstelle mir eine Aufgabe, bei der die SuS am Smartphone zwischen Deutsch, Türkisch, Russisch, Ukrainisch, Französisch und Spanisch sowie verschiedenen Sprachniveaus wechseln können.', bild: 'sprachen',
+  },
+  demo7: {
+    nr: 7, titel: 'Grafiken', unter: '',
+    prompt: 'Erstelle mir ein Lernspiel, bei dem die SuS auf einer Landkarte Länder und auf Körperdarstellungen Organe und Knochen antippen.', bild: 'grafik',
+  },
+  demo8: {
+    nr: 8, titel: 'Gruppenarbeiten', unter: '',
+    prompt: 'Erstelle mir eine Anwendung, die meine SuS in Gruppen einteilt, und ein Gruppenpuzzle, das nur gemeinsam lösbar ist.', bild: 'gruppen',
+  },
+  demo9: {
+    nr: 9, titel: 'Minispielen', unter: '',
     prompt: 'Erstelle mir einen Endless Runner mit Highscore-Funktion.', bild: 'spiel',
   },
 };
@@ -55,14 +70,16 @@ const PROMPT_AUSZUG = [
   '[LOGIN-MODUS – Auf den Smartphones: Nach dem Scannen des QR-Codes müssen die TN ihren Vornamen sowie den Anfangsbuchstaben ihres Nachnamens eingeben und ein Passwort vergeben …]',
   '[DEMO 2: WORTWOLKE – Auf dem Beamer: Oben steht: „Was sind die ersten Begriffe, die euch spontan zum Thema KI einfallen?“ Unter dieser Überschrift entsteht die dynamische Wortwolke. Wörter, die mehrfach genannt werden, rücken in die Mitte und werden größer …]',
   '[PUNKTESTAND-MODUS – Wenn ein TN auf „Ich habe eine Frage“ drückt, wird der Name des TN rot markiert. Wenn ein TN auf „Ich habe eine Antwort“ drückt, wird der Name grün markiert …]',
-  '[DEMO 6: MINISPIEL – Auf den Smartphones startet der Endless Runner … umbenannt in „KAROLINE-RUN!“ …]',
+  '[DEMO 9: MINISPIEL – Auf den Smartphones startet der Endless Runner … umbenannt in „KAROLINE-RUN!“ …]',
 ];
 
 const SCHRITT_NAMEN = ABLAUF.map((s, i) => {
   const n = {
     login: 'Anmeldung', umfrage: 'Demo 1: Balkendiagramm', wortwolke: 'Demo 2: Wortwolke',
     punkte: 'Punktestand', lernkarten: 'Demo 4: Lernkarten', video: 'Demo 5: KI-Song',
-    sortieren: 'Sortieraufgabe', spiel: 'Demo 6: Minispiel', siegerehrung: 'Siegerehrung',
+    sortieren: 'Sortieraufgabe', sprachen: 'Demo 6: Sprachen', grafik: 'Demo 7: Grafiken',
+    gruppen: 'Demo 8: Gruppen einteilen', puzzle: 'Demo 8: Gruppenpuzzle', gruppensieg: 'Demo 8: Siegerehrung der Gruppen',
+    spiel: 'Demo 9: Minispiel', siegerehrung: 'Siegerehrung',
   }[s.modus];
   if (n) return (i + 1) + '. ' + n + (s.fragerunde ? ' (Fragerunde + Export)' : '');
   const f = { wort: 'Im Anfang war das Wort', prompt: 'Und der Prompt?', fragerunde: 'Fragerunde', jetzt: 'Jetzt seid ihr dran!' }[s.folie];
@@ -365,6 +382,35 @@ const BILDER = {
     <path d="M352 100 q42 50 0 100" stroke="#7FA9AE" stroke-width="7" fill="none" stroke-linecap="round" opacity=".6"/>
     <text x="80" y="110" font-size="40" fill="#C2416B">♪</text><text x="95" y="330" font-size="34" fill="#7B5EA7">♫</text></svg>`,
   spiel: `<canvas class="pixel-szene" width="440" height="380"></canvas>`,
+  sprachen: (() => {
+    const gruesse = ['Hallo', 'Merhaba', 'Привет', 'Привіт', 'Bonjour', 'Hola'];
+    const plaetze = [[40, 54], [170, 54], [300, 54], [40, 184], [170, 184], [300, 184]];
+    return `<svg viewBox="0 0 440 380"><rect x="14" y="20" width="412" height="340" rx="30" fill="#fff" stroke="#DCE7E9" stroke-width="3"/>
+      ${SPRACHEN.map((sp, i) => {
+        const [x, y] = plaetze[i];
+        return `<g class="wachs" style="animation-delay:${(0.15 * i).toFixed(2)}s">${FLAGGEN[sp.code].replace('<svg ', `<svg x="${x + 10}" y="${y}" width="80" height="48" `)}
+          <text x="${x + 50}" y="${y + 82}" text-anchor="middle" font-size="22" font-weight="700" fill="#25434B">${gruesse[i]}</text></g>`;
+      }).join('')}
+      <g font-size="17" font-weight="700"><rect x="52" y="300" width="96" height="34" rx="17" fill="#EAF2F4"/><text x="100" y="323" text-anchor="middle" fill="#3F6C72">Leicht</text>
+      <rect x="160" y="300" width="120" height="34" rx="17" fill="#3F6C72"/><text x="220" y="323" text-anchor="middle" fill="#fff">Standard</text>
+      <rect x="292" y="300" width="96" height="34" rx="17" fill="#EAF2F4"/><text x="340" y="323" text-anchor="middle" fill="#3F6C72">Fach</text></g></svg>`;
+  })(),
+  grafik: `<svg viewBox="0 0 440 380"><rect x="14" y="20" width="412" height="340" rx="30" fill="#fff" stroke="#DCE7E9" stroke-width="3"/>
+    <svg x="30" y="32" width="210" height="316" viewBox="0 0 240 326">${KOERPER.svg}</svg>
+    <svg x="235" y="32" width="185" height="316" viewBox="0 0 240 426">${SKELETT.svg}</svg>
+    <g class="huepf"><circle cx="122" cy="207" r="9" fill="#2E9E5B" stroke="#fff" stroke-width="3"/><circle cx="152" cy="232" r="9" fill="#D64545" stroke="#fff" stroke-width="3"/>
+    <circle cx="303" cy="300" r="9" fill="#2E9E5B" stroke="#fff" stroke-width="3"/><text x="160" y="196" font-size="34">👆</text></g></svg>`,
+  gruppen: (() => {
+    const g = [0, 1, 2].map(i => gruppeInfo(i));
+    const pos = [[220, 95], [105, 285], [335, 285]];
+    return `<svg viewBox="0 0 440 380">
+      <path d="M 220 95 L 105 285 L 335 285 Z" fill="none" stroke="#CBD8DB" stroke-width="6" stroke-dasharray="4 10" stroke-linecap="round"/>
+      ${g.map((x, i) => `<g class="wachs" style="animation-delay:${(0.2 * i).toFixed(1)}s"><circle cx="${pos[i][0]}" cy="${pos[i][1]}" r="62" fill="${x.farbe}"/>
+        <text x="${pos[i][0]}" y="${pos[i][1] + 18}" text-anchor="middle" font-size="54">${x.tier}</text>
+        <circle cx="${pos[i][0] + 46}" cy="${pos[i][1] - 44}" r="20" fill="#fff" stroke="${x.farbe}" stroke-width="4"/>
+        <text x="${pos[i][0] + 46}" y="${pos[i][1] - 36}" text-anchor="middle" font-size="22" font-weight="800" fill="${x.farbe}">${'ABC'[i]}</text></g>`).join('')}
+      <text class="huepf" x="220" y="236" text-anchor="middle" font-size="64">🧩</text></svg>`;
+  })(),
 };
 
 // Kleine Szene aus KAROLINE-RUN! (Figur läuft auf der Stelle)
@@ -414,6 +460,7 @@ const FOLIEN_BAUER = {
     inhalt.innerHTML = `<div class="folie-wort"><blockquote>${zeichen}</blockquote><div class="strich"></div><cite>Johannes 1,1</cite></div>`;
   },
   demo1: demoFolie, demo2: demoFolie, demo3: demoFolie, demo4: demoFolie, demo5: demoFolie, demo6: demoFolie,
+  demo7: demoFolie, demo8: demoFolie, demo9: demoFolie,
   prompt() {
     const inhalt = gerüst();
     inhalt.innerHTML = `<div class="folie-prompt">
@@ -560,6 +607,195 @@ const BILDSCHIRME = {
 
   punkte: punkteBildschirm,
 
+  /* ---------- Demo 6: Sprachen ---------- */
+  sprachen() {
+    const inhalt = gerüst({ miniQr: true, links: '<div class="mini-text" data-info></div>' });
+    const zeile = (attr, links, rechts = '') => `<div class="sprach-zeile" ${attr}>${links}<span class="sbalken"><i></i></span><b>0</b>${rechts}</div>`;
+    inhalt.innerHTML = `<div class="frage-kopf"><h1>Händehygiene – in deiner Sprache, auf deinem Niveau</h1></div>
+      <div class="sprach-feld">
+        <div class="sprach-karte"><h2>Gewählte Sprache</h2>
+          ${SPRACHEN.map(sp => zeile(`data-sprache="${sp.code}"`, `<span class="flagge">${FLAGGEN[sp.code]}</span><span class="sname">${esc(sp.name)}<small>${esc(sp.eigen)}</small></span>`)).join('')}</div>
+        <div class="sprach-karte"><h2>Gewähltes Niveau</h2>
+          ${NIVEAU_NAMEN_DE.map((n, i) => zeile(`data-niveau="${i}"`, `<span class="sname">${esc(n)}</span>`)).join('')}
+          <div class="fertig-zeile"><span class="gross">0</span> <small>von 0 fertig</small></div><div class="sprach-fortschritt"><i></i></div></div>
+      </div>`;
+    return {
+      aktualisieren(z) {
+        const d = z.sprachen || { je: {}, niveaus: [0, 0, 0], begonnen: 0, fertig: 0 };
+        const maxS = Math.max(1, ...Object.values(d.je));
+        const maxN = Math.max(1, ...d.niveaus);
+        inhalt.querySelectorAll('[data-sprache]').forEach(e => {
+          const n = d.je[e.dataset.sprache] || 0;
+          $('b', e).textContent = n;
+          $('.sbalken i', e).style.width = (100 * n / maxS) + '%';
+        });
+        inhalt.querySelectorAll('[data-niveau]').forEach(e => {
+          const n = d.niveaus[+e.dataset.niveau] || 0;
+          $('b', e).textContent = n;
+          $('.sbalken i', e).style.width = (100 * n / maxN) + '%';
+        });
+        const gesamt = Math.max(d.begonnen, z.tn.filter(t => t.online).length);
+        $('.fertig-zeile .gross', inhalt).textContent = d.fertig;
+        $('.fertig-zeile small', inhalt).textContent = `von ${gesamt} fertig`;
+        $('.sprach-fortschritt i', inhalt).style.width = (gesamt ? 100 * d.fertig / gesamt : 0) + '%';
+        $('[data-info]', buehne).innerHTML = `<b>${d.begonnen}</b> ${d.begonnen === 1 ? 'Person hat' : 'Personen haben'} die Aufgabe geöffnet`;
+      },
+    };
+  },
+
+  /* ---------- Demo 7: Grafiken ---------- */
+  grafik() {
+    const inhalt = gerüst({ miniQr: true, links: '<div class="mini-text" data-info></div>' });
+    inhalt.innerHTML = `<div class="frage-kopf"><h1>Wo haben alle hingetippt?</h1>
+      <p>live: <b class="ok-text">● Treffer</b> · <b class="nein-text">● daneben</b></p></div>
+      <div class="grafik-feld">${GRAFIK_BILDER.map(b => `<div class="grafik-karte" data-bild="${b.bild}"><h2>${esc(b.titel)}</h2>
+        <div class="grafik-svg"></div><ul class="grafik-aufgaben">${GRAFIK_AUFGABEN.map((a, i) => a.bild === b.bild
+          ? `<li data-aufgabe="${i}"><span>${esc(a.kurz)}</span><span class="ok-text">✓ 0</span><span class="nein-text">✗ 0</span></li>` : '').join('')}</ul></div>`).join('')}</div>`;
+    const radius = { europa: 12, koerper: 4.5, skelett: 4.5 };
+    const svgs = {};
+    const gesehen = new Set();
+    let letzte = null;
+    function bauen(bild, viewBox, inhaltSvg) {
+      const karte = $(`[data-bild="${bild}"]`, inhalt);
+      $('.grafik-svg', karte).innerHTML = `<svg viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet" class="bild-${bild}">${inhaltSvg}<g class="tipps"></g></svg>`;
+      svgs[bild] = $('svg', karte);
+    }
+    bauen('koerper', KOERPER.viewBox, KOERPER.svg);
+    bauen('skelett', SKELETT.viewBox, SKELETT.svg);
+    import('./grafik-europa.js').then(({ EUROPA }) => {
+      bauen('europa', EUROPA.viewBox, europaSvg(EUROPA));
+      if (letzte) zeichnen(letzte);
+    });
+    function zeichnen(z) {
+      letzte = z;
+      const d = z.grafik;
+      if (!d) return;
+      for (const b of GRAFIK_BILDER) {
+        const svg = svgs[b.bild];
+        if (!svg) continue;
+        $('.tipps', svg).innerHTML = d.punkte[b.bild].map(p => {
+          const k = `${b.bild}:${p.x}:${p.y}:${p.ok}`;
+          const neu = !gesehen.has(k);
+          gesehen.add(k);
+          return `<circle class="tipp ${p.ok ? 'ok' : 'nein'}${neu ? ' neu' : ''}" cx="${p.x}" cy="${p.y}" r="${radius[b.bild]}"/>`;
+        }).join('');
+      }
+      inhalt.querySelectorAll('[data-aufgabe]').forEach(li => {
+        const a = d.aufgaben[+li.dataset.aufgabe];
+        li.children[1].textContent = '✓ ' + a.treffer;
+        li.children[2].textContent = '✗ ' + a.daneben;
+      });
+      $('[data-info]', buehne).innerHTML = `<b>${d.fertig}</b> von ${Math.max(d.begonnen, z.tn.filter(t => t.online).length)} fertig`;
+    }
+    return { aktualisieren: zeichnen };
+  },
+
+  /* ---------- Demo 8: Gruppen einteilen ---------- */
+  gruppen() {
+    const inhalt = gerüst({ links: `<button class="knopf2" data-gruppen-zufall>🎲 Zufällig einteilen</button>
+      <button class="knopf2" data-gruppen-wahl>✋ Selbst wählen lassen</button>
+      <button class="knopf2" data-gruppen-rest hidden>🎲 Rest zufällig verteilen</button>` });
+    inhalt.innerHTML = `<div class="gruppen-kopf"><h1>Gruppen einteilen</h1><p class="gruppen-info"></p></div><div class="gruppen-raster"></div>`;
+    const raster = $('.gruppen-raster', inhalt);
+    $('[data-gruppen-zufall]', buehne).addEventListener('click', () => senden({ type: 'gruppenZufall' }));
+    $('[data-gruppen-wahl]', buehne).addEventListener('click', () => senden({ type: 'gruppenWahl', an: !(z.gruppen && z.gruppen.selbstWahl) }));
+    $('[data-gruppen-rest]', buehne).addEventListener('click', () => senden({ type: 'gruppenZufall', nurRest: true }));
+    raster.addEventListener('click', e => {
+      const b = e.target.closest('[data-id]');
+      if (b && !ZUSCHAUER) senden({ type: 'gruppeWechseln', id: b.dataset.id });
+    });
+    const name = m => `<button class="gk-name${m.online ? '' : ' weg'}" data-id="${m.id}" title="Klicken: in die nächste Gruppe">${esc(m.name)}</button>`;
+    return {
+      aktualisieren(z) {
+        const d = z.gruppen;
+        if (!d) return;
+        $('.gruppen-info', inhalt).textContent = d.anzahl
+          ? `${d.anzahl} ${d.anzahl === 1 ? 'Gruppe' : 'Gruppen'} à ${GRUPPENGROESSE}${d.kapazitaet > GRUPPENGROESSE ? ` (manche ${d.kapazitaet})` : ''}${ZUSCHAUER ? '' : ' · Namen anklicken = in die nächste Gruppe'}${d.selbstWahl ? ' · Auf den Handys wählt jede*r selbst.' : ''}`
+          : 'Noch keine Gruppen: „Zufällig einteilen“ oder „Selbst wählen lassen“.';
+        const wahl = $('[data-gruppen-wahl]', buehne);
+        wahl.textContent = d.selbstWahl ? '✋ Selbst wählen: AN' : '✋ Selbst wählen lassen';
+        wahl.classList.toggle('akzent', d.selbstWahl);
+        $('[data-gruppen-rest]', buehne).hidden = !(d.anzahl && d.ohne.some(m => m.online));
+        const karten = d.liste.map(gr => {
+          const info = gruppeInfo(gr.g);
+          return `<div class="gruppen-karte" style="--farbe:${info.farbe}"><div class="gk-kopf"><span class="tier">${info.tier}</span><span class="gk-titel">${esc(info.name)}</span><small>${gr.mitglieder.length} 👤</small></div>
+            <div class="gk-namen">${gr.mitglieder.map(name).join('') || '<span class="gk-leer">noch leer</span>'}</div></div>`;
+        });
+        if (d.ohne.length || !d.anzahl) {
+          karten.push(`<div class="gruppen-karte ohne"><div class="gk-kopf"><span class="tier">⏳</span><span class="gk-titel">Noch ohne Gruppe</span><small>${d.ohne.length}</small></div>
+            <div class="gk-namen">${d.ohne.map(name).join('')}</div></div>`);
+        }
+        raster.innerHTML = karten.join('');
+        raster.style.gridTemplateColumns = `repeat(${Math.min(5, Math.max(2, karten.length <= 4 ? karten.length : Math.ceil(karten.length / 2)))}, 1fr)`;
+      },
+    };
+  },
+
+  /* ---------- Demo 8: Gruppenpuzzle (Rennen) ---------- */
+  puzzle() {
+    const inhalt = gerüst({ miniQr: true, links: '<div class="mini-text">Fall: Herr Brenner, Unterzuckerung bei der Weinlese<br>Jede Gruppe: Expert*innen A · B · C</div>' });
+    inhalt.innerHTML = `<div class="puzzle-kopf"><h1>Gruppenpuzzle: Wer knackt den Fall zuerst?</h1><div class="uhr-klein">0:00</div></div><div class="puzzle-liste"></div>`;
+    const liste = $('.puzzle-liste', inhalt);
+    const medaille = ['🥇', '🥈', '🥉'];
+    const mmss = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+    let letzte = null;
+    function zeichnen() {
+      const z = letzte;
+      if (!z || !z.puzzle) return;
+      const jetzt = Date.now() + zeitVersatz;
+      $('.uhr-klein', inhalt).textContent = '⏱ ' + mmss(jetzt - z.puzzle.start);
+      liste.style.fontSize = (z.puzzle.gruppen.length > 9 ? 17 : 20) + 'px';
+      liste.innerHTML = z.puzzle.gruppen.map(gr => {
+        const info = gruppeInfo(gr.g);
+        const stufen = ['Lesen'].concat(ABSCHNITTE.map((_, k) => 'Abschnitt ' + (k + 1))).map((t, k) => {
+          const erledigt = gr.phase === 'fertig' || (k === 0 ? gr.phase !== 'lesen' : gr.abschnitt > k - 1);
+          const aktiv = !erledigt && (k === 0 ? gr.phase === 'lesen' : gr.phase === 'aufgaben' && gr.abschnitt === k - 1);
+          return `<i class="${erledigt ? 'erledigt' : aktiv ? 'aktiv' : ''}">${k === 0 ? '📖' : k}</i>`;
+        }).join('');
+        let status;
+        if (gr.platz) status = `${medaille[gr.platz - 1] || '🏁'} Platz ${gr.platz} · ${mmss(gr.fertigNach)}`;
+        else if (gr.sperreBis > jetzt) status = `🔒 falsch – ${Math.ceil((gr.sperreBis - jetzt) / 1000)} s gesperrt`;
+        else if (gr.phase === 'lesen') status = 'liest …';
+        else status = `Abschnitt ${gr.abschnitt + 1} von ${z.puzzle.abschnitte}`;
+        const m = gr.mitglieder.map(x => {
+          const symbol = gr.phase === 'lesen' ? (x.gelesen ? '✓' : '📖') : gr.phase === 'fertig' ? '🎉' : (x.abgegeben ? '📨' : '✏️');
+          return `<span class="pz-m${x.aktiv ? '' : ' weg'}">${symbol} ${esc(x.name)}<small>${x.experten.join('')}</small></span>`;
+        }).join('');
+        return `<div class="pz-zeile${gr.platz ? ' fertig' : ''}${gr.sperreBis > jetzt ? ' gesperrt' : ''}" style="--farbe:${info.farbe}">
+          <div class="pz-name"><span class="tier">${info.tier}</span>${esc(info.name)}</div><div class="pz-mitglieder">${m}</div>
+          <div class="pz-schritte">${stufen}</div><div class="pz-status">${status}</div></div>`;
+      }).join('') || '<div class="punkte-leer">Noch keine Gruppen.</div>';
+    }
+    const uhr = setInterval(zeichnen, 1000);
+    return { aktualisieren(z) { letzte = z; zeichnen(); }, abbauen() { clearInterval(uhr); } };
+  },
+
+  /* ---------- Demo 8: Siegerehrung der Gruppen ---------- */
+  gruppensieg() {
+    const inhalt = gerüst({ dunkel: true });
+    inhalt.innerHTML = `<div class="sieger-kopf"><h1>GRUPPENPUZZLE – SIEGEREHRUNG</h1></div><div class="podest"></div><div class="konfetti"></div>`;
+    konfettiStarten($('.konfetti', inhalt));
+    const podest = $('.podest', inhalt);
+    const mmss = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+    let vorher = null;
+    return {
+      aktualisieren(z) {
+        const top = (z.puzzleRangliste || []).slice(0, 3);
+        const sig = JSON.stringify(top);
+        if (sig === vorher) return;
+        vorher = sig;
+        const stufe = platz => {
+          const e = top[platz - 1];
+          const info = e ? gruppeInfo(e.g) : null;
+          return `<div class="stufe p${platz}">${platz === 1 ? POKAL : ''}<div class="wer">${e
+            ? `<span class="gruppen-tier">${info.tier}</span><b>${esc(info.name)}</b><span>${mmss(e.fertigNach)} min</span><em>${e.mitglieder.map(esc).join(' · ')}</em>`
+            : '<b>–</b>'}</div><div class="block">${platz}</div></div>`;
+        };
+        podest.innerHTML = stufe(2) + stufe(1) + stufe(3);
+      },
+    };
+  },
+
   /* ---------- Demo 4: Lernkarten ---------- */
   lernkarten() {
     const inhalt = gerüst({ miniQr: true });
@@ -642,7 +878,7 @@ const BILDSCHIRME = {
     };
   },
 
-  /* ---------- Demo 6: Minispiel ---------- */
+  /* ---------- Demo 9: Minispiel ---------- */
   spiel() {
     const inhalt = gerüst({ miniQr: true, links: '<div class="mini-text" data-info></div>' });
     inhalt.innerHTML = `<div class="spiel-kopf"><canvas width="16" height="24"></canvas><h1>MINISPIEL: KAROLINE-RUN! – HIGHSCORE</h1></div><div class="bestenliste"></div>`;
@@ -680,21 +916,8 @@ const BILDSCHIRME = {
     const inhalt = gerüst({ dunkel: true });
     inhalt.innerHTML = `<div class="sieger-kopf"><h1>KAROLINE-RUN! – SIEGEREHRUNG</h1></div><div class="podest"></div><div class="konfetti"></div>`;
     const podest = $('.podest', inhalt);
-    const konfetti = $('.konfetti', inhalt);
-    const farben = ['#E9B949', '#E8833A', '#C2416B', '#7FA9AE', '#2E9E5B', '#fff', '#7B5EA7'];
-    for (let i = 0; i < 90; i++) {
-      const k = document.createElement('i');
-      k.style.left = Math.random() * 100 + '%';
-      k.style.background = farben[i % farben.length];
-      k.style.animationDuration = (3 + Math.random() * 4).toFixed(2) + 's';
-      k.style.animationDelay = (1.2 + Math.random() * 3).toFixed(2) + 's';
-      k.style.transform = `rotate(${Math.random() * 360}deg)`;
-      konfetti.appendChild(k);
-    }
-    const pokal = `<svg class="pokal" viewBox="0 0 100 100"><path d="M28 12h44v18c0 16-10 28-22 28S28 46 28 30z" fill="#F3CF6B" stroke="#B8860B" stroke-width="3"/>
-      <path d="M28 18H14c0 14 8 22 18 22M72 18h14c0 14-8 22-18 22" fill="none" stroke="#B8860B" stroke-width="5"/>
-      <rect x="44" y="57" width="12" height="16" fill="#D9A62E"/><rect x="30" y="73" width="40" height="12" rx="3" fill="#B8860B"/>
-      <path d="M50 22l3.5 7 7.5 1-5.5 5 1.5 7.5L50 39l-7 3.5 1.5-7.5-5.5-5 7.5-1z" fill="#fff" opacity=".9"/></svg>`;
+    konfettiStarten($('.konfetti', inhalt));
+    const pokal = POKAL;
     let vorher = null;
     return {
       aktualisieren(z) {
@@ -711,6 +934,24 @@ const BILDSCHIRME = {
     };
   },
 };
+
+function konfettiStarten(konfetti) {
+  const farben = ['#E9B949', '#E8833A', '#C2416B', '#7FA9AE', '#2E9E5B', '#fff', '#7B5EA7'];
+  for (let i = 0; i < 90; i++) {
+    const k = document.createElement('i');
+    k.style.left = Math.random() * 100 + '%';
+    k.style.background = farben[i % farben.length];
+    k.style.animationDuration = (3 + Math.random() * 4).toFixed(2) + 's';
+    k.style.animationDelay = (1.2 + Math.random() * 3).toFixed(2) + 's';
+    k.style.transform = `rotate(${Math.random() * 360}deg)`;
+    konfetti.appendChild(k);
+  }
+}
+
+const POKAL = `<svg class="pokal" viewBox="0 0 100 100"><path d="M28 12h44v18c0 16-10 28-22 28S28 46 28 30z" fill="#F3CF6B" stroke="#B8860B" stroke-width="3"/>
+  <path d="M28 18H14c0 14 8 22 18 22M72 18h14c0 14-8 22-18 22" fill="none" stroke="#B8860B" stroke-width="5"/>
+  <rect x="44" y="57" width="12" height="16" fill="#D9A62E"/><rect x="30" y="73" width="40" height="12" rx="3" fill="#B8860B"/>
+  <path d="M50 22l3.5 7 7.5 1-5.5 5 1.5 7.5L50 39l-7 3.5 1.5-7.5-5.5-5 7.5-1z" fill="#fff" opacity=".9"/></svg>`;
 
 /* =====================================================================
    Punktestand (Demo 3 und später)
@@ -936,14 +1177,15 @@ function punkteBildschirm(s) {
 function exportieren() {
   if (!z) return;
   const sortiert = rangliste(z.tn);
-  const zeilen = [['Platz', 'Name', 'Punkte gesamt', 'davon Abstimmung', 'davon Wortwolke', 'davon Sortieraufgabe', 'davon mündlich', 'KAROLINE-RUN! Highscore']];
+  const zeilen = [['Platz', 'Name', 'Punkte gesamt', 'davon Abstimmung', 'davon Wortwolke', 'davon Sortieraufgabe', 'davon Sprachen', 'davon Grafiken', 'davon Gruppenpuzzle', 'davon mündlich', 'KAROLINE-RUN! Highscore']];
   for (const t of sortiert) {
-    zeilen.push([t.rang, t.name, t.punkte.gesamt, t.punkte.umfrage, t.punkte.wolke, t.punkte.sortieren, t.punkte.muendlich, t.spiel ?? '']);
+    zeilen.push([t.rang, t.name, t.punkte.gesamt, t.punkte.umfrage, t.punkte.wolke, t.punkte.sortieren,
+      t.punkte.sprachen, t.punkte.grafik, t.punkte.puzzle, t.punkte.muendlich, t.spiel ?? '']);
   }
   const d = new Date();
   const zwei = n => String(n).padStart(2, '0');
   const name = `Punktestand_Durchgang-${z.durchgang}_${d.getFullYear()}-${zwei(d.getMonth() + 1)}-${zwei(d.getDate())}_${zwei(d.getHours())}-${zwei(d.getMinutes())}.xlsx`;
-  const blob = xlsxErstellen(zeilen, 'Punktestand', [7, 22, 14, 18, 17, 21, 15, 24]);
+  const blob = xlsxErstellen(zeilen, 'Punktestand', [7, 22, 14, 18, 17, 21, 16, 16, 20, 15, 24]);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = name;

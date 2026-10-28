@@ -49,13 +49,22 @@ Die Lehrkraft steuert alles am Laptop. Die Handys springen automatisch mit.
 | 12–13 | Folie Demo 5 → KI-Song „Die 6 Schritte im Pflegeprozess“ (Video) | „Präsentations-Modus …“ | DEMO 5 STARTEN / SORTIERAUFGABE! |
 | 14 | Sortieraufgabe mit Fortschritt („18 von 25 fertig“) | 6 Schritte des Pflegeprozesses ordnen | PUNKTESTAND |
 | 15 | Punktestand | Melde-Knöpfe | FORTFAHREN |
-| 16–17 | Folie Demo 6 → Highscore KAROLINE-RUN! | Endless Runner, beliebig viele Runden | DEMO 6 STARTEN / SIEGEREHRUNG |
-| 18 | Siegerehrung mit Treppchen und Pokal | „Siegerehrung …“ | ZUM PUNKTESTAND |
-| 19 | Punktestand | Melde-Knöpfe | FORTFAHREN |
-| 20 | Folie „Und der Prompt für diese ganze Stunde?“ (Auszug aus der Verlaufsbeschreibung) | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
-| 21 | Folie **Fragerunde**: Ideen? Probleme lösen? Bedenken? | „Präsentations-Modus …“ | PUNKTESTAND-MODUS |
-| 22 | Punktestand der Fragerunde + **FINALEN PUNKTESTAND EXPORTIEREN!** (Excel) | Melde-Knöpfe | FORTFAHREN |
-| 23 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | „Präsentations-Modus …“ | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
+| 16–17 | Folie Demo 6 „unterschiedlichen Sprachen“ → Balken je Sprache (mit Flaggen) und je Niveau, „27 von 30 fertig“ | Text Händehygiene + 3 Fragen in 6 Sprachen × 3 Niveaus, 🔊 Vorlesen | DEMO 6 STARTEN / AUFGABE ABSCHLIESSEN |
+| 18–19 | Folie Demo 7 „Grafiken“ → Europakarte, Organe, Skelett mit allen Tipps live (grün/rot) | 9 Tipp-Aufgaben im eigenen Tempo (Länder, Organe, Knochen) | DEMO 7 STARTEN / GRAFIK-QUIZ ABSCHLIESSEN |
+| 20–21 | Folie Demo 8 „Gruppenarbeiten“ → **Gruppen einteilen** (Dreiergruppen) | Gruppenfarbe + Tier im Vollbild bzw. Gruppenwahl | DEMO 8 STARTEN / GRUPPENPUZZLE STARTEN |
+| 22 | **Gruppenpuzzle** Diabetes als Rennen: Fortschritt jeder Gruppe, Sperren, Plätze | Expertentext A, B oder C + gemeinsame Aufgaben | SIEGEREHRUNG |
+| 23 | Siegerehrung der Gruppen (Treppchen) | „Siegerehrung …“ | ZUM PUNKTESTAND |
+| 24 | Punktestand | Melde-Knöpfe | FORTFAHREN |
+| 25–26 | Folie Demo 9 → Highscore KAROLINE-RUN! | Endless Runner, beliebig viele Runden | DEMO 9 STARTEN / SIEGEREHRUNG |
+| 27 | Siegerehrung mit Treppchen und Pokal | „Siegerehrung …“ | ZUM PUNKTESTAND |
+| 28 | Punktestand | Melde-Knöpfe | FORTFAHREN |
+| 29 | Folie „Und der Prompt für diese ganze Stunde?“ (Auszug aus der Verlaufsbeschreibung) | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
+| 30 | Folie **Fragerunde**: Ideen? Probleme lösen? Bedenken? | „Präsentations-Modus …“ | PUNKTESTAND-MODUS |
+| 31 | Punktestand der Fragerunde + **FINALEN PUNKTESTAND EXPORTIEREN!** (Excel) | Melde-Knöpfe | FORTFAHREN |
+| 32 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | „Präsentations-Modus …“ | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
+
+Jede Demo lässt sich jederzeit beenden („weiter“ oder Sprung über das Menü ⚙): Die Handys brechen
+die Aufgabe ab, alle bis dahin gesammelten Punkte bleiben erhalten.
 
 Die Punkte erscheinen auf den Handys erst ab Demo 3 – so bleibt die Auflösung („Ihr habt schon
 Punkte gesammelt!“) eine Überraschung.
@@ -79,6 +88,24 @@ Punkte gesammelt!“) eine Überraschung.
   herunter – unten auf dem Anmeldebildschirm steht „Video wird vorgeladen … %“ bzw. „Video vorgeladen ✓“.
   In Demo 5 läuft es dann sofort. Bei schlechtem Internet: Video vorher auf dem Laptop speichern
   (z. B. im Ordner „Videos“) und am Video-Bildschirm oder im Menü ⚙ auf **„📁 Video vom Laptop öffnen“** klicken.
+- **Demo 6 (Sprachen):** Jede*r wählt am Handy Sprache und Niveau und kann jederzeit wechseln – die
+  Antworten bleiben erhalten. Das Handy schlägt die eigene Gerätesprache vor. „🔊 Vorlesen“ nutzt die
+  Vorlesestimme des Handys; fehlt sie für eine Sprache (z. B. Ukrainisch auf manchen Android-Geräten),
+  erscheint ein Hinweis. Die Übersetzungen sind maschinell erstellt.
+- **Demo 7 (Grafiken):** Jede Aufgabe hat 2 Versuche. Nach einem Fehltipp steht „Daneben – das ist …“,
+  nach dem zweiten wird die richtige Stelle grün gezeigt. Am Beamer erscheinen alle Tipps als Punkte.
+- **Demo 8 (Gruppen):** *Zufällig einteilen* bildet Dreiergruppen aus allen verbundenen Handys
+  (geht es nicht auf, gibt es Vierergruppen). *Selbst wählen lassen*: Die Handys zeigen die Gruppen,
+  volle Gruppen sind gesperrt; danach verteilt *Rest zufällig verteilen* alle, die noch keine Gruppe haben.
+  Einen **Namen anklicken** schiebt die Person in die nächste Gruppe. Wer später kommt, landet
+  automatisch in der kleinsten Gruppe.
+- **Gruppenpuzzle:** Jede Person bekommt einen Expertentext (A Blutzucker, B Insulin, C Ernährung &
+  Bewegung; in Zweiergruppen hat eine Person zwei Texte). Erst lesen alle und tippen „Text gelesen ✓“,
+  dann lösen sie 3 Abschnitte mit je 2 Fragen, die nur mit allen Texten lösbar sind. Ein Abschnitt wird
+  erst geprüft, wenn alle abgegeben haben; ist irgendwo etwas falsch, sieht die Gruppe nur „noch falsch“
+  (nicht wer) und ist 15 Sekunden gesperrt. Ist ein Handy länger als 30 Sekunden getrennt, sieht der
+  Rest der Gruppe dessen Text und kommt ohne die Person weiter. Alle Gruppen haben dieselben Aufgaben –
+  wer zuerst fertig ist, gewinnt. *Fachlich:* Werte und Empfehlungen vor dem Einsatz im Unterricht prüfen.
 - **Zurücksetzen** löscht alle Namen, Passwörter und Punkte und meldet alle Handys ab. Wurde noch
   nicht exportiert, fragt die Anwendung vorher nach. Die PIN bleibt erhalten.
 
@@ -89,6 +116,9 @@ Punkte gesammelt!“) eine Überraschung.
 | Demo 1: Abstimmung | 1 je gewählter Antwort |
 | Demo 2: Wortwolke | 10 je Begriff (ausgeblendete zählen nicht) |
 | Sortieraufgabe | 10 je richtig eingeordnetem Schritt, −10 je falscher Zahl, nie unter 0 (fehlerfrei = 60) |
+| Demo 6: Sprachen | 10 je Frage, die beim ersten Versuch stimmt (höchstens 30) |
+| Demo 7: Grafiken | 10 für einen Treffer beim ersten, 5 beim zweiten Versuch (höchstens 90) |
+| Demo 8: Gruppenpuzzle | jede Person der Gruppe: Platz 1 = 50, Platz 2 = 40, Platz 3 = 30, alle anderen fertigen Gruppen 20 |
 | Punktestand | 0–100 je Vergabe durch die Lehrkraft |
 | KAROLINE-RUN! | zählt nur für die Spiel-Highscore, nicht für den Punktestand |
 
@@ -133,6 +163,9 @@ Link z. B. per Messenger oder E-Mail schicken.
 | Ablauf, Umfrage-Frage und -Antworten, Lernkarten, Schritte der Sortieraufgabe, Punktwerte | `public/js/gemeinsam.js` |
 | Folientexte und Prompts der Demos, Auszug auf der Folie „Und der Prompt?“, Countdown-Dauer | `public/js/beamer.js` (oben) |
 | Texte der Handy-Seite | `public/js/handy.js` |
+| Demo 6: Text, Fragen und Übersetzungen (6 Sprachen × 3 Niveaus) | `public/js/inhalte-sprachen.js` |
+| Demo 7: Tipp-Aufgaben | `public/js/gemeinsam.js` (`GRAFIK_AUFGABEN`); Körper und Skelett in `public/js/grafik-koerper.js` |
+| Demo 8: Fall, Expertentexte, Fragen und Abschnitte des Gruppenpuzzles; Gruppennamen | `public/js/inhalte-puzzle.js`; `public/js/gemeinsam.js` (`GRUPPEN`) |
 | Spieltexte KAROLINE-RUN! | `public/spiel/spiel.js` (oben) |
 
 ## Technik
@@ -143,12 +176,18 @@ worker/logik.js        Spielregeln: Anmeldung, Punkte, Ansichten (ohne Cloudflar
 public/index.html      Handy-Seite          → js/handy.js, css/handy.css
 public/beamer.html     Beamer-Seite         → js/beamer.js, css/beamer.css
 public/handout.html    Handout mit QR-Code zum Drucken
-public/js/             gemeinsam.js, verbindung.js (WebSocket + Reserve), wortwolke.js, export.js (Excel)
+public/js/             gemeinsam.js, verbindung.js (WebSocket + Reserve), wortwolke.js, export.js (Excel),
+                       inhalte-sprachen.js, inhalte-puzzle.js, grafik-koerper.js, grafik-europa.js (Karte)
 public/spiel/          KAROLINE-RUN! (aus „Diabetes Run!“ der Lernkarten übernommen)
 public/video/          hier gehört pflegeprozess.mp4 hin
 public/vendor/         qrcode.min.js (MIT-Lizenz)
 tests/                 automatischer Gesamttest
+werkzeuge/             europakarte.mjs: erzeugt public/js/grafik-europa.js
 ```
+
+Die Europakarte stammt aus **Natural Earth** (gemeinfrei), aufbereitet im npm-Paket „world-atlas“
+(ISC-Lizenz); die Krim ist der Ukraine zugeordnet. Neu erzeugen: `cd werkzeuge && npm install && node europakarte.mjs`.
+Körper und Skelett sind selbst gezeichnete, vereinfachte Schemazeichnungen.
 
 Der gesamte Zustand liegt in einem Durable Object (kostenloser Tarif). Beamer und Handys sind per
 WebSocket verbunden und bekommen nach jeder Änderung ihre aktuelle Ansicht; Handys ohne WebSocket
@@ -160,11 +199,13 @@ fragen alle 1,5 Sekunden per HTTP nach.
 cd tests
 npm install                      # installiert wrangler (lokaler Cloudflare-Server) und Playwright
 npx playwright install chromium
-node ablauf.test.js              # ganze Stunde mit 30 simulierten Handys (~3 Minuten); TN=10 für weniger
+node ablauf.test.js              # ganze Stunde mit 30 simulierten Handys (~5 Minuten); TN=12 für weniger
 ```
 
 Der Test startet den Workshop lokal mit leerem Speicher und prüft u. a.: PIN, Anmeldung mit
 30 Handys (eines im Reserve-Modus), falsches Passwort, Wiedereinstieg, alle Demos, Punkteberechnung,
-Zufallsauswahl, Rückgängig, Excel-Export und Zurücksetzen. Bildschirmfotos liegen in `tests/ergebnisse/`.
+Zufallsauswahl, Rückgängig, Sprachen und Niveaus, Tipp-Aufgaben auf Karte und Körper, Gruppeneinteilung
+(selbst wählen, volle Gruppe gesperrt, Rest zufällig, Namen verschieben), Gruppenpuzzle mit falscher
+Abgabe (Sperre), ausgefallenem Handy (Text freigegeben) und Plätzen, Excel-Export und Zurücksetzen. Bildschirmfotos liegen in `tests/ergebnisse/`.
 
 © 2026 Sven Klawitter

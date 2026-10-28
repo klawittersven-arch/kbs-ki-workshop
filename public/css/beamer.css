@@ -438,3 +438,84 @@ body.zuschauer .tn-karte, body.zuschauer .wolke-wort, body.zuschauer .chip { poi
 .zuschauen-ende h1 { font-size: 50px; color: var(--dunkelpetrol); margin: 24px 0 16px; }
 .zuschauen-ende p { font-size: 28px; color: var(--leise); margin: 0; }
 #menue .link-feld { width: 100%; font: inherit; font-size: 13px; padding: 7px 9px; border: 1px solid #C5D3D6; border-radius: 8px; margin: 4px 0; color: var(--dunkelpetrol); background: var(--papier); }
+
+/* ---------- Demo 6: Sprachen ---------- */
+.sprach-feld { position: absolute; left: 60px; right: 60px; top: 130px; bottom: 20px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 36px; }
+.sprach-karte { background: #fff; border-radius: 26px; padding: 22px 30px; box-shadow: 0 6px 24px rgba(20, 45, 52, .08); }
+.sprach-karte h2 { font-size: 26px; margin: 0 0 12px; color: var(--leise); }
+.sprach-zeile { display: grid; grid-template-columns: auto 230px 1fr 60px; align-items: center; gap: 16px; height: 68px; }
+.sprach-karte:last-child .sprach-zeile { grid-template-columns: 210px 1fr 60px; height: 76px; }
+.sprach-zeile .flagge svg { width: 64px; height: 38px; display: block; border-radius: 4px; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
+.sprach-zeile .sname { font-size: 26px; font-weight: 800; color: var(--dunkelpetrol); line-height: 1.1; }
+.sprach-zeile .sname small { display: block; font-size: 17px; font-weight: 600; color: var(--leise); }
+.sprach-zeile .sbalken { height: 34px; background: var(--hell); border-radius: 10px; overflow: hidden; }
+.sprach-zeile .sbalken i { display: block; height: 100%; width: 0; background: var(--petrol); border-radius: 10px; transition: width .5s cubic-bezier(.3, 1.2, .4, 1); }
+.sprach-karte:last-child .sbalken i { background: var(--akzent); }
+.sprach-zeile b { font-size: 34px; color: var(--dunkelpetrol); text-align: right; }
+.fertig-zeile { margin-top: 26px; font-size: 26px; color: var(--leise); font-weight: 700; }
+.fertig-zeile .gross { font-size: 64px; font-weight: 900; color: var(--gruen); }
+.sprach-fortschritt { height: 22px; background: var(--hell); border-radius: 11px; margin-top: 12px; overflow: hidden; }
+.sprach-fortschritt i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--petrol), var(--gruen)); border-radius: 11px; transition: width .6s; }
+
+/* ---------- Demo 7: Grafiken ---------- */
+.frage-kopf .ok-text, .grafik-aufgaben .ok-text { color: var(--gruen); }
+.frage-kopf .nein-text, .grafik-aufgaben .nein-text { color: var(--rot); }
+.grafik-feld { position: absolute; left: 40px; right: 40px; top: 150px; bottom: 16px; display: grid; grid-template-columns: 1.55fr 1fr 1fr; gap: 24px; }
+.grafik-karte { background: #fff; border-radius: 24px; padding: 14px 18px; box-shadow: 0 6px 24px rgba(20, 45, 52, .08); display: flex; flex-direction: column; min-height: 0; }
+.grafik-karte h2 { font-size: 24px; margin: 0 0 6px; color: var(--dunkelpetrol); }
+.grafik-svg { flex: 1; min-height: 0; }
+.grafik-svg svg { width: 100%; height: 100%; display: block; }
+.grafik-svg .meer { fill: #E3EFF4; }
+.grafik-svg .land { fill: #F3EEDF; stroke: #A39D8A; stroke-width: 1; }
+.grafik-svg .tipp { stroke: #fff; stroke-width: 1; opacity: .85; }
+.grafik-svg .bild-europa .tipp { stroke-width: 2.5; }
+.grafik-svg .tipp.ok { fill: var(--gruen); }
+.grafik-svg .tipp.nein { fill: var(--rot); }
+.grafik-svg .tipp.neu { animation: tipp-neu .6s cubic-bezier(.2, 1.5, .4, 1); transform-box: fill-box; transform-origin: center; }
+@keyframes tipp-neu { from { transform: scale(3); opacity: 0; } }
+.grafik-aufgaben { list-style: none; padding: 0; margin: 8px 0 0; }
+.grafik-aufgaben li { display: grid; grid-template-columns: 1fr 70px 70px; font-size: 21px; font-weight: 700; padding: 3px 0; border-top: 1px solid var(--hell); }
+.grafik-aufgaben li span:not(:first-child) { text-align: right; }
+
+/* ---------- Demo 8: Gruppen ---------- */
+.gruppen-kopf { text-align: center; padding-top: 24px; }
+.gruppen-kopf h1 { font-size: 50px; margin: 0; color: var(--dunkelpetrol); }
+.gruppen-info { font-size: 21px; color: var(--leise); margin: 6px 0 0; }
+.gruppen-raster { position: absolute; left: 40px; right: 40px; top: 150px; bottom: 16px; display: grid; gap: 16px; align-content: start; overflow: hidden; }
+.gruppen-karte { background: #fff; border-radius: 20px; border-top: 12px solid var(--farbe); padding: 10px 14px 12px; box-shadow: 0 6px 20px rgba(20, 45, 52, .08); }
+.gruppen-karte.ohne { border-top-color: #B9CACE; background: #F6F9FA; }
+.gk-kopf { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.gk-kopf .tier { font-size: 34px; line-height: 1; }
+.gk-titel { font-size: 22px; font-weight: 800; color: var(--dunkelpetrol); flex: 1; line-height: 1.1; }
+.gk-kopf small { font-size: 18px; font-weight: 800; color: var(--leise); }
+.gk-namen { display: flex; flex-wrap: wrap; gap: 6px; }
+.gk-name { border: 2px solid #D3E0E3; background: #fff; border-radius: 999px; padding: 4px 13px; font-size: 19px; font-weight: 700; color: var(--text); cursor: pointer; }
+.gk-name:hover { border-color: var(--petrol); background: var(--hell); }
+.gk-name.weg { opacity: .45; }
+.gk-leer { color: var(--leise); font-size: 18px; font-style: italic; }
+body.zuschauer .gk-name { pointer-events: none; }
+
+/* ---------- Demo 8: Gruppenpuzzle ---------- */
+.puzzle-kopf { display: flex; align-items: center; justify-content: center; gap: 30px; padding-top: 22px; }
+.puzzle-kopf h1 { font-size: 44px; margin: 0; color: var(--dunkelpetrol); }
+.uhr-klein { font-size: 36px; font-weight: 900; color: var(--akzent); font-variant-numeric: tabular-nums; }
+.puzzle-liste { position: absolute; left: 40px; right: 40px; top: 105px; bottom: 14px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; font-size: 20px; }
+.pz-zeile { flex: 1 1 0; max-height: 92px; min-height: 0; display: grid; grid-template-columns: 300px 1fr 330px 270px; align-items: center; gap: 16px; background: #fff; border-radius: 16px; border-left: 14px solid var(--farbe); padding: 0 18px; box-shadow: 0 4px 14px rgba(20, 45, 52, .07); transition: background .3s; }
+.pz-zeile.fertig { background: var(--gruen-hell); }
+.pz-zeile.gesperrt { background: var(--rot-hell); }
+.pz-name { font-size: 1.15em; font-weight: 800; color: var(--dunkelpetrol); display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; }
+.pz-name .tier { font-size: 1.5em; }
+.pz-mitglieder { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.pz-m { font-weight: 700; white-space: nowrap; }
+.pz-m small { font-size: .7em; color: var(--leise); margin-left: 3px; font-weight: 800; }
+.pz-m.weg { opacity: .4; }
+.pz-schritte { display: flex; gap: 6px; }
+.pz-schritte i { flex: 1; height: 38px; border-radius: 10px; background: var(--hell); display: grid; place-items: center; font-style: normal; font-weight: 900; color: var(--leise); }
+.pz-schritte i.aktiv { background: #fff; box-shadow: inset 0 0 0 3px var(--farbe); color: var(--dunkelpetrol); }
+.pz-schritte i.erledigt { background: var(--farbe); color: #fff; }
+.pz-status { font-weight: 800; color: var(--dunkelpetrol); text-align: right; white-space: nowrap; }
+.pz-zeile.gesperrt .pz-status { color: #9B2C2C; }
+
+/* ---------- Demo 8: Siegerehrung der Gruppen ---------- */
+.stufe .wer .gruppen-tier { display: block; font-size: 72px; line-height: 1.1; }
+.stufe .wer em { display: block; font-style: normal; font-size: 21px; color: rgba(255,255,255,.85); margin-top: 6px; line-height: 1.3; }
