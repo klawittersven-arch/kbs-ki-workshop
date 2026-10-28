@@ -46,7 +46,7 @@ export const ABLAUF = [
 ];
 
 // Zum Mitnehmen auf den Handys: Beispiel-Prompt (Folie „Und der Prompt …?“) und Claude (Schlussfolie)
-export const PROMPT_PDF = 'prompt/Beispiel-Prompt-KI-Workshop.pdf';   // erzeugt mit werkzeuge/beispiel-prompt-pdf.mjs
+export const PROMPT_PDF = 'prompt/Beispiel-Prompt-KI-Workshop.pdf';   // erzeugt mit werkzeuge/pdfs-erzeugen.mjs
 export const CLAUDE_LINK = 'https://claude.ai';
 
 // Ab diesem Schritt sehen die Teilnehmenden ihre Punkte auf dem Handy

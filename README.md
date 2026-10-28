@@ -10,6 +10,7 @@ Alle scannen einen QR-Code und bleiben die ganze Stunde in derselben Anwendung.
 | **Handys** (QR-Code) | https://kbs-ki-workshop.klawittersven.workers.dev/ |
 | **Beamer** (Lehrkraft, mit PIN) | https://kbs-ki-workshop.klawittersven.workers.dev/beamer |
 | Handout mit QR-Code zum Drucken | https://kbs-ki-workshop.klawittersven.workers.dev/handout |
+| **Handout zum Austeilen** (4 Seiten, PDF) | https://kbs-ki-workshop.klawittersven.workers.dev/material/Handout-KI-Workshop.pdf |
 
 Der QR-Code liegt auch als Bild in `qr/qr-workshop.png` (z. B. für ein eigenes Word-Handout).
 
@@ -189,7 +190,7 @@ Link z. B. per Messenger oder E-Mail schicken.
 | Was | Wo |
 |---|---|
 | Ablauf, Umfrage-Frage und -Antworten, Lernkarten, Schritte der Sortieraufgabe, Punktwerte | `public/js/gemeinsam.js` |
-| Beispiel-Prompt (PDF zum Mitnehmen): Text bearbeiten, dann neu erzeugen mit `cd tests && node ../werkzeuge/beispiel-prompt-pdf.mjs` | `werkzeuge/beispiel-prompt.html` → `public/prompt/Beispiel-Prompt-KI-Workshop.pdf` |
+| Handout zum Austeilen (PDF) und Beispiel-Prompt zum Mitnehmen (PDF): Text bearbeiten, dann beide neu erzeugen mit `cd tests && node ../werkzeuge/pdfs-erzeugen.mjs` | `werkzeuge/handout.html` → `public/material/Handout-KI-Workshop.pdf`; `werkzeuge/beispiel-prompt.html` → `public/prompt/Beispiel-Prompt-KI-Workshop.pdf` |
 | Demo 10: Testfragen; richtige Antworten (nur auf dem Server); Notenschlüssel | `public/js/inhalte-test.js`; `worker/test-loesung.js`; `public/js/gemeinsam.js` (`NOTEN_GRENZEN`, `TEST_DAUER_MS`) |
 | Folientexte und Prompts der Demos, Impulsfrage und Karten der Folie „Wünsch dir was!“ (`WUNSCH`), Auszug auf der Folie „Und der Prompt?“, Countdown-Dauer | `public/js/beamer.js` (oben) |
 | Texte der Handy-Seite | `public/js/handy.js` |
@@ -214,7 +215,7 @@ public/video/          hier gehört pflegeprozess.mp4 hin
 public/vendor/         qrcode.min.js (MIT-Lizenz)
 tests/                 automatischer Gesamttest
 werkzeuge/             europakarte.mjs: erzeugt public/js/grafik-europa.js;
-                       beispiel-prompt-pdf.mjs: erzeugt public/prompt/Beispiel-Prompt-KI-Workshop.pdf
+                       pdfs-erzeugen.mjs: erzeugt Handout und Beispiel-Prompt als PDF
 ```
 
 Die Europakarte stammt aus **Natural Earth** (gemeinfrei), aufbereitet im npm-Paket „world-atlas“

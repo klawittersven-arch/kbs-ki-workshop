@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<!--
+  Quelle für das Handout (PDF zum Austeilen zu Beginn des Workshops).
+  Nach Änderungen neu erzeugen: cd tests && node ../werkzeuge/pdfs-erzeugen.mjs
+  Die Adresse unter dem QR-Code muss die Handy-Adresse der Anwendung sein (wie auf dem Anmeldebildschirm am Beamer).
+-->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Handout – Workshop „Digitale Tools &amp; KI“</title>
+<script src="../public/vendor/qrcode.min.js"></script>
+<style>
+  @page { size: A4; margin: 14mm 15mm 17mm; }
+  :root { --petrol: #3F6C72; --dunkel: #25434B; --akzent: #E8833A; --akzent-hell: #FFF6EC; --hell: #EAF2F4; --leise: #5B6F74; }
+  * { box-sizing: border-box; }
+  body { font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif; font-size: 10pt; line-height: 1.42; color: #16262A; margin: 0; }
+  h1, h2, h3 { color: var(--dunkel); line-height: 1.2; margin: 0; }
+  h1 { font-size: 25pt; letter-spacing: -.01em; }
+  h2 { font-size: 15pt; margin: 0 0 7pt; }
+  h3 { font-size: 11pt; margin: 0 0 4pt; color: var(--petrol); }
+  p { margin: 0 0 6pt; }
+  ul, ol { margin: 0 0 6pt; padding-left: 14pt; }
+  li { margin-bottom: 2.5pt; }
+  a { color: var(--petrol); }
+  .seite { break-after: page; }
+  .seite:last-child { break-after: auto; }
+  .kopf { display: flex; align-items: center; gap: 10pt; border-bottom: 2pt solid var(--petrol); padding-bottom: 7pt; margin-bottom: 12pt; }
+  .kopf img { width: 36pt; height: 36pt; }
+  .kopf b { display: block; font-size: 11pt; color: var(--dunkel); }
+  .kopf span { font-size: 8.5pt; color: var(--leise); }
+  .kicker { display: inline-block; background: var(--akzent); color: #fff; font-weight: 800; font-size: 8.5pt; letter-spacing: .08em; padding: 2.5pt 9pt; border-radius: 99pt; margin-bottom: 6pt; }
+  .unter { font-size: 11.5pt; color: var(--petrol); margin: 4pt 0 14pt; }
+  .box { border-radius: 9pt; padding: 10pt 12pt; margin-bottom: 11pt; break-inside: avoid; }
+  .box.hell { background: var(--hell); }
+  .box.warm { background: var(--akzent-hell); border: 1pt solid #F3C9A4; }
+  .box.rahmen { border: 1.5pt solid var(--petrol); }
+  .box.kontakt { background: var(--dunkel); color: #fff; }
+  .box.kontakt h3, .box.kontakt b { color: #fff; }
+  .box.kontakt a { color: #FFD9B8; font-weight: 800; }
+  .mitmachen { display: grid; grid-template-columns: 130pt 1fr; gap: 16pt; align-items: center; }
+  .qr { width: 130pt; height: 130pt; }
+  .qr img, .qr canvas { width: 100% !important; height: 100% !important; }
+  .adresse { font-size: 8.5pt; line-height: 1.3; font-weight: 700; color: var(--dunkel); text-align: center; margin-top: 4pt; word-break: normal; }
+  .pw { margin-top: 8pt; font-weight: 700; }
+  .pw span { display: inline-block; width: 120pt; border-bottom: 1pt solid #16262A; margin-left: 4pt; }
+  .ablauf { display: flex; flex-wrap: wrap; gap: 5pt; margin: 4pt 0 2pt; }
+  .ablauf span { background: #fff; border: 1pt solid #C5D3D6; border-radius: 99pt; padding: 2.5pt 8pt; font-size: 8.8pt; font-weight: 700; color: var(--dunkel); }
+  .ablauf i { font-style: normal; color: var(--akzent); font-weight: 900; align-self: center; }
+  .zitat { font-family: Georgia, serif; font-style: italic; font-size: 13pt; color: var(--leise); text-align: center; margin: 12pt 0 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 8.8pt; }
+  th { background: var(--dunkel); color: #fff; text-align: left; padding: 4pt 6pt; font-weight: 700; }
+  td { padding: 5pt 6pt; border-bottom: 0.6pt solid #D3E0E3; vertical-align: top; }
+  tr { break-inside: avoid; }
+  td.nr { font-weight: 900; color: var(--akzent); font-size: 12pt; text-align: center; }
+  td .prompt { display: block; margin-top: 2pt; color: var(--leise); font-size: 8pt; font-style: italic; }
+  td.notiz { background-image: repeating-linear-gradient(transparent 0, transparent 13pt, #C5D3D6 13pt, #C5D3D6 13.6pt); }
+  .zwei { display: grid; grid-template-columns: 1fr 1fr; gap: 11pt; }
+  .tipp-liste { list-style: none; padding: 0; counter-reset: t; }
+  .tipp-liste li { counter-increment: t; position: relative; padding-left: 19pt; margin-bottom: 5pt; }
+  .tipp-liste li::before { content: counter(t); position: absolute; left: 0; top: 0; width: 13pt; height: 13pt; border-radius: 50%; background: var(--akzent); color: #fff; font-weight: 800; font-size: 7.8pt; text-align: center; line-height: 13pt; }
+  .bauplan { font-size: 10pt; line-height: 1.9; }
+  .bauplan .luecke { display: inline-block; min-width: 92pt; border-bottom: 1pt solid var(--dunkel); color: var(--leise); font-size: 7.5pt; line-height: 1.1; text-align: center; vertical-align: baseline; padding-top: 6pt; }
+  .bauplan .luecke.lang { min-width: 170pt; }
+  .beispiel { font-style: italic; border-left: 2pt solid var(--petrol); padding-left: 8pt; margin: 0 0 5pt; }
+  .schritte { counter-reset: s; list-style: none; padding: 0; }
+  .schritte li { counter-increment: s; position: relative; padding-left: 24pt; margin-bottom: 6pt; }
+  .schritte li::before { content: counter(s); position: absolute; left: 0; top: -1pt; width: 17pt; height: 17pt; border-radius: 50%; background: var(--petrol); color: #fff; font-weight: 800; font-size: 9pt; text-align: center; line-height: 17pt; }
+  .claude-qr { float: right; width: 66pt; margin: 0 0 6pt 10pt; text-align: center; font-size: 7.5pt; color: var(--leise); }
+  .claude-qr .qr { width: 66pt; height: 66pt; }
+  .linien div { height: 19pt; border-bottom: 0.8pt solid #C5D3D6; }
+  .klein { font-size: 8.5pt; color: var(--leise); }
+</style>
+</head>
+<body>
+
+<!-- ===================================================== Seite 1 -->
+<section class="seite">
+  <div class="kopf"><img src="../public/img/kbs-logo.png" alt="">
+    <div><b>Karoline-Breitinger-Schule Künzelsau</b><span>Multimedia-Nachmittag · Dienstag, 3. November 2026 · Raum 446</span></div></div>
+
+  <span class="kicker">HANDOUT</span>
+  <h1>Digitale Tools &amp; KI</h1>
+  <p class="unter">Vom Wort zur Software: Wie du mit Claude eigene Anwendungen für deinen Unterricht erstellen lässt.<br>Workshop mit Sven Klawitter</p>
+
+  <div class="box rahmen">
+    <h2>So machst du mit</h2>
+    <div class="mitmachen">
+      <div><div class="qr" data-qr="https://kbs-ki-workshop.klawittersven.workers.dev/"></div>
+        <div class="adresse">kbs-ki-workshop.<wbr>klawittersven.<wbr>workers.dev</div></div>
+      <div>
+        <ol>
+          <li>QR-Code mit dem Smartphone scannen.</li>
+          <li>Vornamen und Anfangsbuchstaben deines Nachnamens eingeben.</li>
+          <li>Ein Passwort vergeben (mindestens 3 Zeichen, Groß-/Kleinschreibung egal) – und hier notieren:</li>
+        </ol>
+        <p class="pw">Mein Passwort: <span></span></p>
+        <p class="klein" style="margin:6pt 0 0">Browser zu oder rausgeflogen? Einfach den QR-Code erneut scannen – du bist sofort wieder dabei, deine Punkte bleiben erhalten.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="box hell">
+    <h2>Worum es heute geht</h2>
+    <ul>
+      <li>Du erlebst <b>10 kurze Demos</b> aus der Sicht deiner Schülerinnen und Schüler – alles in <b>einer einzigen Web-Anwendung</b>, auf deinem eigenen Smartphone.</li>
+      <li>Diese Anwendung hat die KI <b>Claude</b> programmiert – aus einer Beschreibung in ganz normaler Sprache, einem sogenannten <b>Prompt</b>.</li>
+      <li>Zu jeder Demo siehst du den Prompt, mit dem man so etwas bei Claude „bestellen“ kann.</li>
+      <li>Am Ende probierst du es selbst aus. Ich helfe dir gern bei den ersten Schritten.</li>
+    </ul>
+  </div>
+
+  <h3>Ablauf</h3>
+  <div class="ablauf">
+    <span>Anmeldung</span><i>›</i><span>Wünsch dir was!</span><i>›</i><span>Demos 1–10</span><i>›</i><span>Und der Prompt?</span><i>›</i><span>Fragerunde</span><i>›</i><span>Jetzt seid ihr dran!</span>
+  </div>
+  <p class="klein" style="margin-top:6pt">Du sammelst nebenbei Punkte – lass dich überraschen, wofür.</p>
+
+  <p class="zitat">„Im Anfang war das Wort.“ <span style="font-size:9pt">(Johannes 1,1)</span></p>
+</section>
+
+<!-- ===================================================== Seite 2 -->
+<section class="seite">
+  <h2>Die 10 Demos – zum Mitlesen und Notieren</h2>
+  <p class="klein">Unter jeder Demo steht der Prompt, der auf der Folie „getippt“ wird. Rechts ist Platz für deine Ideen.</p>
+  <table>
+    <thead><tr><th style="width:6%">Demo</th><th style="width:20%">Lernen mit …</th><th style="width:40%">Das erlebst du</th><th>Meine Idee für den Unterricht</th></tr></thead>
+    <tbody>
+      <tr><td class="nr">1</td><td>Präsentations&shy;tools: Abstimmung</td><td>Live-Umfrage mit wachsendem Balkendiagramm<span class="prompt">„Erstelle mir eine Multiple-Choice-Abstimmung mit dynamischem Balkendiagramm.“</span></td><td class="notiz"></td></tr>
+      <tr><td class="nr">2</td><td>Präsentations&shy;tools: Wortwolke</td><td>Eure Begriffe zum Thema KI als Wortwolke wie bei Mentimeter<span class="prompt">„Erstelle mir eine Word Cloud im Stil von Mentimeter.“</span></td><td class="notiz"></td></tr>
+      <tr><td class="nr">3</td><td>messbarem Fortschritt</td><td>Punktestand für die Mitarbeit, Melden per Smartphone, zufällig aufrufen<span class="prompt">„Erstelle mir eine Übersicht, mit der meine SuS Feedback zu ihrer Mitarbeit am Unterricht in Form von Punktewerten bekommen.“</span></td><td class="notiz"></td></tr>
+      <tr><td class="nr">4</td><td>digitalen Karteikarten</td><td>15 Lernkarten Latein – Deutsch, danach wird abgefragt<span class="prompt">„Erstelle mir eine Webanwendung mit digitalen Lernkarten (im Stil von Quizlet).“</span></td><td class="notiz"></td></tr>
+      <tr><td class="nr">5</td><td>KI-Songs</td><td>Merksong zum Pflegeprozess, danach eine Sortieraufgabe<span class="prompt">„Erstelle mir einen kurzen Merksong, der den SuS hilft, sich die 6 Schritte des Pflegeprozesses einzuprägen, und eine passende Aufgabe dazu.“</span></td><td class="notiz"></td></tr>
+      <tr><td class="nr">6</td><td>unterschiedlichen Sprachen</td><td>Text zur Händehygiene in 6 Sprachen und 3 Niveaus, mit Vorlesefunktion<span class="prompt">„Erstelle mir eine Aufgabe, bei der die SuS am Smartphone zwischen sechs Sprachen und verschiedenen Sprachniveaus wechseln können.“</span></td><td class="notiz"></td></tr>
+      <tr><td class="nr">7</td><td>Grafiken</td><td>Länder, Organe und Knochen antippen – alle Tipps live am Beamer<span class="prompt">„Erstelle mir ein Lernspiel, bei dem die SuS auf einer Landkarte Länder und auf Körperdarstellungen Organe und Knochen antippen.“</span></td><td class="notiz"></td></tr>
+      <tr><td class="nr">8</td><td>Gruppenarbeiten</td><td>Gruppen einteilen und ein Gruppenpuzzle zum Diabetes, das nur gemeinsam lösbar ist<span class="prompt">„Erstelle mir eine Anwendung, die meine SuS in Gruppen einteilt, und ein Gruppenpuzzle, das nur gemeinsam lösbar ist.“</span></td><td class="notiz"></td></tr>
+      <tr><td class="nr">9</td><td>Minispielen</td><td>„KAROLINE-RUN!“ mit Highscore und Siegerehrung<span class="prompt">„Erstelle mir einen Endless Runner mit Highscore-Funktion.“</span></td><td class="notiz"></td></tr>
+      <tr><td class="nr">10</td><td>automatisch korrigierten Tests</td><td>Kurzer Test, für jede Person anders gemischt – die Note siehst nur du<span class="prompt">„Erstelle mir einen Multiple-Choice-Test mit Notenberechnung, bei dem die Fragen für alle SuS anders gemischt sind.“</span></td><td class="notiz"></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================================================== Seite 3 -->
+<section class="seite">
+  <h2>Gut prompten – das Wichtigste</h2>
+  <div class="zwei">
+    <div class="box warm" style="margin:0">
+      <h3>7 Tipps</h3>
+      <ol class="tipp-liste">
+        <li><b>Kontext geben:</b> Wer bist du, für wen ist es, wo wird es genutzt?</li>
+        <li><b>Erst das Ziel, dann die Funktionen:</b> Wozu brauchst du es?</li>
+        <li><b>Struktur:</b> Überschriften, Listen, Schritt für Schritt.</li>
+        <li><b>Konkret werden:</b> genaue Texte, Zahlen, Beispiele.</li>
+        <li><b>Alle Perspektiven:</b> Was sieht die Lehrkraft, was sehen die SuS? Was passiert bei Fehlern?</li>
+        <li><b>Rahmen setzen:</b> Datenschutz, Kosten, was es <i>nicht</i> tun soll.</li>
+        <li><b>Zusammenarbeiten:</b> Rückfragen erlauben, Ergebnis testen, nachbessern lassen.</li>
+      </ol>
+    </div>
+    <div class="box hell" style="margin:0">
+      <h3>Nachschärfen statt neu anfangen</h3>
+      <p class="klein" style="margin-bottom:5pt">Selten ist der erste Versuch perfekt. Sag Claude einfach, was dir nicht gefällt:</p>
+      <p class="beispiel">„Mach die Schrift größer und die Knöpfe bunter.“</p>
+      <p class="beispiel">„Füge fünf weitere Fragen hinzu, etwas schwerer.“</p>
+      <p class="beispiel">„Bei Frage 3 stimmt die Lösung nicht. Richtig ist …“</p>
+      <p class="beispiel">„Schreib die Texte in Leichter Sprache.“</p>
+      <p class="beispiel" style="margin:0">„Erkläre mir Schritt für Schritt, wie ich das meinen SuS zur Verfügung stelle.“</p>
+    </div>
+  </div>
+
+  <div class="box rahmen" style="margin-top:11pt">
+    <h3>Dein Prompt-Bauplan – zum Ausfüllen</h3>
+    <p class="bauplan">
+      Erstelle mir <span class="luecke lang">was? (z. B. Lernkarten, Quiz, Sortieraufgabe)</span>
+      für <span class="luecke lang">wen? (Klasse, Ausbildungsjahr, Vorwissen)</span>
+      zum Thema <span class="luecke lang">Thema</span>.
+      Ziel ist, dass <span class="luecke lang">wozu?</span>.
+      Inhalt: <span class="luecke lang">Begriffe, Fragen, Anzahl</span>.
+      So soll es funktionieren: <span class="luecke lang">auf dem Smartphone, Rückmeldung, Punkte …</span>.
+      Bitte beachte: <span class="luecke lang">Sprache, Niveau, keine Anmeldung …</span>.
+      Stelle mir Rückfragen, wenn etwas unklar ist.
+    </p>
+    <p class="klein" style="margin:4pt 0 0"><b>Beispiel:</b> <i>„Erstelle mir eine Webseite mit 10 digitalen Lernkarten zum Thema Vitalzeichen für Pflegeschülerinnen und -schüler im 2. Ausbildungsjahr. Vorne der Fachbegriff, hinten eine kurze Erklärung in einfacher Sprache. Die Karten drehen sich beim Antippen um und funktionieren gut auf dem Smartphone. Am Ende soll angezeigt werden, wie viele Karten gewusst wurden.“</i></p>
+  </div>
+
+  <div class="box warm">
+    <h3>Worauf du achten solltest</h3>
+    <ul style="margin:0">
+      <li><b>Fachlich prüfen:</b> KI kann sich irren – besonders bei Zahlen, Fachbegriffen und Übersetzungen.</li>
+      <li><b>Keine personenbezogenen Daten:</b> Gib keine Namen, Noten oder Diagnosen von Schülerinnen und Schülern in den Prompt ein.</li>
+      <li><b>Vorgaben der Schule beachten:</b> Kläre, ob und wie eine Anwendung im Unterricht eingesetzt werden darf – vor allem, wenn sie Daten speichert.</li>
+      <li><b>Transparent sein:</b> Sag deinen Schülerinnen und Schülern, wenn Material mit KI erstellt wurde.</li>
+      <li><b>Urheberrecht:</b> Lade nur Material hoch, das du verwenden darfst.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================================================== Seite 4 -->
+<section class="seite">
+  <h2>Jetzt bist du dran</h2>
+  <div class="box hell">
+    <div class="claude-qr"><div class="qr" data-qr="https://claude.ai"></div>claude.ai</div>
+    <h3>In 5 Schritten zur ersten eigenen Anwendung</h3>
+    <ol class="schritte">
+      <li><b>claude.ai öffnen</b> und anmelden (QR-Code rechts).</li>
+      <li><b>Klein anfangen:</b> Such dir eine Idee aus, die in 10 Minuten machbar ist.</li>
+      <li><b>Prompt schreiben</b> – mit dem Bauplan von Seite 3.</li>
+      <li><b>Ausprobieren und nachschärfen:</b> Beschreib, was nicht passt, und lass es verbessern.</li>
+      <li><b>Mit deiner Klasse testen</b> – erst in kleinem Rahmen, dann nach Bedarf ausbauen.</li>
+    </ol>
+  </div>
+
+  <div class="zwei">
+    <div class="box warm" style="margin:0">
+      <h3>Ideen für den Start</h3>
+      <ul style="margin:0">
+        <li>Lernkarten mit Fachbegriffen deines Fachs</li>
+        <li>Quiz mit sofortiger Rückmeldung</li>
+        <li>Sortieraufgabe, z. B. Schritte einer Pflegehandlung</li>
+        <li>Zufallsgenerator zum Aufrufen oder für Gruppen</li>
+        <li>Countdown-Timer für Gruppenarbeiten</li>
+        <li>Lückentext mit automatischer Auswertung</li>
+        <li>Fachbegriffe Deutsch – Herkunftssprache</li>
+        <li>Checkliste für den Praxiseinsatz</li>
+      </ul>
+    </div>
+    <div class="box hell" style="margin:0">
+      <h3>So lernst du weiter</h3>
+      <ul style="margin:0">
+        <li><b>Regelmäßig üben:</b> jede Woche eine kleine Idee umsetzen.</li>
+        <li><b>Claude als Lernpartner:</b> „Erkläre mir …“, „Was fehlt in meinem Prompt?“, „Welche Rückfragen hast du?“</li>
+        <li><b>Vorlage nutzen:</b> Den ausführlichen Beispiel-Prompt dieser Stunde gibt es als PDF in der Workshop-App (Folie „Und der Prompt …?“).</li>
+        <li><b>Im Kollegium teilen:</b> gelungene Prompts sammeln und weitergeben.</li>
+        <li><b>Fortbildungen</b> zu KI im Unterricht nutzen, z. B. Angebote des ZSL.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box rahmen" style="margin-top:11pt">
+    <h3>Meine nächste Idee</h3>
+    <div class="linien"><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+
+  <div class="box kontakt">
+    <h3>Fragen?</h3>
+    <p style="margin:0">Sprich mich gerne jederzeit an oder schreib mir eine E-Mail:<br>
+      ✉️ <a href="mailto:Sven.Klawitter@Karoline-Breitinger-Schule.de">Sven.Klawitter@Karoline-Breitinger-Schule.de</a></p>
+    <p style="margin:6pt 0 0">Viel Spaß beim Ausprobieren! – <b>Sven Klawitter</b></p>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-qr]').forEach(el => {
+    new QRCode(el, { text: el.dataset.qr, width: 600, height: 600, correctLevel: QRCode.CorrectLevel.M });
+  });
+</script>
+</body>
+</html>
