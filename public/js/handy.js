@@ -7,6 +7,7 @@
 import {
   UMFRAGE_OPTIONEN, UMFRAGE_KEINE, WOLKE_MAX_BEGRIFFE, WOLKE_MAX_LAENGE, PFLEGEPROZESS, LERNKARTEN, PUNKTE_SICHTBAR_AB, begriffGueltig, sortierPunkte, PUNKTE,
   SPRACHEN_LOESUNG, sprachPunkte, GRAFIK_AUFGABEN, GRAFIK_VERSUCHE, grafikPunkte, gruppeInfo, puzzlePunkte, NOTEN_NAMEN,
+  ABLAUF, PROMPT_PDF, CLAUDE_LINK,
 } from './gemeinsam.js';
 import { TEST_FRAGEN } from './inhalte-test.js';
 import { SPRACHEN, FLAGGEN, INHALT } from './inhalte-sprachen.js';
@@ -201,7 +202,19 @@ const BILDSCHIRME = {
     return warten({ symbol: '🎉', text: `Du bist dabei, ${esc(a.name)}!<br>Gleich geht’s los – richte deine Aufmerksamkeit nach vorne.` });
   },
 
-  folie() {
+  folie(a) {
+    const folie = ABLAUF[a.schritt] && ABLAUF[a.schritt].folie;
+    const pdfKnopf = art => `<a class="knopf${art}" href="${PROMPT_PDF}" target="_blank" rel="noopener" data-prompt-pdf>📄 Prompt als PDF herunterladen</a>`;
+    if (folie === 'prompt') {
+      const s = warten({ symbol: '📄', modus: 'DER PROMPT ZUM MITNEHMEN', text: 'So hätte man diese ganze Anwendung bei Claude „bestellen“ können – als Beispiel dafür, wie man gut promptet.', mitPunkten: false });
+      $('.stand', app).insertAdjacentHTML('beforebegin', pdfKnopf('') + '<p class="leise klein" style="margin-top:12px">Mit 7 Tipps für gute Prompts und einem kurzen Beispiel für den Einstieg.</p>');
+      return s;
+    }
+    if (folie === 'jetzt') {
+      const s = warten({ symbol: '🚀', modus: 'JETZT SEID IHR DRAN!', text: 'Probier es selbst aus: Öffne Claude und beschreibe, was du dir wünschst.', mitPunkten: false });
+      $('.stand', app).insertAdjacentHTML('beforebegin', `<a class="knopf claude-knopf" href="${CLAUDE_LINK}" target="_blank" rel="noopener" data-claude>Claude öffnen</a>${pdfKnopf(' zweit')}`);
+      return s;
+    }
     return warten({ symbol: '📽️', modus: 'PRÄSENTATIONS-MODUS', text: 'Richte deine Aufmerksamkeit nach vorne, leg dein Smartphone erstmal zur Seite.' });
   },
 

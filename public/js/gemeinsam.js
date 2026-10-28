@@ -45,6 +45,10 @@ export const ABLAUF = [
   { modus: 'folie', folie: 'jetzt', knopf: null },
 ];
 
+// Zum Mitnehmen auf den Handys: Beispiel-Prompt (Folie „Und der Prompt …?“) und Claude (Schlussfolie)
+export const PROMPT_PDF = 'prompt/Beispiel-Prompt-KI-Workshop.pdf';   // erzeugt mit werkzeuge/beispiel-prompt-pdf.mjs
+export const CLAUDE_LINK = 'https://claude.ai';
+
 // Ab diesem Schritt sehen die Teilnehmenden ihre Punkte auf dem Handy
 // (vorher nicht, damit die Auflösung in Demo 3 eine Überraschung bleibt).
 export const PUNKTE_SICHTBAR_AB = ABLAUF.findIndex(s => s.modus === 'punkte');

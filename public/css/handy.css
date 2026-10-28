@@ -306,3 +306,8 @@ body.gruppen-bunt { background: var(--gruppe, var(--hell)); transition: backgrou
 .pz-status.nein { background: var(--rot-hell); color: #9B2C2C; }
 .pz-tipp { background: #FFF8E4; border-radius: 10px; padding: 9px 11px; font-size: 15px; line-height: 1.4; color: #5C4600; margin: 0 0 10px; }
 .pz-tipp.loesung { background: #E5F0FB; color: #1E4E7A; }
+
+/* Folien „Und der Prompt …?“ und „JETZT SEID IHR DRAN!“: Knöpfe zum Mitnehmen */
+a.knopf { text-decoration: none; text-align: center; }
+.knopf.claude-knopf { background: #D97757; font-size: 22px; padding: 17px 18px; }
+.knopf.claude-knopf:active { background: #B85F43; }

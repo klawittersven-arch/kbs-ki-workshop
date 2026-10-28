@@ -61,10 +61,10 @@ Die Lehrkraft steuert alles am Laptop. Die Handys springen automatisch mit.
 | 29 | Punktestand | Melde-Knöpfe | FORTFAHREN |
 | 30–31 | Folie Demo 10 → **Test**: 3-Minuten-Countdown, „18 von 30 abgegeben“ (keine Namen, keine Noten) | 8 Multiple-Choice-Fragen, je Person anders gemischt; danach eigene Note | DEMO 10 STARTEN / TEST BEENDEN |
 | 32 | **Notenspiegel** (anonym) mit Durchschnitt | eigene Note und falsch beantwortete Fragen mit Lösung | FORTFAHREN |
-| 33 | Folie „Und der Prompt für diese ganze Stunde?“ (Auszug aus der Verlaufsbeschreibung) | „Präsentations-Modus …“ | NÄCHSTE FOLIE |
+| 33 | Folie „Und der Prompt für diese ganze Stunde?“ (Auszug aus der Verlaufsbeschreibung) | Knopf **„Prompt als PDF herunterladen“** (Beispiel-Prompt mit Tipps) | NÄCHSTE FOLIE |
 | 34 | Folie **Fragerunde**: Fehlende Wünsche vom Anfang? Probleme lösen? Bedenken? | „Präsentations-Modus …“ | PUNKTESTAND-MODUS |
 | 35 | Punktestand der Fragerunde + **FINALEN PUNKTESTAND EXPORTIEREN!** (Excel) | Melde-Knöpfe; nach dem Export die eigenen Noten | FORTFAHREN |
-| 36 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | „Präsentations-Modus …“ | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
+| 36 | Folie „JETZT SEID IHR DRAN!“ mit QR-Code zu claude.ai | Knopf **„Claude öffnen“** (claude.ai), PDF-Prompt, eigene Noten | ALLES ZURÜCKSETZEN FÜR DEN NÄCHSTEN DURCHGANG |
 
 Jede Demo lässt sich jederzeit beenden („weiter“ oder Sprung über das Menü ⚙): Die Handys brechen
 die Aufgabe ab, alle bis dahin gesammelten Punkte bleiben erhalten.
@@ -189,6 +189,7 @@ Link z. B. per Messenger oder E-Mail schicken.
 | Was | Wo |
 |---|---|
 | Ablauf, Umfrage-Frage und -Antworten, Lernkarten, Schritte der Sortieraufgabe, Punktwerte | `public/js/gemeinsam.js` |
+| Beispiel-Prompt (PDF zum Mitnehmen): Text bearbeiten, dann neu erzeugen mit `cd tests && node ../werkzeuge/beispiel-prompt-pdf.mjs` | `werkzeuge/beispiel-prompt.html` → `public/prompt/Beispiel-Prompt-KI-Workshop.pdf` |
 | Demo 10: Testfragen; richtige Antworten (nur auf dem Server); Notenschlüssel | `public/js/inhalte-test.js`; `worker/test-loesung.js`; `public/js/gemeinsam.js` (`NOTEN_GRENZEN`, `TEST_DAUER_MS`) |
 | Folientexte und Prompts der Demos, Impulsfrage und Karten der Folie „Wünsch dir was!“ (`WUNSCH`), Auszug auf der Folie „Und der Prompt?“, Countdown-Dauer | `public/js/beamer.js` (oben) |
 | Texte der Handy-Seite | `public/js/handy.js` |
@@ -212,7 +213,8 @@ public/spiel/          KAROLINE-RUN! (aus „Diabetes Run!“ der Lernkarten üb
 public/video/          hier gehört pflegeprozess.mp4 hin
 public/vendor/         qrcode.min.js (MIT-Lizenz)
 tests/                 automatischer Gesamttest
-werkzeuge/             europakarte.mjs: erzeugt public/js/grafik-europa.js
+werkzeuge/             europakarte.mjs: erzeugt public/js/grafik-europa.js;
+                       beispiel-prompt-pdf.mjs: erzeugt public/prompt/Beispiel-Prompt-KI-Workshop.pdf
 ```
 
 Die Europakarte stammt aus **Natural Earth** (gemeinfrei), aufbereitet im npm-Paket „world-atlas“

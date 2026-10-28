@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<!--
+  Quelle für das PDF „Beispiel-Prompt“, das die Handys auf der Folie „Und der Prompt für diese ganze Stunde?“
+  herunterladen können. Nach Änderungen neu erzeugen: siehe werkzeuge/beispiel-prompt-pdf.mjs
+-->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Der Prompt zur Stunde – Beispiel für gutes Prompten</title>
+<style>
+  @page { size: A4; margin: 18mm 17mm 20mm; }
+  :root { --petrol: #3F6C72; --dunkel: #25434B; --akzent: #E8833A; --hell: #EAF2F4; --leise: #5B6F74; }
+  * { box-sizing: border-box; }
+  body { font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif; font-size: 10.2pt; line-height: 1.45; color: #16262A; margin: 0; }
+  h1, h2, h3 { color: var(--dunkel); line-height: 1.2; }
+  h1 { font-size: 22pt; margin: 0 0 4pt; }
+  h2 { font-size: 13.5pt; margin: 16pt 0 6pt; padding-bottom: 3pt; border-bottom: 1.5pt solid var(--hell); break-after: avoid; }
+  h3 { font-size: 11pt; margin: 11pt 0 4pt; color: var(--petrol); break-after: avoid; }
+  p { margin: 0 0 6pt; }
+  ul, ol { margin: 0 0 6pt; padding-left: 15pt; }
+  li { margin-bottom: 2.5pt; }
+  table { width: 100%; border-collapse: collapse; margin: 4pt 0 8pt; font-size: 9pt; break-inside: auto; }
+  th { background: var(--dunkel); color: #fff; text-align: left; font-weight: 700; padding: 4pt 6pt; }
+  td { padding: 3.5pt 6pt; border-bottom: 0.6pt solid #D3E0E3; vertical-align: top; }
+  tr { break-inside: avoid; }
+  tr:nth-child(even) td { background: #F6F9FA; }
+  .kopf { display: flex; align-items: center; gap: 12pt; margin-bottom: 10pt; }
+  .kopf img { width: 42pt; height: 42pt; }
+  .kopf .schule { font-size: 9pt; color: var(--leise); }
+  .kicker { display: inline-block; background: var(--akzent); color: #fff; font-weight: 800; font-size: 8.5pt; letter-spacing: .08em; padding: 2.5pt 9pt; border-radius: 99pt; margin-bottom: 6pt; }
+  .untertitel { font-size: 12pt; color: var(--petrol); margin: 0 0 12pt; }
+  .box { border-radius: 8pt; padding: 9pt 12pt; margin: 8pt 0 10pt; break-inside: avoid; }
+  .box.info { background: var(--hell); }
+  .box.tipps { background: #FFF6EC; border: 1pt solid #F3C9A4; }
+  .box.mini { background: #fff; border: 1.5pt solid var(--petrol); }
+  .box h3 { margin-top: 0; }
+  .tipps ol { padding-left: 0; list-style: none; counter-reset: tipp; }
+  .tipps li { counter-increment: tipp; position: relative; padding-left: 22pt; margin-bottom: 5pt; }
+  .tipps li::before { content: counter(tipp); position: absolute; left: 0; top: 0; width: 15pt; height: 15pt; border-radius: 50%; background: var(--akzent); color: #fff; font-weight: 800; font-size: 8.5pt; text-align: center; line-height: 15pt; }
+  .tipps .wo { color: var(--leise); font-size: 8.5pt; }
+  .zitat { font-family: Georgia, serif; font-style: italic; }
+  .prompt-start { margin-top: 0; border-left: 4pt solid var(--akzent); padding: 6pt 0 2pt 11pt; background: linear-gradient(90deg, #FFF6EC, transparent 70%); }
+  .prompt-start p { margin: 0; color: var(--leise); font-size: 9pt; }
+  .prompt-start h1 { font-size: 17pt; }
+  .seitenumbruch { break-before: page; }
+  .klein { font-size: 8.8pt; color: var(--leise); }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.8pt; background: var(--hell); padding: 0 3pt; border-radius: 3pt; }
+  b, strong { color: #0F2B31; }
+</style>
+</head>
+<body>
+
+<div class="kopf">
+  <img src="../public/img/kbs-logo.png" alt="">
+  <div class="schule">Karoline-Breitinger-Schule Künzelsau · Multimedia-Nachmittag<br>Workshop „Digitale Tools &amp; KI“</div>
+</div>
+
+<span class="kicker">ZUM MITNEHMEN</span>
+<h1>Der Prompt zur Stunde</h1>
+<p class="untertitel">So hätte man die Workshop-Anwendung von heute bei Claude „bestellen“ können –<br>als Beispiel dafür, wie man gut promptet.</p>
+
+<div class="box info">
+  <p><b>Wie die Anwendung tatsächlich entstanden ist:</b> aus einer 9-seitigen Beschreibung in Word und vielen Rückfragen und Ergänzungen im Gespräch mit Claude. Der Text ab Seite 2 ist die aufgeräumte Fassung: alles, was die Anwendung heute kann, klar gegliedert und in verständlicher Sprache. Du kannst ihn als Vorlage für eigene Ideen nehmen.</p>
+  <p style="margin:0">Getreu dem Motto der Stunde: <span class="zitat">„Im Anfang war das Wort.“</span></p>
+</div>
+
+<div class="box tipps">
+  <h3>7 Tipps für gute Prompts – und wo du sie im Beispiel findest</h3>
+  <ol>
+    <li><b>Kontext geben:</b> Wer bist du, für wen ist das Ergebnis, wo und mit wie vielen Personen wird es genutzt? <span class="wo">→ Abschnitt 1</span></li>
+    <li><b>Erst das Ziel, dann die Funktionen:</b> Sag, <i>wozu</i> du etwas brauchst – dann kann Claude mitdenken und bessere Lösungen vorschlagen. <span class="wo">→ Abschnitt 1</span></li>
+    <li><b>Struktur schaffen:</b> Überschriften, Listen, eine Tabelle für den Ablauf. So findet sich Claude (und jeder Mensch) schneller zurecht. <span class="wo">→ Abschnitte 4 und 5</span></li>
+    <li><b>Konkret statt ungefähr:</b> genaue Texte, Beschriftungen von Knöpfen, Zahlen (Punkte, Zeiten, Anzahl Personen). <span class="wo">→ Abschnitte 5 und 6</span></li>
+    <li><b>Alle Perspektiven beschreiben:</b> Was sieht der Beamer, was das Handy? Was passiert, wenn etwas schiefgeht – Browser zu, WLAN weg, falsche Eingabe? <span class="wo">→ Abschnitte 2 und 5</span></li>
+    <li><b>Rahmen setzen:</b> Kosten, Datenschutz, Technik – und was die Anwendung ausdrücklich <i>nicht</i> tun soll. <span class="wo">→ Abschnitt 2</span></li>
+    <li><b>Zusammenarbeit festlegen:</b> Rückfragen einfordern, Schritt für Schritt vorgehen, testen lassen, fachliche Inhalte selbst prüfen. <span class="wo">→ Abschnitt 9</span></li>
+  </ol>
+</div>
+
+<div class="box mini">
+  <h3>Für den Anfang reicht viel weniger</h3>
+  <p>Für einen ersten Versuch genügen ein paar Sätze – wichtig sind Zielgruppe, Inhalt und wie es funktionieren soll. Zum Beispiel:</p>
+  <p style="margin:0 0 0 8pt; border-left: 2pt solid var(--petrol); padding-left: 8pt;"><i>„Erstelle mir eine Webseite mit 10 digitalen Lernkarten zum Thema Vitalzeichen für Pflegeschülerinnen und -schüler im 2. Ausbildungsjahr. Vorne steht der Fachbegriff, hinten eine kurze Erklärung in einfacher Sprache. Die Karten drehen sich beim Antippen um und funktionieren gut auf dem Smartphone. Am Ende soll angezeigt werden, wie viele Karten gewusst wurden.“</i></p>
+</div>
+<p class="klein">Ausprobieren kannst du das direkt auf <b>claude.ai</b>. Prüfe Inhalte, die Claude erstellt, immer fachlich – besonders Zahlen, Fachbegriffe und Übersetzungen.</p>
+
+<!-- ======================================================================= -->
+<div class="seitenumbruch"></div>
+<div class="prompt-start">
+  <p>Ab hier: der Prompt</p>
+  <h1>Eine Web-Anwendung, die durch meinen Workshop führt</h1>
+</div>
+
+<h2>1. Worum es geht</h2>
+<p>Ich bin Lehrkraft an einer Berufsschule mit Schwerpunkt Pflege und gebe für mein Kollegium einen 45-minütigen Workshop „Digitale Tools &amp; KI“. Er findet <b>zweimal direkt hintereinander</b> statt, jeweils mit <b>bis zu 30 Kolleginnen und Kollegen</b> (im Folgenden „Teilnehmende“).</p>
+<p><b>Ziel:</b> Die Teilnehmenden sollen aus Sicht von Schülerinnen und Schülern erleben, was mit KI-erstellten Anwendungen im Unterricht möglich ist – und Lust bekommen, es selbst auszuprobieren.</p>
+<p>Dafür brauche ich <b>eine einzige Web-Anwendung</b>, die durch die ganze Stunde führt:</p>
+<ul>
+  <li><b>Beamer-Ansicht</b> auf meinem Laptop: Hier steuere ich alles. Sie sieht aus wie eine schön gestaltete PowerPoint-Präsentation.</li>
+  <li><b>Handy-Ansicht</b> auf den Smartphones der Teilnehmenden: Sie wechselt automatisch mit, je nachdem, was ich am Beamer zeige.</li>
+</ul>
+<p>Sprich die Teilnehmenden überall mit „du“ an.</p>
+
+<h2>2. Rahmenbedingungen</h2>
+<ul>
+  <li><b>Ohne Installation, ohne Konto:</b> Die Teilnehmenden scannen einen QR-Code und landen im Browser. Keine App, keine E-Mail-Adresse.</li>
+  <li><b>Kostenlos betreiben:</b> Der Code liegt auf GitHub, veröffentlicht wird über Cloudflare. Alle Daten speichert die Anwendung selbst (kein Google Sheet o. Ä.).</li>
+  <li><b>Live und robust:</b> Was auf den Handys passiert, erscheint sofort am Beamer. Das muss mit 30 Handys im Schul-WLAN zuverlässig laufen, auch wenn die Verbindung mal wackelt.</li>
+  <li><b>Datensparsam:</b> Gespeichert werden nur Vorname, Anfangsbuchstabe des Nachnamens, ein Passwort (nicht im Klartext), Punkte und Antworten. Keine Cookies, keine Analyse, keine Werbung.</li>
+  <li><b>Geschützt:</b> Die Beamer-Ansicht ist mit einer PIN gesichert, damit nur ich steuern kann.</li>
+  <li><b>Wiedereinstieg:</b> Wer den Browser schließt oder die Verbindung verliert, scannt den QR-Code erneut und ist automatisch wieder dabei – im aktuellen Bildschirm, mit allen Punkten. Auf einem anderen Gerät genügen Name und Passwort.</li>
+  <li><b>Zwei Durchgänge:</b> „Alles zurücksetzen“ macht die Anwendung wieder wie neu. Vorher erinnert sie mich, die Ergebnisse zu exportieren.</li>
+</ul>
+
+<h2>3. Bedienung am Beamer</h2>
+<ul>
+  <li>Unten rechts gibt es immer einen großen <b>Weiter-Knopf</b>. Seine Beschriftung wechselt (siehe Ablauf in Abschnitt 4). Weiter geht auch mit der Pfeiltaste → oder einem Presenter, zurück mit ←.</li>
+  <li>Ein dezentes <b>Menü (⚙)</b>: zu jedem Bildschirm springen, Vollbild, Teilnehmende verwalten (Passwort zurücksetzen, entfernen), Excel-Export, Handout mit QR-Code drucken, „Alles zurücksetzen“ und ein <b>Zuschauer-Link</b> – damit kann jemand von außerhalb die Beamer-Ansicht live mitsehen, ohne steuern zu können.</li>
+  <li>Ich kann jede Aufgabe jederzeit beenden. Die Handys brechen dann ab, bereits gesammelte Punkte bleiben erhalten.</li>
+</ul>
+
+<h2>4. Ablauf der Stunde</h2>
+<p>Jede Zeile ist ein Bildschirm. Solange am Beamer eine Folie zu sehen ist, steht auf den Handys: <i>„PRÄSENTATIONS-MODUS – Richte deine Aufmerksamkeit nach vorne, leg dein Smartphone erstmal zur Seite.“</i></p>
+<table>
+  <thead><tr><th style="width:17%">Bildschirm</th><th style="width:31%">Beamer</th><th style="width:21%">Handys</th><th>Weiter-Knopf</th></tr></thead>
+  <tbody>
+    <tr><td>Anmeldung</td><td>QR-Code, Anleitung, Namen der Angemeldeten</td><td>Anmeldeformular</td><td>PRÄSENTATIONS-MODUS STARTEN</td></tr>
+    <tr><td>Folie „Wünsch dir was!“</td><td>Impulsfrage, 11 Karten zum Aufdecken</td><td>Präsentations-Modus</td><td>AUFDECKEN, dann NÄCHSTE FOLIE</td></tr>
+    <tr><td>Folie „Im Anfang war das Wort“</td><td>Zitat (Johannes 1,1)</td><td>Präsentations-Modus</td><td>NÄCHSTE FOLIE</td></tr>
+    <tr><td>Demo 1</td><td>Folie, dann Balkendiagramm</td><td>Abstimmen</td><td>DEMO 1 STARTEN · UMFRAGE ABSCHLIESSEN</td></tr>
+    <tr><td>Demo 2</td><td>Folie, dann Wortwolke</td><td>Begriffe eingeben</td><td>DEMO 2 STARTEN · WORTWOLKE ABSCHLIESSEN</td></tr>
+    <tr><td>Demo 3</td><td>Folie, dann Punktestand</td><td>Melden</td><td>DEMO 3 STARTEN · FORTFAHREN</td></tr>
+    <tr><td>Demo 4</td><td>Folie, Lernkarten mit 2-Minuten-Countdown, Punktestand</td><td>Lernkarten, dann Melden</td><td>DEMO 4 STARTEN · ABFRAGEN! · FORTFAHREN</td></tr>
+    <tr><td>Demo 5</td><td>Folie, KI-Song (Video), Sortieraufgabe, Punktestand</td><td>Sortieren, dann Melden</td><td>DEMO 5 STARTEN · SORTIERAUFGABE! · PUNKTESTAND · FORTFAHREN</td></tr>
+    <tr><td>Demo 6</td><td>Folie, dann Balken je Sprache und Niveau</td><td>Text und Fragen in 6 Sprachen</td><td>DEMO 6 STARTEN · AUFGABE ABSCHLIESSEN</td></tr>
+    <tr><td>Demo 7</td><td>Folie, dann alle Tipps live auf Karte und Körper</td><td>Tipp-Aufgaben</td><td>DEMO 7 STARTEN · GRAFIK-QUIZ ABSCHLIESSEN</td></tr>
+    <tr><td>Demo 8</td><td>Folie, Gruppen einteilen, Gruppenpuzzle, Siegerehrung, Punktestand</td><td>Gruppe, Expertentext, Aufgaben</td><td>DEMO 8 STARTEN · GRUPPENPUZZLE STARTEN · SIEGEREHRUNG · ZUM PUNKTESTAND · FORTFAHREN</td></tr>
+    <tr><td>Demo 9</td><td>Folie, Highscore, Siegerehrung, Punktestand</td><td>Minispiel</td><td>DEMO 9 STARTEN · SIEGEREHRUNG · ZUM PUNKTESTAND · FORTFAHREN</td></tr>
+    <tr><td>Demo 10</td><td>Folie, Test mit Countdown, Notenspiegel</td><td>Test, dann eigene Note</td><td>DEMO 10 STARTEN · TEST BEENDEN · FORTFAHREN</td></tr>
+    <tr><td>Folie „Und der Prompt …?“</td><td>Ausschnitt meiner Beschreibung</td><td>Prompt als PDF herunterladen</td><td>NÄCHSTE FOLIE</td></tr>
+    <tr><td>Fragerunde</td><td>Folie mit drei Fragen, dann Punktestand mit Export</td><td>Melden, nach dem Export eigene Noten</td><td>PUNKTESTAND-MODUS · FORTFAHREN</td></tr>
+    <tr><td>Folie „JETZT SEID IHR DRAN!“</td><td>QR-Code zu claude.ai</td><td>Knopf „Claude öffnen“</td><td>ALLES ZURÜCKSETZEN</td></tr>
+  </tbody>
+</table>
+
+<h2>5. Die Bildschirme im Einzelnen</h2>
+
+<h3>Anmeldung</h3>
+<ul>
+  <li><b>Beamer:</b> großer QR-Code mit Adresse; Anleitung in vier Schritten: QR-Code scannen · Vorname und Anfangsbuchstabe des Nachnamens eingeben · Passwort vergeben (mindestens 3 Zeichen, Groß-/Kleinschreibung egal) · <b>Passwort notieren</b>. Die Namen der Angemeldeten erscheinen live.</li>
+  <li><b>Handy:</b> Formular mit Vorname, Anfangsbuchstabe, Passwort. Gibt es den Namen schon mit anderem Passwort, erscheint ein freundlicher Hinweis.</li>
+  <li>Den QR-Code möchte ich zusätzlich als Handout ausdrucken können.</li>
+</ul>
+
+<h3>Folie „Wünsch dir was!“</h3>
+<p>Links die Impulsfrage: <i>„Stell dir vor, du hast einen Wunsch frei: eine Software für deinen Unterricht, die einfach alles kann. Was soll sie können?“</i> Rechts 11 verdeckte Karten. Ich sammle erst mündlich Antworten, dann deckt jeder Klick auf „Weiter“ die nächste Karte auf – oder ich klicke eine bestimmte an. Jede Karte nennt, wo man es heute sieht:</p>
+<ul>
+  <li><b>Im Unterricht:</b> Abstimmen, Meinungen einholen, Feedback (Demo 1 &amp; 2) · Mitarbeit oder Lernstand sichtbar machen (Demo 3) · Üben, Wiederholen, Prüfungsvorbereitung (Demo 4 &amp; 5) · Differenzieren, Sprachbarrieren/DaZ, Inklusion (Demo 6) · Anschaulich erklären, visualisieren (Demo 5 &amp; 7) · Gruppen bilden, Zusammenarbeit fördern (Demo 8) · Motivieren, Spaß, Wettbewerb (Demo 9 &amp; Punktestand)</li>
+  <li><b>Rund um den Unterricht:</b> Einfach &amp; datensparsam: ohne App, ohne Konto, kostenlos · Korrigieren &amp; benoten (Demo 10) · Verwaltung: Anwesenheit, Noten, Excel-Export · KI im Hintergrund: Planung, Material &amp; Übersetzungen</li>
+</ul>
+<p>Sind alle Karten offen, erscheint: <i>„Heute live – alles in einer einzigen Anwendung.“</i></p>
+
+<h3>Demo-Folien</h3>
+<p>Jede Demo beginnt mit einer Folie: „DEMO 1“ usw., darunter „Lernen mit …“ und der Titel, eine passende kleine Illustration und unten der Prompt in einem Eingabefeld, der wie getippt erscheint.</p>
+<table>
+  <thead><tr><th style="width:7%">Demo</th><th style="width:35%">Lernen mit …</th><th>Prompt auf der Folie</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>interaktiven Präsentationstools – Abstimmungen mit Balkendiagramm</td><td>Erstelle mir eine Multiple-Choice-Abstimmung mit dynamischem Balkendiagramm.</td></tr>
+    <tr><td>2</td><td>interaktiven Präsentationstools – Wortwolke (à la Mentimeter)</td><td>Erstelle mir eine Word Cloud im Stil von Mentimeter.</td></tr>
+    <tr><td>3</td><td>messbarem Fortschritt für erledigte Aufgaben</td><td>Erstelle mir eine Übersicht, mit der meine SuS Feedback zu ihrer Mitarbeit am Unterricht in Form von Punktewerten bekommen.</td></tr>
+    <tr><td>4</td><td>digitalen Karteikarten</td><td>Erstelle mir eine Webanwendung mit digitalen Lernkarten (im Stil von Quizlet).</td></tr>
+    <tr><td>5</td><td>KI-Songs</td><td>Erstelle mir einen kurzen Merksong, der den SuS hilft, sich die 6 Schritte des Pflegeprozesses (nach Fiechter und Meier) einzuprägen, und eine passende Aufgabe dazu.</td></tr>
+    <tr><td>6</td><td>unterschiedlichen Sprachen</td><td>Erstelle mir eine Aufgabe, bei der die SuS am Smartphone zwischen Deutsch, Türkisch, Russisch, Ukrainisch, Französisch und Spanisch sowie verschiedenen Sprachniveaus wechseln können.</td></tr>
+    <tr><td>7</td><td>Grafiken</td><td>Erstelle mir ein Lernspiel, bei dem die SuS auf einer Landkarte Länder und auf Körperdarstellungen Organe und Knochen antippen.</td></tr>
+    <tr><td>8</td><td>Gruppenarbeiten</td><td>Erstelle mir eine Anwendung, die meine SuS in Gruppen einteilt, und ein Gruppenpuzzle, das nur gemeinsam lösbar ist.</td></tr>
+    <tr><td>9</td><td>Minispielen</td><td>Erstelle mir einen Endless Runner mit Highscore-Funktion.</td></tr>
+    <tr><td>10</td><td>automatisch korrigierten Tests</td><td>Erstelle mir einen Multiple-Choice-Test mit Notenberechnung, bei dem die Fragen für alle SuS anders gemischt sind und die Note nur auf dem eigenen Smartphone erscheint.</td></tr>
+  </tbody>
+</table>
+
+<h3>Demo 1: Abstimmung mit Balkendiagramm</h3>
+<ul>
+  <li>Frage: <i>„Wozu nutzt du KI momentan schon?“</i> – Antworten: Texte generieren · Bilder erstellen · E-Mails beantworten · Softwarecode schreiben · Noch gar nicht.</li>
+  <li><b>Handy:</b> mehrere Antworten möglich, jede nur einmal; „Noch gar nicht“ schließt die anderen aus. Nochmal antippen nimmt eine Antwort zurück.</li>
+  <li><b>Beamer:</b> Die Balken wachsen live mit, darunter „x Personen haben abgestimmt“.</li>
+</ul>
+
+<h3>Demo 2: Wortwolke</h3>
+<ul>
+  <li>Frage: <i>„Was sind die ersten Begriffe, die euch spontan zum Thema KI einfallen?“</i> (auf dem Handy: „… dir …“).</li>
+  <li><b>Handy:</b> bis zu 5 Begriffe in eigenen Feldern, dann „Abschicken“; danach die Bestätigung „Begriffe erfolgreich abgeschickt“.</li>
+  <li><b>Beamer:</b> Wortwolke wie bei Mentimeter – verschiedene Farben, gemischt waagerecht und senkrecht. Je häufiger ein Begriff, desto größer und mittiger; der häufigste steht waagerecht in der Mitte. Gleiche Begriffe werden zusammengefasst (Groß-/Kleinschreibung egal). Ein Klick auf ein Wort blendet es aus, falls etwas Unpassendes dabei ist.</li>
+</ul>
+
+<h3>Demo 3: Punktestand (kommt mehrmals vor)</h3>
+<ul>
+  <li><b>Beamer:</b> „AKTUELLER PUNKTESTAND“ mit allen Namen, nach Punkten sortiert, Plätze 1 bis 3 hervorgehoben. Überraschung: Es sind schon Punkte aus Demo 1 und 2 da – die Handys zeigen Punkte deshalb erst ab hier.</li>
+  <li><b>Handy:</b> zwei große Knöpfe „✋ Ich habe eine Frage“ (rot) und „💡 Ich habe eine Antwort“ (grün); nochmal tippen nimmt die Meldung zurück. Am Beamer wird der Name rot bzw. grün.</li>
+  <li>Ich klicke einen Namen an, die Person ist dran (Handy: „Du bist dran!“). Dann vergebe ich 0, 10, 25, 50, 75, 100 oder eine eigene Zahl bis 100; die Punkte werden addiert. Bei einer Frage (rot) gibt es stattdessen „Frage beantwortet“ ohne Punkte.</li>
+  <li>Knöpfe „Zufällig aufrufen: ALLE“ und „Zufällig aufrufen: NUR MIT MELDUNG“ (nur unter den grünen Meldungen), jeweils mit kurzer Auslosungs-Animation, und „Rückgängig“ für die letzte Vergabe.</li>
+</ul>
+
+<h3>Demo 4: Lernkarten</h3>
+<ul>
+  <li><b>Beamer:</b> <i>„Präge dir die Lernkarten auf deinem Smartphone ein. In 2 Minuten wird abgefragt!“</i> mit großem Countdown.</li>
+  <li><b>Handy:</b> 15 Karten, vorne Latein, hinten Deutsch: Cor – Herz, Pulmo – Lunge, Ren – Niere, Cutis – Haut, Cerebrum – Großhirn, Vesica urinaria – Harnblase, Vertebra – Wirbel, Costa – Rippe, Sanguis – Blut, Dolor – Schmerz, Febris – Fieber, Vulnus – Wunde, Fractura – Knochenbruch, Respiratio – Atmung, Decubitus – Druckgeschwür. Antippen dreht die Karte um, dann „Gewusst“ oder „Noch nicht“; was noch nicht sitzt, kommt wieder.</li>
+  <li>Danach frage ich die Begriffe im Punktestand mündlich ab.</li>
+</ul>
+
+<h3>Demo 5: KI-Song und Sortieraufgabe</h3>
+<ul>
+  <li><b>Beamer:</b> das Video „Die 6 Schritte im Pflegeprozess“ (die Datei liefere ich). Es soll schon beim Start im Hintergrund geladen werden, damit es sofort läuft; zur Sicherheit auch vom Laptop aus zu öffnen.</li>
+  <li><b>Sortieraufgabe am Handy:</b> Die 6 Schritte (Informationssammlung · Probleme und Ressourcen erkennen · Pflegeziele festlegen · Pflegemaßnahmen planen · Pflege durchführen · Evaluation) stehen gemischt untereinander, daneben die Zahlen 1 bis 6. Eine falsche Zahl gibt sofort eine Rückmeldung und kostet 10 Punkte – höchstens 60 Punkte, nie weniger als 0.</li>
+  <li><b>Beamer:</b> „18 von 25 fertig“ und die Namen der Fertigen.</li>
+</ul>
+
+<h3>Demo 6: Sprachen</h3>
+<ul>
+  <li>Ein kurzer Text zur Händehygiene mit 3 Multiple-Choice-Fragen – auf Deutsch, Türkisch, Russisch, Ukrainisch, Französisch und Spanisch, jeweils in Leichter Sprache, Standard und Fachsprache. Erstelle Texte und Übersetzungen; ich lasse sie gegenlesen. Die Fragen haben in allen Fassungen dieselbe Lösung.</li>
+  <li><b>Handy:</b> Sprache (mit Flagge) und Niveau jederzeit wechselbar, die Antworten bleiben erhalten; ein Knopf „Vorlesen“ nutzt die Sprachausgabe des Handys; sofortige Rückmeldung richtig/falsch.</li>
+  <li><b>Beamer:</b> Balken je Sprache (mit Flaggen) und je Niveau, dazu „x von y fertig“.</li>
+</ul>
+
+<h3>Demo 7: Grafiken</h3>
+<ul>
+  <li>9 Tipp-Aufgaben im eigenen Tempo: auf einer Europakarte „Wo spricht man Ukrainisch / Türkisch / Spanisch?“, auf einem Oberkörper Leber, Magen und Niere, auf einem Skelett Oberschenkelknochen, Schlüsselbein und Wirbelsäule. Die Karte aus freien Kartendaten, Körper und Skelett als einfache Schemazeichnungen.</li>
+  <li><b>Handy:</b> je 2 Versuche; nach einem Fehltipp „Daneben – das ist …“, nach dem zweiten wird die richtige Stelle gezeigt.</li>
+  <li><b>Beamer:</b> alle Tipps live als grüne und rote Punkte auf den drei Bildern.</li>
+</ul>
+
+<h3>Demo 8: Gruppenarbeit</h3>
+<ul>
+  <li><b>Gruppen einteilen:</b> Dreiergruppen (geht es nicht auf, Vierergruppen), jede mit Farbe und Tier, z. B. „Blaue Elefanten“. Ich kann zufällig einteilen, die Teilnehmenden selbst wählen lassen (volle Gruppen gesperrt) oder per Klick auf einen Namen die Person in die nächste Gruppe schieben. Das Handy zeigt die Gruppe bildschirmfüllend in ihrer Farbe. Wer später kommt, landet in der kleinsten Gruppe.</li>
+  <li><b>Gruppenpuzzle „Herr Brenner“</b> zum Diabetes mellitus: Jede Person bekommt einen Expertentext – A: Blutzucker &amp; Anzeichen, B: Insulin &amp; Wirkzeiten, C: Ernährung &amp; Bewegung. Dazu 3 Abschnitte mit je 2 Fragen, die nur mit allen Texten lösbar sind.</li>
+  <li><b>Ablauf:</b> Erst lesen alle und tippen „Text gelesen ✓“, dann geht es an die Aufgaben; zwischen eigenem Text und Aufgaben kann man wechseln. Ein Abschnitt wird erst geprüft, wenn alle abgegeben haben. Ist etwas falsch, sieht die Gruppe nur „noch falsch“ (nicht, wer) und ist 15 Sekunden gesperrt. Nach 4 Fehlversuchen gibt es einen Hinweis (welche Frage schon stimmt, dazu ein Tipp), nach 5 die Lösung. Ist jemand länger als 30 Sekunden offline, bekommt der Rest der Gruppe dessen Text.</li>
+  <li><b>Rennen:</b> Alle Gruppen haben dieselben Aufgaben. Der Beamer zeigt den Fortschritt jeder Gruppe live, danach eine Siegerehrung auf dem Treppchen.</li>
+</ul>
+
+<h3>Demo 9: Minispiel</h3>
+<ul>
+  <li><b>Handy:</b> ein einfacher Endless Runner namens „KAROLINE-RUN!“ (springen durch Antippen), beliebig viele Runden.</li>
+  <li><b>Beamer:</b> Highscore-Liste – nur fürs Spiel, nicht für den Punktestand. Die Punktzahl wird nach jeder Runde übertragen, nicht während des Laufens. Danach Siegerehrung: die besten drei auf dem Treppchen, Platz 1 mit Pokal und Konfetti.</li>
+</ul>
+
+<h3>Demo 10: Test mit Note</h3>
+<ul>
+  <li>8 Multiple-Choice-Fragen zur Stunde (Pflegeprozess, Händehygiene, Diabetes, Latein, KI). Fragen und Antworten sind für jede Person anders gemischt, damit niemand abschauen kann. 3 Minuten Zeit, dann wird automatisch abgegeben.</li>
+  <li><b>Handy:</b> eine Frage pro Bildschirm, vor- und zurückblättern, am Ende „Abgeben“. Danach erscheinen die eigene Note, die Zahl der richtigen Antworten und die falsch beantworteten Fragen mit Lösung. <b>Die Note sieht nur die Person selbst.</b></li>
+  <li><b>Beamer:</b> nur „x von y abgegeben“, danach ein anonymer Notenspiegel mit Durchschnitt.</li>
+  <li>Die richtigen Antworten dürfen nicht im Programmcode stehen, den die Handys laden.</li>
+</ul>
+
+<h3>Folie „Und der Prompt für diese ganze Stunde?“</h3>
+<ul>
+  <li><b>Beamer:</b> ein Ausschnitt meiner Beschreibung in Word, daneben „📄 Beschreibung in Word → 💻 diese Anwendung“ und das Zitat „Im Anfang war das Wort.“</li>
+  <li><b>Handy:</b> ein Knopf, um diesen Prompt als PDF herunterzuladen.</li>
+</ul>
+
+<h3>Fragerunde und finaler Punktestand</h3>
+<ul>
+  <li><b>Folie mit drei Fragen:</b> Welche eurer Wünsche vom Anfang fehlen noch – und was würdet ihr damit bauen? · Welche Probleme würdet ihr gerne damit lösen? · Wo seht ihr Probleme, die durch KI-generierte Anwendungen entstehen könnten?</li>
+  <li>Dann der Punktestand mit dem Knopf <b>„FINALEN PUNKTESTAND EXPORTIEREN!“</b>. Nach dem Export sieht jede Person auf dem eigenen Handy ihre mündliche und ihre schriftliche Note.</li>
+</ul>
+
+<h3>Folie „JETZT SEID IHR DRAN!“</h3>
+<ul>
+  <li><b>Beamer:</b> <i>„Wenn ihr wollt, könnt ihr jetzt selbst ausprobieren, mit Claude Software schreiben zu lassen. Ich helfe euch gerne bei den ersten Schritten!“</i>, dazu ein QR-Code zu claude.ai und der Knopf „Alles zurücksetzen für den nächsten Durchgang“.</li>
+  <li><b>Handy:</b> ein großer Knopf „Claude öffnen“ (claude.ai), damit niemand den QR-Code scannen muss; dazu nochmal der Prompt als PDF.</li>
+</ul>
+
+<h2>6. Punkte und Noten</h2>
+<table>
+  <thead><tr><th style="width:32%">Aufgabe</th><th>Punkte</th></tr></thead>
+  <tbody>
+    <tr><td>Abstimmung</td><td>1 je gewählter Antwort</td></tr>
+    <tr><td>Wortwolke</td><td>10 je Begriff (ausgeblendete zählen nicht)</td></tr>
+    <tr><td>Sortieraufgabe</td><td>10 je richtig eingeordnetem Schritt, −10 je falscher Zahl, nie unter 0</td></tr>
+    <tr><td>Sprachen</td><td>10 je Frage, die beim ersten Versuch stimmt</td></tr>
+    <tr><td>Grafiken</td><td>10 für einen Treffer beim ersten, 5 beim zweiten Versuch</td></tr>
+    <tr><td>Gruppenpuzzle</td><td>für jede Person der Gruppe: Platz 1 = 50, Platz 2 = 40, Platz 3 = 30, alle anderen fertigen Gruppen 20</td></tr>
+    <tr><td>Mündliche Beiträge</td><td>0 bis 100 je Vergabe durch mich</td></tr>
+    <tr><td>Minispiel</td><td>nur für die Highscore, nicht für den Punktestand</td></tr>
+    <tr><td>Test</td><td>keine Punkte, nur eine Note (sonst ließe sie sich aus dem Punktestand zurückrechnen)</td></tr>
+  </tbody>
+</table>
+<ul>
+  <li><b>Notenschlüssel</b> (wie bei der IHK): ab 92 % = 1, ab 81 % = 2, ab 67 % = 3, ab 50 % = 4, ab 30 % = 5, darunter 6.</li>
+  <li><b>Schriftliche Note:</b> Anteil richtiger Antworten im Test.</li>
+  <li><b>Mündliche Note:</b> eigene Punkte im Verhältnis zur höchsten Punktzahl im Durchgang (die meisten Punkte = 100 % = 1), gleicher Schlüssel.</li>
+</ul>
+
+<h2>7. Excel-Export</h2>
+<p>Eine Excel-Datei (.xlsx) mit Platz, Name, Anmeldezeit (als Anwesenheitsnachweis), Punkte gesamt und je Aufgabe, mündliche Note, Testergebnis (richtig von 8, Prozent), schriftliche Note und Spiel-Highscore. Im Dateinamen stehen Durchgang, Datum und Uhrzeit.</p>
+
+<h2>8. Gestaltung</h2>
+<ul>
+  <li><b>Beamer:</b> 16:9, passt sich jeder Bildschirmgröße an, aus der letzten Reihe lesbar. Farben der Schule (Petrol und Orange), Schullogo oben links (liefere ich). Folien mit kleinen Illustrationen und dezenten Animationen.</li>
+  <li><b>Handy:</b> große Knöpfe, kurze Texte; funktioniert auf allen gängigen Smartphones, auch auf älteren.</li>
+</ul>
+
+<h2>9. So arbeiten wir zusammen</h2>
+<ol>
+  <li>Lies die ganze Beschreibung. <b>Stelle mir zuerst Rückfragen</b>, wenn etwas unklar ist, und mach Verbesserungsvorschläge, bevor du mit dem Programmieren beginnst.</li>
+  <li>Entwickle die Anwendung Schritt für Schritt und zeige mir Zwischenstände.</li>
+  <li>Teste alles selbst – auch mit vielen gleichzeitig simulierten Handys –, bevor du mir sagst, dass es fertig ist.</li>
+  <li>Erkläre mir die Einrichtung (GitHub, Cloudflare, PIN) Schritt für Schritt; ich programmiere selbst nicht.</li>
+  <li>Markiere fachliche Inhalte (medizinische Werte, Übersetzungen) so, dass ich sie prüfen kann.</li>
+</ol>
+
+</body>
+</html>

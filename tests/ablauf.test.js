@@ -831,6 +831,12 @@ async function anmelden(page, vorname, initiale, passwort) {
 
     await weiter(beamer, 'folie');
     await foto(beamer, 'b-29-und-der-prompt');
+    await warteBis(() => handys[0].page.$('[data-prompt-pdf]'), 'PDF-Knopf am Handy');
+    const pdfLink = await handys[0].page.$eval('[data-prompt-pdf]', a => a.href);
+    const pdfAntwort = await handys[0].page.request.get(pdfLink);
+    pruefe(pdfAntwort.ok() && /application\/pdf/.test(pdfAntwort.headers()['content-type'] || '') && (await pdfAntwort.body()).subarray(0, 5).toString() === '%PDF-',
+      'Folie „Und der Prompt?“: Handy bietet den Beispiel-Prompt als PDF an, die Datei wird ausgeliefert');
+    await foto(handys[0].page, 'h-25-prompt-pdf');
     await weiter(beamer, 'folie');
     await warte(1200);
     pruefe(/FRAGERUNDE/.test(await beamer.textContent('.inhalt')) && /PUNKTESTAND-MODUS/.test(await beamer.textContent('[data-weiter]')), 'Folie Fragerunde mit Knopf PUNKTESTAND-MODUS');
@@ -854,6 +860,10 @@ async function anmelden(page, vorname, initiale, passwort) {
     await weiter(beamer, 'folie');
     await warte(800);
     await foto(beamer, 'b-32-jetzt-seid-ihr-dran');
+    await warteBis(() => handys[0].page.$('[data-claude]'), 'Claude-Knopf am Handy');
+    pruefe(await handys[0].page.$eval('[data-claude]', a => a.href) === 'https://claude.ai/' && /Deine Noten/.test(await handys[0].page.textContent('#app')),
+      'Folie „JETZT SEID IHR DRAN!“: Handy hat einen Knopf zu claude.ai (und zeigt weiter die eigenen Noten)');
+    await foto(handys[0].page, 'h-26-jetzt-claude', true);
 
     // Zurücksetzen
     await beamer.click('[data-zuruecksetzen]');

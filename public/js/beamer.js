@@ -560,7 +560,8 @@ const FOLIEN_BAUER = {
       <div class="seite">${PROMPT_AUSZUG.map(p => `<p>${esc(p)}</p>`).join('')}</div></div>
       <div><h1>Und der Prompt für diese ganze Stunde?</h1>
       <div class="gleichung"><span>📄 9 Seiten Beschreibung in Word</span><i>↓</i><span>💻 diese Anwendung</span></div>
-      <p class="zitat">„Im Anfang war das Wort.“</p></div></div>`;
+      <p class="zitat">„Im Anfang war das Wort.“</p>
+      <p class="pdf-hinweis">📱 Ein aufgeräumter Beispiel-Prompt für diese Anwendung – mit Tipps fürs Prompten – liegt jetzt als PDF auf eurem Smartphone.</p></div></div>`;
   },
   fragerunde() {
     const inhalt = gerüst();
