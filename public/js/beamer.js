@@ -914,13 +914,14 @@ const BILDSCHIRME = {
         if (gr.platz) status = `${medaille[gr.platz - 1] || '🏁'} Platz ${gr.platz} · ${mmss(gr.fertigNach)}`;
         else if (gr.sperreBis > jetzt) status = `🔒 falsch – ${Math.ceil((gr.sperreBis - jetzt) / 1000)} s gesperrt`;
         else if (gr.phase === 'lesen') status = 'liest …';
+        else if (gr.hilfe) status = `${gr.hilfe.stufe === 'loesung' ? '🔑 Lösung' : '💡 Hinweis'} · Abschnitt ${gr.abschnitt + 1}`;
         else status = `Abschnitt ${gr.abschnitt + 1} von ${z.puzzle.abschnitte}`;
         const m = gr.mitglieder.map(x => {
           const symbol = gr.phase === 'lesen' ? (x.gelesen ? '✓' : '📖') : gr.phase === 'fertig' ? '🎉' : (x.abgegeben ? '📨' : '✏️');
           return `<span class="pz-m${x.aktiv ? '' : ' weg'}">${symbol} ${esc(x.name)}<small>${x.experten.join('')}</small></span>`;
         }).join('');
         return `<div class="pz-zeile${gr.platz ? ' fertig' : ''}${gr.sperreBis > jetzt ? ' gesperrt' : ''}" style="--farbe:${info.farbe}">
-          <div class="pz-name"><span class="tier">${info.tier}</span>${esc(info.name)}</div><div class="pz-mitglieder">${m}</div>
+          <div class="pz-name"><span class="tier">${info.tier}</span>${esc(info.name)}${gr.hilfe ? ` <span title="${gr.hilfe.stufe === 'loesung' ? 'Lösung angezeigt' : 'Hinweis angezeigt'}">${gr.hilfe.stufe === 'loesung' ? '🔑' : '💡'}</span>` : ''}</div><div class="pz-mitglieder">${m}</div>
           <div class="pz-schritte">${stufen}</div><div class="pz-status">${status}</div></div>`;
       }).join('') || '<div class="punkte-leer">Noch keine Gruppen.</div>';
     }

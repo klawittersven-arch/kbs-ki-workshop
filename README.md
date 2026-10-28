@@ -117,7 +117,10 @@ Punkte gesammelt!“) eine Überraschung.
   Bewegung; in Zweiergruppen hat eine Person zwei Texte). Erst lesen alle und tippen „Text gelesen ✓“,
   dann lösen sie 3 Abschnitte mit je 2 Fragen, die nur mit allen Texten lösbar sind. Ein Abschnitt wird
   erst geprüft, wenn alle abgegeben haben; ist irgendwo etwas falsch, sieht die Gruppe nur „noch falsch“
-  (nicht wer) und ist 15 Sekunden gesperrt. Ist ein Handy länger als 30 Sekunden getrennt, sieht der
+  (nicht wer) und ist 15 Sekunden gesperrt. Nach dem **4. Fehlversuch** im selben Abschnitt kommt ein
+  **Hinweis**: Jede Frage zeigt, ob sie bei allen stimmt (✓) oder noch nicht (✗), dazu ein Tipp, welche Texte
+  helfen. Nach dem **5. Fehlversuch** wird die **Lösung** mit Erklärung gezeigt und eingetragen; die Gruppe
+  gibt ab und macht weiter. Ist ein Handy länger als 30 Sekunden getrennt, sieht der
   Rest der Gruppe dessen Text und kommt ohne die Person weiter. Alle Gruppen haben dieselben Aufgaben –
   wer zuerst fertig ist, gewinnt. *Fachlich:* Werte und Empfehlungen vor dem Einsatz im Unterricht prüfen.
 - **Zurücksetzen** löscht alle Namen, Passwörter und Punkte und meldet alle Handys ab. Wurde noch
@@ -191,7 +194,7 @@ Link z. B. per Messenger oder E-Mail schicken.
 | Texte der Handy-Seite | `public/js/handy.js` |
 | Demo 6: Text, Fragen und Übersetzungen (6 Sprachen × 3 Niveaus) | `public/js/inhalte-sprachen.js` |
 | Demo 7: Tipp-Aufgaben | `public/js/gemeinsam.js` (`GRAFIK_AUFGABEN`); Körper und Skelett in `public/js/grafik-koerper.js` |
-| Demo 8: Fall, Expertentexte, Fragen und Abschnitte des Gruppenpuzzles; Gruppennamen | `public/js/inhalte-puzzle.js`; `public/js/gemeinsam.js` (`GRUPPEN`) |
+| Demo 8: Fall, Expertentexte, Fragen (mit Tipps und Erklärungen) und Abschnitte des Gruppenpuzzles; Gruppennamen; ab wann Hinweis/Lösung (`PUZZLE_HINWEIS_NACH`, `PUZZLE_LOESUNG_NACH`) | `public/js/inhalte-puzzle.js`; `public/js/gemeinsam.js` (`GRUPPEN`) |
 | Spieltexte KAROLINE-RUN! | `public/spiel/spiel.js` (oben) |
 
 ## Technik

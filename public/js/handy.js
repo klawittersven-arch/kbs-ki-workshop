@@ -747,6 +747,7 @@ const BILDSCHIRME = {
     let meldungZeit = null;
     let phaseVorher = null;
     let entwurf = {};           // Antworten je Abschnitt (übersteht Neuladen)
+    let loesungEingetragen = null;
     const mmss = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
     const textKarte = (k, von) => {
       const e = EXPERTEN[k];
@@ -810,13 +811,28 @@ const BILDSCHIRME = {
         const ab = ABSCHNITTE[p.abschnitt];
         const werte = p.abgabe || antworten();
         const fest = !!p.abgabe;
-        inhalt = `<div class="pz-abschnitt">${esc(ab.titel)} <small>(${p.abschnitt + 1} von ${ABSCHNITTE.length})</small></div>${fallKarte(p.abschnitt === 0)}
+        const hilfe = p.hilfe;
+        // Nach mehreren Fehlversuchen: erst ✓/✗ je Frage mit Tipp, dann die Lösung (nicht, wer falsch lag)
+        const hilfeKopf = !hilfe ? '' : hilfe.stufe === 'loesung'
+          ? `<div class="pz-hilfe loesung">🔑 <b>Lösung</b> nach ${hilfe.fehler} Versuchen: Die richtigen Antworten sind eingetragen. Lest die Erklärungen und gebt dann ab.</div>`
+          : `<div class="pz-hilfe hinweis">💡 <b>Hinweis</b> nach ${hilfe.fehler} Versuchen: Bei den mit ✗ markierten Fragen stimmt es noch nicht bei allen. Lest den Tipp und schaut in die passenden Texte!</div>`;
+        const hilfeFrage = (f, k) => {
+          if (!hilfe) return '';
+          if (hilfe.stufe === 'loesung') {
+            const loesung = f.art === 'zahl' ? f.richtig + ' ' + f.einheit : f.optionen[f.richtig];
+            return `<p class="pz-tipp loesung">🔑 <b>${esc(loesung)}</b><br>${esc(f.erklaerung)}</p>`;
+          }
+          return hilfe.richtig && hilfe.richtig[k]
+            ? '<span class="pz-status ok">✓ stimmt bei allen</span>'
+            : `<span class="pz-status nein">✗ stimmt noch nicht bei allen</span><p class="pz-tipp">💡 ${esc(f.tipp)}</p>`;
+        };
+        inhalt = `<div class="pz-abschnitt">${esc(ab.titel)} <small>(${p.abschnitt + 1} von ${ABSCHNITTE.length})</small></div>${hilfeKopf}${fallKarte(p.abschnitt === 0)}
           ${ab.fragen.map((nr, k) => {
             const f = PUZZLE_FRAGEN[nr];
             const feld = f.art === 'zahl'
               ? `<div class="pz-zahl"><input class="feld" inputmode="decimal" maxlength="8" data-k="${k}" value="${esc(werte[k])}" ${fest ? 'disabled' : ''} aria-label="Antwort"><span>${esc(f.einheit)}</span></div>`
               : f.optionen.map((o, i) => `<button class="wahl${String(werte[k]) === String(i) ? ' gewaehlt' : ''}" data-k="${k}" data-o="${i}" ${fest ? 'disabled' : ''}>${esc(o)}</button>`).join('');
-            return `<div class="karte pz-frage"><p class="frage"><b>${k + 1}.</b> ${esc(f.frage)}</p>${feld}</div>`;
+            return `<div class="karte pz-frage"><p class="frage"><b>${k + 1}.</b> ${esc(f.frage)}</p>${hilfeFrage(f, k)}${feld}</div>`;
           }).join('')}
           ${fest
             ? `<div class="rueck-box gut">📨 Abgegeben – warte auf die anderen.</div><button class="knopf zweit" data-zurueck>Abgabe ändern</button>`
@@ -862,7 +878,7 @@ const BILDSCHIRME = {
     function zeichnen() {
       if (!p) return;
       // Neu aufbauen nur, wenn sich der Inhalt ändert – sonst gehen Eingaben verloren
-      const neu = JSON.stringify([p.phase, p.abschnitt, tab, p.experten, p.freigegeben, p.gelesen, p.abgabe, p.platz]);
+      const neu = JSON.stringify([p.phase, p.abschnitt, tab, p.experten, p.freigegeben, p.gelesen, p.abgabe, p.platz, p.hilfe]);
       if (neu !== sig) { sig = neu; koerper(); }
       kopf();
     }
@@ -887,10 +903,22 @@ const BILDSCHIRME = {
         const m = p.meldung;
         if (m && meldungZeit !== null && m.zeit !== meldungZeit) {
           if (m.art === 'falsch') { toast('✗ Noch nicht alles richtig – besprecht euch!', 'schlecht', 3000); vibrieren([120, 60, 120]); }
+          if (m.art === 'hinweis') { toast('💡 Noch nicht alles richtig – jetzt gibt es einen Hinweis!', '', 3200); vibrieren([120, 60, 120]); tab = 'aufgaben'; window.scrollTo(0, 0); }
+          if (m.art === 'loesung') { toast('🔑 Hier ist die Lösung – lest sie und gebt ab.', '', 3200); vibrieren([120, 60, 120]); tab = 'aufgaben'; window.scrollTo(0, 0); }
           if (m.art === 'weiter') { toast(`✓ Alles richtig! Weiter mit Abschnitt ${p.abschnitt + 1}`, 'gut', 2600); vibrieren([40, 30, 40]); tab = 'aufgaben'; window.scrollTo(0, 0); }
           if (m.art === 'fertig') vibrieren([60, 40, 60, 40, 200]);
         }
         meldungZeit = m ? m.zeit : 0;
+        // Lösung einmal je Abschnitt in die Felder eintragen
+        if (p.hilfe && p.hilfe.stufe === 'loesung' && loesungEingetragen !== p.abschnitt) {
+          entwurf[p.abschnitt] = ABSCHNITTE[p.abschnitt].fragen.map(nr => {
+            const f = PUZZLE_FRAGEN[nr];
+            return f.art === 'zahl' ? String(f.richtig) : f.richtig;
+          });
+          entwurfSpeichern();
+          loesungEingetragen = p.abschnitt;
+          sig = '';
+        }
         if (phaseVorher === 'lesen' && p.phase === 'aufgaben') { toast('Alle haben gelesen – los geht’s!', 'gut', 2400); tab = 'aufgaben'; window.scrollTo(0, 0); }
         phaseVorher = p.phase;
         zeichnen();

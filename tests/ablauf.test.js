@@ -643,9 +643,9 @@ async function anmelden(page, vorname, initiale, passwort) {
     await ausfall.page.close();
     const RICHTIG = [[1, 2], [0, '40'], [2, 0]];
     const fotoGemacht = {};
+    // falschImAbschnitt0: gibt in Abschnitt 1 so lange Falsches ab, bis die Lösung erscheint
     async function puzzleSpielen(h, falschImAbschnitt0) {
-      let falschGemacht = false;
-      const ende = Date.now() + 150000;
+      const ende = Date.now() + 240000;
       while (Date.now() < ende) {
         const p = await h.page.evaluate(() => { const a = window.__handy.a; return a && a.puzzle ? a.puzzle : null; });
         if (!p) { await warte(300); continue; }
@@ -664,18 +664,22 @@ async function anmelden(page, vorname, initiale, passwort) {
           await h.page.click('.pz-tabs [data-tab="aufgaben"]');
         }
         if (p.abgabe || !(await h.page.$('[data-abgeben]'))) { await warte(300); continue; }
-        const falsch = falschImAbschnitt0 && p.abschnitt === 0 && !falschGemacht;
+        const loesung = p.hilfe && p.hilfe.stufe === 'loesung';
+        const falsch = falschImAbschnitt0 && p.abschnitt === 0 && !loesung;
         const antworten = falsch ? [0, 2] : RICHTIG[p.abschnitt];
-        for (let k = 0; k < 2; k++) {
-          const karte = h.page.locator('.pz-frage').nth(k);
-          if (typeof antworten[k] === 'number') await karte.locator(`.wahl[data-o="${antworten[k]}"]`).click();
-          else await karte.locator('input').fill(h === handys[2] ? '40 g' : antworten[k]);
+        if (loesung) await warte(2500);   // Lösung lesen
+        // Wer falsch lag, gibt bei der Lösung ohne eigene Eingabe ab – die Lösung muss eingetragen sein
+        if (!(loesung && falschImAbschnitt0)) {
+          for (let k = 0; k < 2; k++) {
+            const karte = h.page.locator('.pz-frage').nth(k);
+            if (typeof antworten[k] === 'number') await karte.locator(`.wahl[data-o="${antworten[k]}"]`).click();
+            else await karte.locator('input').fill(h === handys[2] ? '40 g' : antworten[k]);
+          }
         }
         try {
           await h.page.waitForSelector('[data-abgeben]:not([disabled])', { timeout: 20000 });
           await h.page.click('[data-abgeben]');
         } catch (e) { continue; }
-        if (falsch) falschGemacht = true;
         await warte(400);
       }
       throw new Error('Gruppenpuzzle nicht fertig: ' + h.name);
@@ -692,6 +696,20 @@ async function anmelden(page, vorname, initiale, passwort) {
     pruefe(true, 'Alle Handys der Gruppe sehen die Sperre, ohne dass verraten wird, wer falsch lag');
     await foto(handys[1].page, 'h-18-puzzle-gesperrt');
     await foto(beamer, 'b-19-demo8-puzzle');
+    // Gruppe 1 liegt immer wieder falsch: nach dem 4. Fehlversuch Hinweis, nach dem 5. die Lösung
+    const hilfeVon = async () => (await zustand(beamer)).puzzle.gruppen[0].hilfe;
+    await warteBis(async () => { const h = await hilfeVon(); return h && h.stufe === 'hinweis'; }, 'Hinweis nach 4 Fehlversuchen', 120000);
+    await warteBis(async () => /stimmt noch nicht bei allen/.test(await handys[1].page.textContent('.pz-koerper')), 'Hinweis am Handy', 8000);
+    const hinweisText = await handys[1].page.textContent('.pz-koerper');
+    pruefe(/✓ stimmt bei allen/.test(hinweisText) && /Vergleicht den gemessenen Wert/.test(hinweisText),
+      'Nach 4 Fehlversuchen: Hinweis – Frage 1 ✗ mit Tipp, Frage 2 ✓ (ohne zu verraten, wer falsch lag)');
+    await foto(handys[1].page, 'h-18b-puzzle-hinweis', true);
+    await foto(beamer, 'b-19b-demo8-puzzle-hinweis');
+    await warteBis(async () => /Lösung<\/b> nach 5 Versuchen/.test(await handys[1].page.innerHTML('.pz-koerper')), 'Lösung am Handy', 40000);
+    pruefe(/55 mg\/dl liegt unter 70/.test(await handys[1].page.textContent('.pz-koerper')), 'Nach 5 Fehlversuchen: Lösung mit Erklärung');
+    await foto(handys[1].page, 'h-18c-puzzle-loesung', true);
+    await warteBis(async () => (await zustand(beamer)).puzzle.gruppen[0].abschnitt > 0, 'Gruppe 1 weiter', 20000);
+    pruefe(true, 'Mit der eingetragenen Lösung kommt die Gruppe weiter');
     await spielen;
     zg = await zustand(beamer);
     const plaetze = zg.puzzle.gruppen.map(g => g.platz).sort((a, b) => a - b);

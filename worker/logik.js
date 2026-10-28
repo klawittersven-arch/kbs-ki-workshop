@@ -8,7 +8,7 @@ import {
   ABLAUF, UMFRAGE_OPTIONEN, UMFRAGE_KEINE, WOLKE_MAX_BEGRIFFE, PFLEGEPROZESS, PUNKTE,
   begriffSchluessel, begriffBereinigen, begriffGueltig, sortierPunkte,
   SPRACH_CODES, SPRACHEN_LOESUNG, sprachPunkte, GRAFIK_AUFGABEN, GRAFIK_VERSUCHE, grafikPunkte,
-  GRUPPENGROESSE, PUZZLE_SPERRE_MS, OFFLINE_FREIGABE_MS, puzzlePunkte, TEST_DAUER_MS, noteAusProzent,
+  GRUPPENGROESSE, PUZZLE_SPERRE_MS, PUZZLE_HINWEIS_NACH, PUZZLE_LOESUNG_NACH, OFFLINE_FREIGABE_MS, puzzlePunkte, TEST_DAUER_MS, noteAusProzent,
 } from '../public/js/gemeinsam.js';
 import { ABSCHNITTE, antwortRichtig } from '../public/js/inhalte-puzzle.js';
 import { TEST_FRAGEN } from '../public/js/inhalte-test.js';
@@ -304,6 +304,7 @@ function puzzleStarten(z, kx) {
     for (let k = 3; k < m.length; k++) experten[m[k]].push(['A', 'B', 'C'][k % 3]);
     gruppen.push({
       phase: 'lesen', gelesen: {}, abschnitt: 0, abgaben: {}, sperreBis: 0, fehlversuche: 0,
+      fehlerImAbschnitt: 0, letztePruefung: null,   // für Hinweis und Lösung
       fertigNach: null, platz: null, fertigMitglieder: [], meldung: null,
     });
   }
@@ -324,15 +325,24 @@ export function puzzleAktualisieren(z, kx) {
     }
     if (gs.phase !== 'aufgaben' || kx.jetzt < gs.sperreBis || !aktive.every(id => gs.abgaben[id])) return;
     const fragen = ABSCHNITTE[gs.abschnitt].fragen;
-    const alleRichtig = aktive.every(id => fragen.every((f, k) => antwortRichtig(f, gs.abgaben[id][k])));
+    // je Frage: stimmt sie bei allen? (für den Hinweis – verrät nicht, wer falsch lag)
+    const fragenRichtig = fragen.map((f, k) => aktive.every(id => antwortRichtig(f, gs.abgaben[id][k])));
     gs.abgaben = {};
     geaendert = true;
-    if (!alleRichtig) {
+    if (!fragenRichtig.every(Boolean)) {
       gs.fehlversuche++;
-      gs.sperreBis = kx.jetzt + PUZZLE_SPERRE_MS;
-      gs.meldung = { art: 'falsch', zeit: kx.jetzt };
+      gs.fehlerImAbschnitt = (gs.fehlerImAbschnitt || 0) + 1;
+      gs.letztePruefung = fragenRichtig;
+      if (gs.fehlerImAbschnitt >= PUZZLE_LOESUNG_NACH) {
+        gs.meldung = { art: 'loesung', zeit: kx.jetzt };   // keine Sperre: die Lösung steht schon da
+      } else {
+        gs.sperreBis = kx.jetzt + PUZZLE_SPERRE_MS;
+        gs.meldung = { art: gs.fehlerImAbschnitt >= PUZZLE_HINWEIS_NACH ? 'hinweis' : 'falsch', zeit: kx.jetzt };
+      }
       return;
     }
+    gs.fehlerImAbschnitt = 0;
+    gs.letztePruefung = null;
     gs.abschnitt++;
     gs.meldung = { art: 'weiter', zeit: kx.jetzt };
     if (gs.abschnitt >= ABSCHNITTE.length) {
@@ -344,6 +354,13 @@ export function puzzleAktualisieren(z, kx) {
     }
   });
   return geaendert;
+}
+
+// Hilfe nach mehreren Fehlversuchen im selben Abschnitt: null, 'hinweis' oder 'loesung'
+function puzzleHilfe(gs) {
+  const n = gs.fehlerImAbschnitt || 0;
+  if (gs.phase !== 'aufgaben' || n < PUZZLE_HINWEIS_NACH) return null;
+  return { stufe: n >= PUZZLE_LOESUNG_NACH ? 'loesung' : 'hinweis', richtig: gs.letztePruefung, fehler: n };
 }
 
 export function puzzleRangliste(z) {
@@ -680,7 +697,7 @@ function puzzleAnsicht(z, kx) {
     start: z.puzzle.start,
     abschnitte: ABSCHNITTE.length,
     gruppen: z.puzzle.gruppen.map((gs, g) => ({
-      g, phase: gs.phase, abschnitt: gs.abschnitt, sperreBis: gs.sperreBis, fehlversuche: gs.fehlversuche,
+      g, phase: gs.phase, abschnitt: gs.abschnitt, sperreBis: gs.sperreBis, fehlversuche: gs.fehlversuche, hilfe: puzzleHilfe(gs),
       fertigNach: gs.fertigNach, platz: gs.platz,
       mitglieder: gruppenMitglieder(z, g).map(id => ({
         id, name: z.tn[id].name, online: kx.online.has(id), aktiv: aktiv(kx, id),
@@ -924,6 +941,7 @@ export function tnAnsicht(z, id, kx = kontext()) {
         })),
         gelesen: !!gs.gelesen[id],
         abgabe: gs.abgaben[id] || null,
+        hilfe: puzzleHilfe(gs),
       };
     }
   }

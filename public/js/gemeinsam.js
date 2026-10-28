@@ -148,7 +148,9 @@ export function grafikPunkte(g) {
 
 /* ---------- Demo 8: Gruppen und Gruppenpuzzle ---------- */
 export const GRUPPENGROESSE = 3;
-export const PUZZLE_SPERRE_MS = 15000;     // Sperre nach einer falschen Gruppenprüfung
+export const PUZZLE_SPERRE_MS = 15000;
+export const PUZZLE_HINWEIS_NACH = 4;   // so viele Fehlversuche im selben Abschnitt → Hinweis (✓/✗ je Frage + Tipp)
+export const PUZZLE_LOESUNG_NACH = 5;   // so viele → Lösung wird gezeigt und eingetragen     // Sperre nach einer falschen Gruppenprüfung
 export const OFFLINE_FREIGABE_MS = 30000;  // so lange darf jemand weg sein, bevor sein Text für die Gruppe frei wird
 export const GRUPPEN = [
   { tier: '🐘', name: 'Blaue Elefanten', farbe: '#2B7BB9' },

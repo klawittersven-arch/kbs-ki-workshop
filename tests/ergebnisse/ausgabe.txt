@@ -1,4 +1,4 @@
-Starte lokalen Workshop auf Port 8824 …
+Starte lokalen Workshop auf Port 8830 …
 
 Beamer und PIN
   ✓ Beim ersten Öffnen wird eine PIN festgelegt
@@ -8,7 +8,7 @@ Beamer und PIN
   ✓ Falsche PIN wird abgelehnt
 
 Zuschauer-Link
-  ✓ Zuschauer-Link erstellt: http://127.0.0.1:8824/beamer?zuschauen=…
+  ✓ Zuschauer-Link erstellt: http://127.0.0.1:8830/beamer?zuschauen=…
   ✓ Zuschauer sieht den Anmeldebildschirm ohne PIN, ohne Weiter-Knopf und ohne Menü
   ✓ Zuschauer-Ansicht ist gekennzeichnet und hat einen Vollbild-Knopf
   ✓ Menü der Lehrkraft zählt 1 verbundenen Zuschauer
@@ -44,7 +44,7 @@ Demo 2: Wortwolke
   ✓ Keine Wörter überlappen sich
   ✓ Zuschauer sieht dieselbe Wortwolke live mit
   ✓ Zuschauer kann keine Begriffe ausblenden
-  ✓ Begriff „Chatbot“ per Klick ausgeblendet
+  ✓ Begriff „Hausaufgaben“ per Klick ausgeblendet
 
 Demo 3: Punktestand
   ✓ Beamer zeigt „folie“ (Schritt 8)
@@ -105,11 +105,14 @@ Demo 8: Gruppen und Gruppenpuzzle
   ✓ Selbst wählen: volle Gruppe (3) ist gesperrt
   ✓ Rest zufällig verteilt, die selbst gewählte Gruppe bleibt
   ✓ Gruppengrößen: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
-  ✓ Felix B. per Klick von Gruppe 2 in Gruppe 3 verschoben
+  ✓ Paul J. per Klick von Gruppe 2 in Gruppe 3 verschoben
   ✓ Beamer zeigt „puzzle“ (Schritt 23)
-  ✓ Jede Gruppe hat die Texte A, B und C (A/C/B · B/AC · C/A/A/B · A/C/B · C/B/A · B/A/C · A/B/C · A/B/C · C/A/B · B/C/A)
+  ✓ Jede Gruppe hat die Texte A, B und C (B/A/C · AC/B · A/C/A/B · A/C/B · C/B/A · A/B/C · B/A/C · C/B/A · C/B/A · A/B/C)
   ✓ Falsche Antwort in der Gruppe → Gruppe 15 s gesperrt
   ✓ Alle Handys der Gruppe sehen die Sperre, ohne dass verraten wird, wer falsch lag
+  ✓ Nach 4 Fehlversuchen: Hinweis – Frage 1 ✗ mit Tipp, Frage 2 ✓ (ohne zu verraten, wer falsch lag)
+  ✓ Nach 5 Fehlversuchen: Lösung mit Erklärung
+  ✓ Mit der eingetragenen Lösung kommt die Gruppe weiter
   ✓ Alle 10 Gruppen fertig, Plätze 1–10
   ✓ Text der ausgefallenen Person wurde für ihre Gruppe freigegeben
   ✓ Puzzle-Punkte 50/40/30, alle anderen fertigen Gruppen 20
@@ -146,7 +149,7 @@ Demo 10: Test mit Note
   ✓ Folie Fragerunde mit Knopf PUNKTESTAND-MODUS
   ✓ Beamer zeigt „punkte“ (Schritt 35)
   ✓ Punktestand der Fragerunde
-  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-28_19-13.xlsx
+  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-28_20-02.xlsx
   ✓ Excel-Datei gültig: 30 Namen mit Endpunktestand
   ✓ Excel enthält Anmeldezeit, mündliche Note, Testergebnis und schriftliche Note
   ✓ Nach dem Export sieht jede*r die eigenen Noten auf dem Handy

@@ -296,3 +296,13 @@ body.gruppen-bunt { background: var(--gruppe, var(--hell)); transition: backgrou
 .noten-karte { text-align: left; margin-top: 22px; }
 .noten-zeile { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-top: 1px solid var(--hell); font-size: 19px; }
 .noten-zeile b { font-size: 30px; color: var(--dunkelpetrol); }
+
+/* Gruppenpuzzle: Hinweis und Lösung nach mehreren Fehlversuchen */
+.pz-hilfe { border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; font-size: 16px; line-height: 1.4; }
+.pz-hilfe.hinweis { background: #FFF4D6; color: #6B4E00; border: 2px solid var(--gold); }
+.pz-hilfe.loesung { background: #E5F0FB; color: #1E4E7A; border: 2px solid #2B7BB9; }
+.pz-status { display: inline-block; border-radius: 999px; padding: 3px 11px; font-size: 14px; font-weight: 800; margin-bottom: 8px; }
+.pz-status.ok { background: var(--gruen-hell); color: #1D7442; }
+.pz-status.nein { background: var(--rot-hell); color: #9B2C2C; }
+.pz-tipp { background: #FFF8E4; border-radius: 10px; padding: 9px 11px; font-size: 15px; line-height: 1.4; color: #5C4600; margin: 0 0 10px; }
+.pz-tipp.loesung { background: #E5F0FB; color: #1E4E7A; }
