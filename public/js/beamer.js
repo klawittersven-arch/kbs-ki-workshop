@@ -5,7 +5,7 @@
  * und das Video weiterlaufen).
  */
 import { ABLAUF, UMFRAGE_FRAGE, UMFRAGE_OPTIONEN, PFLEGEPROZESS } from './gemeinsam.js';
-import { beamerVerbindung } from './verbindung.js';
+import { beamerVerbindung, zuschauerVerbindung } from './verbindung.js';
 import { Wortwolke } from './wortwolke.js';
 import { xlsxErstellen } from './export.js';
 
@@ -13,6 +13,10 @@ import { xlsxErstellen } from './export.js';
    Einstellungen und Folientexte
    ===================================================================== */
 const HANDY_ADRESSE = location.origin + '/';
+// Zuschauer-Link (…/beamer?zuschauen=CODE): gleiche Ansicht, aber ohne Steuerung und ohne PIN
+const ZUSCHAUER_CODE = new URLSearchParams(location.search).get('zuschauen') || '';
+const ZUSCHAUER = !!ZUSCHAUER_CODE;
+if (ZUSCHAUER) { document.body.classList.add('zuschauer'); document.title = 'KI-Workshop – Zuschauer'; }
 const VIDEO_DATEI = 'video/pflegeprozess.mp4';
 const VIDEO_DRIVE = 'https://drive.google.com/file/d/1C42lMvY-1WYxzDCiLV_dKR-cuAuybSPk/preview';
 const LERNZEIT_SEKUNDEN = 120;
@@ -209,8 +213,9 @@ let aufgebaut = { schritt: -1, durchgang: -1 };
 let bildschirm = null;        // { aktualisieren(z), abbauen() }
 let verbunden = false;
 
-const verbindung = beamerVerbindung({
+const handler = {
   onPin: zeigePinDialog,
+  onUngueltig: zuschauenBeendet,
   onStatus(s) {
     verbunden = s === 'verbunden' || s === 'freigeschaltet';
     if (s === 'freigeschaltet') { $('#pin-ebene').hidden = true; videoVorladen(); }
@@ -220,6 +225,7 @@ const verbindung = beamerVerbindung({
   },
   onNachricht(m) {
     if (m.type !== 'zustand') return;
+    if (ZUSCHAUER) videoVorladen();
     z = m.z;
     zeitVersatz = z.serverZeit - Date.now();
     if (z.schritt !== aufgebaut.schritt || z.durchgang !== aufgebaut.durchgang) aufbauen();
@@ -227,8 +233,20 @@ const verbindung = beamerVerbindung({
     kopfAktualisieren();
     if (!$('#menue').hidden) menueAufbauen();
   },
-});
-const senden = m => verbindung.senden(m);
+};
+const verbindung = ZUSCHAUER ? zuschauerVerbindung(ZUSCHAUER_CODE, handler) : beamerVerbindung(handler);
+const senden = m => { if (!ZUSCHAUER) verbindung.senden(m); };
+
+// Zuschauer-Link gelöscht, neu erstellt oder alles zurückgesetzt
+function zuschauenBeendet() {
+  if (bildschirm && bildschirm.abbauen) bildschirm.abbauen();
+  bildschirm = null;
+  z = null;
+  aufgebaut = { schritt: -1, durchgang: -1 };
+  buehne.className = '';
+  buehne.innerHTML = `<div class="zuschauen-ende"><img src="img/kbs-logo.png" alt=""><h1>Dieser Zuschauer-Link ist nicht (mehr) gültig.</h1>
+    <p>Die Präsentation wurde beendet oder zurückgesetzt. Bitte frag die Lehrkraft nach einem neuen Link.</p></div>`;
+}
 
 /* ---------- PIN ---------- */
 function zeigePinDialog({ eingerichtet, fehler }) {
@@ -259,7 +277,7 @@ $('#pin-form').addEventListener('submit', e => {
 function kopfHtml() {
   return `<header class="kopf"><img src="img/kbs-logo.png" alt="">
     <div class="schule">Karoline-Breitinger-Schule<small>Multimedia-Nachmittag · Digitale Tools &amp; KI</small></div>
-    <div class="rechts"><span class="titel-klein">KI-WORKSHOP</span>
+    <div class="rechts">${ZUSCHAUER ? '<span class="zuschauer-marke">👁 ZUSCHAUER-ANSICHT</span>' : ''}<span class="titel-klein">KI-WORKSHOP</span>
     <span class="zaehler" title="verbundene Handys"><span class="punkt${verbunden ? '' : ' weg'}"></span><span class="online-zahl">0</span>&nbsp;Handys</span></div></header>`;
 }
 
@@ -482,7 +500,7 @@ const BILDSCHIRME = {
             c = document.createElement('button');
             c.className = 'chip';
             c.title = 'Passwort zurücksetzen oder entfernen';
-            c.addEventListener('click', () => tnVerwalten(t.id));
+            c.addEventListener('click', () => { if (!ZUSCHAUER) tnVerwalten(t.id); });
             chips.appendChild(c);
             elemente.set(t.id, c);
           }
@@ -523,6 +541,7 @@ const BILDSCHIRME = {
     const inhalt = gerüst({ miniQr: true, links: '<div class="mini-text" data-info></div>' });
     inhalt.innerHTML = `<div class="frage-kopf"><h1>Was sind die ersten Begriffe, die euch spontan zum Thema KI einfallen?</h1></div><div class="wolke-feld"></div>`;
     const wolke = new Wortwolke($('.wolke-feld', inhalt), async schluessel => {
+      if (ZUSCHAUER) return;
       const w = z.wolke.begriffe.find(b => b.schluessel === schluessel);
       const ja = await dialog({
         titel: 'Begriff ausblenden?',
@@ -534,7 +553,7 @@ const BILDSCHIRME = {
     return {
       aktualisieren(z) {
         wolke.zeichnen(z.wolke.begriffe.filter(b => !b.versteckt));
-        $('[data-info]', buehne).innerHTML = `<b>${z.wolke.abgeschickt}</b> ${z.wolke.abgeschickt === 1 ? 'Person hat' : 'Personen haben'} Begriffe geschickt<br><span style="font-size:14px">Klick auf ein Wort blendet es aus</span>`;
+        $('[data-info]', buehne).innerHTML = `<b>${z.wolke.abgeschickt}</b> ${z.wolke.abgeschickt === 1 ? 'Person hat' : 'Personen haben'} Begriffe geschickt${ZUSCHAUER ? '' : '<br><span style="font-size:14px">Klick auf ein Wort blendet es aus</span>'}`;
       },
     };
   },
@@ -762,7 +781,7 @@ function punkteBildschirm(s) {
       const k = document.createElement('button');
       k.className = 'tn-karte';
       k.innerHTML = '<span class="rang"></span><span class="name"><span class="n"></span><span class="status"></span></span><span class="pkt"></span>';
-      k.addEventListener('click', () => { if (!auslosung) senden({ type: 'aufrufen', id: t.id }); });
+      k.addEventListener('click', () => { if (!auslosung && !ZUSCHAUER) senden({ type: 'aufrufen', id: t.id }); });
       karten.set(t.id, k);
       raster.appendChild(k);
     }
@@ -805,7 +824,7 @@ function punkteBildschirm(s) {
     // Vergabe-Fenster passend zum aufgerufenen Namen
     const dran = z.aufgerufen && z.tn.find(t => t.id === z.aufgerufen);
     if (punkteTrotzFrage && !auslosung && (!dran || dran.id !== punkteTrotzFrage)) punkteTrotzFrage = null;
-    if (dran && !auslosung) vergabeOeffnen(dran);
+    if (dran && !auslosung && !ZUSCHAUER) vergabeOeffnen(dran);
     else if (!dran && vergabeFenster) vergabeSchliessen();
   }
 
@@ -1003,6 +1022,14 @@ function menueAufbauen() {
     <h3>Teilnehmende (${z.tn.length})</h3>
     ${z.tn.length ? z.tn.map(t => `<div class="tn-zeile"><span>${t.online ? '🟢' : '⚪'} ${esc(t.name)} <span class="klein">${t.punkte.gesamt} P.</span></span><button data-tn="${t.id}">verwalten</button></div>`).join('') : '<p class="klein">Noch niemand angemeldet.</p>'}
     ${versteckt.length ? `<h3>Ausgeblendete Begriffe</h3>${versteckt.map(b => `<div class="wort-zeile"><span>${esc(b.text)}</span><button data-zeigen="${esc(b.schluessel)}">wieder zeigen</button></div>`).join('')}` : ''}
+    <h3>Zuschauer-Link</h3>
+    ${zuschauerLink() ? `<p class="klein">Zeigt diese Ansicht live – nur anschauen, keine Steuerung, keine PIN nötig. Gilt bis zum Zurücksetzen. Gerade verbunden: <b>${z.zuschauer.verbunden || 0}</b></p>
+    <input class="link-feld" readonly value="${esc(zuschauerLink())}" aria-label="Zuschauer-Link">
+    <button class="aktion" data-a="zuschauer-kopieren">📋 Link kopieren</button>
+    <button class="aktion" data-a="zuschauer-erstellen">↻ Neuen Link erstellen (der alte wird ungültig)</button>
+    <button class="aktion warn" data-a="zuschauer-loeschen">🗑 Zuschauer-Link löschen</button>`
+    : `<p class="klein">Für eine Vorführung aus der Ferne: Wer den Link hat, sieht diese Ansicht live mit – ohne PIN und ohne Steuerung.</p>
+    <button class="aktion" data-a="zuschauer-erstellen">👁 Zuschauer-Link erstellen</button>`}
     <h3>Durchgang ${z.durchgang}</h3>
     <button class="aktion warn" data-a="reset">↺ Alles zurücksetzen …</button>
     <button class="aktion" data-a="pin">PIN auf diesem Gerät vergessen</button>
@@ -1017,9 +1044,27 @@ function menueAufbauen() {
     if (a === 'export') exportieren();
     if (a === 'handout') window.open('handout.html', '_blank', 'noopener');
     if (a === 'video') videoVomLaptop();
+    if (a === 'zuschauer-erstellen') senden({ type: 'zuschauerErstellen' });
+    if (a === 'zuschauer-loeschen') { senden({ type: 'zuschauerLoeschen' }); hinweis('Zuschauer-Link gelöscht.'); }
+    if (a === 'zuschauer-kopieren') linkKopieren(zuschauerLink());
     if (a === 'reset') zuruecksetzenFragen();
     if (a === 'pin') { verbindung.pinVergessen(); hinweis('PIN vergessen – beim nächsten Öffnen wird sie wieder abgefragt.'); }
   }));
+}
+
+function zuschauerLink() {
+  return z && z.zuschauer && z.zuschauer.code ? `${location.origin}/beamer?zuschauen=${encodeURIComponent(z.zuschauer.code)}` : '';
+}
+
+function linkKopieren(text) {
+  const markieren = () => {
+    const f = $('#menue .link-feld');
+    if (f) { f.focus(); f.select(); }
+    hinweis('Link markiert – mit Strg+C kopieren.');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => hinweis('Zuschauer-Link kopiert – z. B. per Messenger oder E-Mail verschicken.'), markieren);
+  } else markieren();
 }
 
 $('#menue-knopf').addEventListener('click', () => {
@@ -1032,6 +1077,7 @@ $('#menue-knopf').addEventListener('click', () => {
    Tastatur (auch Presenter: Bild↓ / Bild↑)
    ===================================================================== */
 document.addEventListener('keydown', e => {
+  if (ZUSCHAUER) return;
   if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
   if (document.querySelector('.ebene:not([hidden])')) return;
   if (e.key === 'Escape') { $('#menue').hidden = true; return; }
@@ -1045,6 +1091,13 @@ document.addEventListener('keydown', e => {
     senden({ type: 'zurueck' });
   }
 });
+
+// Zuschauer: eigener Vollbild-Knopf statt Menü
+if (ZUSCHAUER) {
+  const v = $('#vollbild-knopf');
+  v.hidden = false;
+  v.addEventListener('click', () => vollbild(!document.fullscreenElement));
+}
 
 // Zustand vor dem ersten Kontakt
 buehne.innerHTML = '<div style="margin:auto;font-size:30px;color:#5B6F74">Verbinde …</div>';

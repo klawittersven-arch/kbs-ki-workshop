@@ -422,3 +422,19 @@ button.chip:hover { border-color: var(--petrol); }
 .frage-karte.warn { border-left-color: var(--akzent); }
 .frage-karte .symbol { font-size: 58px; line-height: 1; flex: none; }
 .frage-karte p { margin: 0; font-size: 38px; line-height: 1.25; color: var(--dunkelpetrol); }
+
+/* Zuschauer-Ansicht (Zuschauer-Link): nur anschauen */
+body.zuschauer #menue-knopf, body.zuschauer [data-weiter], body.zuschauer .fuss .knopf2, body.zuschauer .vergabe { display: none !important; }
+body.zuschauer .tn-karte, body.zuschauer .wolke-wort, body.zuschauer .chip { pointer-events: none; }
+.zuschauer-marke { background: var(--akzent); color: #fff; border-radius: 999px; padding: 5px 14px; font-size: 15px; font-weight: 800; letter-spacing: .04em; }
+#vollbild-knopf {
+  position: fixed; right: 10px; bottom: 10px; z-index: 40;
+  border: 0; border-radius: 999px; padding: 8px 16px;
+  background: rgba(0, 0, 0, .35); color: #fff; font-size: 15px; font-weight: 700; opacity: .5; transition: opacity .2s;
+}
+#vollbild-knopf:hover { opacity: 1; background: var(--petrol); }
+.zuschauen-ende { margin: auto; max-width: 1000px; text-align: center; padding: 40px; }
+.zuschauen-ende img { width: 110px; height: 110px; }
+.zuschauen-ende h1 { font-size: 50px; color: var(--dunkelpetrol); margin: 24px 0 16px; }
+.zuschauen-ende p { font-size: 28px; color: var(--leise); margin: 0; }
+#menue .link-feld { width: 100%; font: inherit; font-size: 13px; padding: 7px 9px; border: 1px solid #C5D3D6; border-radius: 8px; margin: 4px 0; color: var(--dunkelpetrol); background: var(--papier); }

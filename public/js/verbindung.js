@@ -206,3 +206,37 @@ export function beamerVerbindung(handler) {
     pinVergessen() { pin = ''; schreiben(PIN_SCHLUESSEL, null); },
   };
 }
+
+/* ---------- Zuschauer (nur anschauen, über den Zuschauer-Link) ---------- */
+
+export function zuschauerVerbindung(code, handler) {
+  const h = Object.assign({ onNachricht: nichts, onStatus: nichts, onUngueltig: nichts }, handler);
+  let ws = null;
+  let beendet = false;
+
+  function starten() {
+    const w = new WebSocket(wsAdresse({ rolle: 'zuschauer', code }));
+    ws = w;
+    w.onopen = () => h.onStatus('verbunden');
+    w.onmessage = e => {
+      const m = parsen(e.data);
+      if (!m || m.type === 'pong') return;
+      if (m.type === 'zuschauen-ungueltig') { beendet = true; h.onUngueltig(); return; }
+      h.onNachricht(m);
+    };
+    w.onclose = () => {
+      if (ws !== w || beendet) return;
+      ws = null;
+      h.onStatus('getrennt');
+      setTimeout(starten, 1500);
+    };
+    w.onerror = nichts;
+  }
+
+  setInterval(() => {
+    try { if (!beendet && ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'aktualisieren' })); } catch (e) { /* egal */ }
+  }, 10000);
+  starten();
+
+  return { senden: nichts };
+}

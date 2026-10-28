@@ -6,6 +6,7 @@
  *
  *   GET  /api/ws?rolle=lehrer             WebSocket des Beamers (danach PIN schicken)
  *   GET  /api/ws?rolle=tn&token=<token>   WebSocket eines Handys (Token nach der Anmeldung)
+ *   GET  /api/ws?rolle=zuschauer&code=<c>  WebSocket einer Zuschauer-Ansicht (nur anschauen)
  *   POST /api/poll  {token, msgs}          Reserve für Handys ohne WebSocket
  */
 import { DurableObject } from 'cloudflare:workers';
@@ -78,6 +79,18 @@ export class Workshop extends DurableObject {
         this.ctx.acceptWebSocket(server, ['lehrer']);
         anhangSetzen(server, { rolle: 'lehrer', ok: false });
         senden(server, { type: 'pin', eingerichtet: this.pinEingerichtet() });
+      } else if (url.searchParams.get('rolle') === 'zuschauer') {
+        // Zuschauer-Link: sieht die Beamer-Ansicht, kann aber nichts steuern
+        this.ctx.acceptWebSocket(server, ['zuschauer']);
+        const code = url.searchParams.get('code') || '';
+        if (this.z.zuschauerCode && code === this.z.zuschauerCode) {
+          anhangSetzen(server, { rolle: 'zuschauer', code });
+          senden(server, this.beamerNachrichten().zuschauer);
+          this.planeSenden();
+        } else {
+          anhangSetzen(server, { rolle: 'zu' });
+          senden(server, { type: 'zuschauen-ungueltig' });
+        }
       } else {
         this.ctx.acceptWebSocket(server, ['tn']);
         const tn = L.tnZuToken(this.z, url.searchParams.get('token'));
@@ -141,6 +154,10 @@ export class Workshop extends DurableObject {
     if (m.type === 'ping') { senden(ws, { type: 'pong' }); return; }
     const a = anhang(ws);
     if (a.rolle === 'lehrer') return this.vonLehrer(ws, a, m);
+    if (a.rolle === 'zuschauer') {
+      if (m.type === 'aktualisieren') senden(ws, this.beamerNachrichten().zuschauer);
+      return;
+    }
     if (a.rolle === 'gast') {
       if (m.type !== 'anmelden') return;
       const r = await this.anmelden(m);
@@ -171,7 +188,7 @@ export class Workshop extends DurableObject {
   geschlossen(ws) {
     const a = anhang(ws);
     anhangSetzen(ws, { rolle: 'zu' });
-    if (a.rolle === 'tn') this.planeSenden();
+    if (a.rolle === 'tn' || a.rolle === 'zuschauer') this.planeSenden();
   }
 
   /* ---------- Anmeldung ---------- */
@@ -231,16 +248,17 @@ export class Workshop extends DurableObject {
       if (r !== 'ok') { senden(ws, { type: 'pin-falsch', grund: r, eingerichtet: this.pinEingerichtet() }); return; }
       anhangSetzen(ws, { rolle: 'lehrer', ok: true });
       senden(ws, { type: 'pin-ok' });
-      senden(ws, { type: 'zustand', z: L.beamerAnsicht(this.z, this.onlineSet()) });
+      senden(ws, this.beamerNachrichten().lehrer);
       return;
     }
     if (m.type === 'aktualisieren') {
-      senden(ws, { type: 'zustand', z: L.beamerAnsicht(this.z, this.onlineSet()) });
+      senden(ws, this.beamerNachrichten().lehrer);
       return;
     }
     if (m.type === 'zuruecksetzen') { this.zuruecksetzen(); return; }
     const r = L.lehrerAktion(this.z, m, Date.now(), this.laufend);
     for (const id of r.abmelden) this.abmelden(id);
+    if (m.type === 'zuschauerErstellen' || m.type === 'zuschauerLoeschen') this.zuschauerPruefen();
     if (r.geaendert) { this.speichern(); this.planeSenden(); }
   }
 
@@ -261,8 +279,32 @@ export class Workshop extends DurableObject {
     this.laufend.clear();
     this.namensSperre.clear();
     this.abmelden(null);
+    this.zuschauerPruefen();
     this.speichern();
     this.planeSenden();
+  }
+
+  /* ---------- Zuschauer-Link ---------- */
+
+  // Zuschauer, deren Link nicht mehr gilt (gelöscht, neu erstellt, zurückgesetzt), abmelden
+  zuschauerPruefen() {
+    for (const ws of this.ctx.getWebSockets('zuschauer')) {
+      const a = anhang(ws);
+      if (a.rolle !== 'zuschauer' || a.code === this.z.zuschauerCode) continue;
+      anhangSetzen(ws, { rolle: 'zu' });
+      senden(ws, { type: 'zuschauen-ungueltig' });
+      try { ws.close(4003, 'Link abgelaufen'); } catch (e) { /* schon zu */ }
+    }
+  }
+
+  // Beamer-Ansicht für die Lehrkraft (mit Zuschauer-Code) und für Zuschauer (ohne)
+  beamerNachrichten() {
+    const v = L.beamerAnsicht(this.z, this.onlineSet());
+    const zuschauer = this.ctx.getWebSockets('zuschauer').filter(ws => anhang(ws).rolle === 'zuschauer').length;
+    return {
+      lehrer: JSON.stringify({ type: 'zustand', z: Object.assign({}, v, { zuschauer: { code: this.z.zuschauerCode || null, verbunden: zuschauer } }) }),
+      zuschauer: JSON.stringify({ type: 'zustand', z: Object.assign({}, v, { zuschauer: { verbunden: zuschauer } }) }),
+    };
   }
 
   /* ---------- Ansichten verschicken ---------- */
@@ -291,13 +333,12 @@ export class Workshop extends DurableObject {
   }
 
   allesSenden() {
-    const online = this.onlineSet();
     let beamer = null;
     for (const ws of this.ctx.getWebSockets()) {
       const a = anhang(ws);
-      if (a.rolle === 'lehrer' && a.ok) {
-        if (!beamer) beamer = JSON.stringify({ type: 'zustand', z: L.beamerAnsicht(this.z, online) });
-        senden(ws, beamer);
+      if ((a.rolle === 'lehrer' && a.ok) || a.rolle === 'zuschauer') {
+        if (!beamer) beamer = this.beamerNachrichten();
+        senden(ws, a.rolle === 'lehrer' ? beamer.lehrer : beamer.zuschauer);
       } else if (a.rolle === 'tn') {
         const v = L.tnAnsicht(this.z, a.id);
         if (v) senden(ws, { type: 'ansicht', a: v });

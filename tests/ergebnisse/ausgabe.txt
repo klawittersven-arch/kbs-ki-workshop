@@ -1,4 +1,4 @@
-Starte lokalen Workshop auf Port 8847 …
+Starte lokalen Workshop auf Port 8815 …
 
 Beamer und PIN
   ✓ Beim ersten Öffnen wird eine PIN festgelegt
@@ -6,6 +6,13 @@ Beamer und PIN
   ✓ PIN angenommen, Anmeldebildschirm sichtbar
   ✓ Zweites Gerät muss die PIN eingeben
   ✓ Falsche PIN wird abgelehnt
+
+Zuschauer-Link
+  ✓ Zuschauer-Link erstellt: http://127.0.0.1:8815/beamer?zuschauen=…
+  ✓ Zuschauer sieht den Anmeldebildschirm ohne PIN, ohne Weiter-Knopf und ohne Menü
+  ✓ Zuschauer-Ansicht ist gekennzeichnet und hat einen Vollbild-Knopf
+  ✓ Menü der Lehrkraft zählt 1 verbundenen Zuschauer
+  ✓ Falscher Zuschauer-Link zeigt „nicht (mehr) gültig“
 
 Anmeldung von 30 Handys
   ✓ 30 Teilnehmende angemeldet
@@ -30,7 +37,9 @@ Demo 2: Wortwolke
   ✓ Häufigster Begriff „Kreativität“ (7×) steht waagerecht in der Mitte
   ✓ Gemischte Wortwolke: 8 Wörter senkrecht
   ✓ Keine Wörter überlappen sich
-  ✓ Begriff „ChatGPT“ per Klick ausgeblendet
+  ✓ Zuschauer sieht dieselbe Wortwolke live mit
+  ✓ Zuschauer kann keine Begriffe ausblenden
+  ✓ Begriff „Datenschutz“ per Klick ausgeblendet
 
 Demo 3: Punktestand
   ✓ Beamer zeigt „folie“ (Schritt 7)
@@ -87,13 +96,14 @@ Abschluss: Fragerunde, Export und Zurücksetzen
   ✓ Folie Fragerunde mit Knopf PUNKTESTAND-MODUS
   ✓ Beamer zeigt „punkte“ (Schritt 22)
   ✓ Punktestand der Fragerunde
-  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-27_16-59.xlsx
+  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-28_12-59.xlsx
   ✓ Excel-Datei gültig: 30 Namen mit Endpunktestand
   ✓ Beamer zeigt „folie“ (Schritt 23)
   ✓ Zurückgesetzt: Durchgang 2, Anmeldung, keine Namen
   ✓ Handys wurden abgemeldet und zeigen wieder die Anmeldung
   ✓ Alte Anmeldung gilt nach dem Zurücksetzen nicht mehr
   ✓ Neuanmeldung im neuen Durchgang startet bei 0 Punkten
+  ✓ Nach dem Zurücksetzen ist der Zuschauer-Link ungültig
   ✓ Keine JavaScript-Fehler auf den Seiten
 
 Alle Prüfungen bestanden.

@@ -101,6 +101,22 @@ Handy meldet sich automatisch wieder an und springt in den aktuellen Bildschirm.
 Gerät genügen Name und Passwort; der Punktestand bleibt erhalten. Klappt die Dauerverbindung im
 WLAN nicht, wechselt das Handy von selbst auf regelmäßige Abfragen (etwas langsamer, sonst gleich).
 
+## Zuschauer-Link (Vorführung aus der Ferne)
+
+Für jemanden, der nicht im Raum ist (z. B. per Telefon zugeschaltet): Im Menü ⚙ unter
+**Zuschauer-Link** auf **„👁 Zuschauer-Link erstellen“** klicken, dann **„📋 Link kopieren“** und den
+Link z. B. per Messenger oder E-Mail schicken.
+
+- Wer den Link öffnet, sieht die Beamer-Ansicht live mit – **ohne PIN und ohne Steuerung**
+  (keine Knöpfe, kein Menü, Klicks auf Namen oder Wörter bewirken nichts). Oben steht „Zuschauer-Ansicht“,
+  unten rechts gibt es einen Vollbild-Knopf.
+- Mitmachen geht wie im Raum: den QR-Code auf der eigenen Zuschauer-Ansicht mit dem Handy scannen.
+- Das Video startet bei Zuschauern nicht automatisch mit – dort selbst auf Play drücken.
+- Im Menü steht, wie viele Zuschauer gerade verbunden sind.
+- Der Link gilt **bis zum Zurücksetzen**. „Neuen Link erstellen“ oder „Zuschauer-Link löschen“ macht
+  den alten sofort ungültig; Zuschauer sehen dann „Dieser Zuschauer-Link ist nicht (mehr) gültig“.
+- Zuschauer sehen alle Namen und Punkte auf dem Bildschirm – den Link also nur gezielt weitergeben.
+
 ## Datenschutz
 
 - Gespeichert werden nur Vorname, Anfangsbuchstabe des Nachnamens, Passwort (nur als Prüfsumme,

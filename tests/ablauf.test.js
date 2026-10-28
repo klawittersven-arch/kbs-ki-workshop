@@ -14,7 +14,7 @@ const WURZEL = path.resolve(__dirname, '..');
 const ERGEBNISSE = path.join(__dirname, 'ergebnisse');
 const PORT = 8790 + Math.floor(Math.random() * 100);
 const B = `http://127.0.0.1:${PORT}`;
-const TN = Number(process.env.TN || 30);
+const TN = Math.max(12, Number(process.env.TN || 30));   // mindestens 12 (einzelne Prüfungen nutzen Handy 5–10)
 const PIN = '2468';
 const PFLEGEPROZESS_LAENGE = 6;
 
@@ -133,6 +133,30 @@ async function anmelden(page, vorname, initiale, passwort) {
     await warteBis(async () => /falsch/.test(await fremd.textContent('#pin-fehler')), 'falsche PIN erkannt');
     pruefe(true, 'Falsche PIN wird abgelehnt');
     await fremd.context().close();
+
+    // Zuschauer-Link: im Menü erstellen, in einem anderen Browser öffnen
+    console.log('\nZuschauer-Link');
+    await beamer.click('#menue-knopf');
+    await beamer.click('#menue [data-a="zuschauer-erstellen"]');
+    await beamer.waitForSelector('#menue .link-feld');
+    const zuschauerLink = await beamer.inputValue('#menue .link-feld');
+    pruefe(/\/beamer\?zuschauen=[a-z0-9]{16}$/.test(zuschauerLink), 'Zuschauer-Link erstellt: ' + zuschauerLink.replace(/zuschauen=.*/, 'zuschauen=…'));
+    await beamer.keyboard.press('Escape');
+    const zuschauerCtx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+    const zuschauer = await zuschauerCtx.newPage();
+    beobachten(zuschauer, 'Zuschauer');
+    await zuschauer.goto(zuschauerLink);
+    await zuschauer.waitForSelector('.login .qr-gross');
+    pruefe(await zuschauer.isHidden('#pin-ebene') && !(await zuschauer.isVisible('[data-weiter]')) && await zuschauer.isHidden('#menue-knopf'),
+      'Zuschauer sieht den Anmeldebildschirm ohne PIN, ohne Weiter-Knopf und ohne Menü');
+    pruefe(await zuschauer.isVisible('.zuschauer-marke') && await zuschauer.isVisible('#vollbild-knopf'), 'Zuschauer-Ansicht ist gekennzeichnet und hat einen Vollbild-Knopf');
+    await warteBis(async () => (await zustand(beamer)).zuschauer.verbunden === 1, 'Zuschauer gezählt');
+    pruefe(true, 'Menü der Lehrkraft zählt 1 verbundenen Zuschauer');
+    const falsch = await (await browser.newContext()).newPage();
+    await falsch.goto(B + '/beamer?zuschauen=falsch123');
+    await warteBis(async () => /nicht \(mehr\) gültig/.test(await falsch.textContent('#buehne')), 'ungültiger Link');
+    pruefe(true, 'Falscher Zuschauer-Link zeigt „nicht (mehr) gültig“');
+    await falsch.context().close();
 
     /* ---------- Anmeldung der Handys ---------- */
     console.log(`\nAnmeldung von ${TN} Handys`);
@@ -258,6 +282,14 @@ async function anmelden(page, vorname, initiale, passwort) {
       return n;
     });
     pruefe(ueberlappt === 0, 'Keine Wörter überlappen sich');
+    await warteBis(async () => (await zuschauer.$$('.wolke-wort')).length === (await beamer.$$('.wolke-wort')).length, 'Zuschauer-Wolke');
+    pruefe(true, 'Zuschauer sieht dieselbe Wortwolke live mit');
+    await foto(zuschauer, 'z-01-zuschauer-wortwolke');
+    await zuschauer.click('.wolke-wort', { force: true });
+    await warte(500);
+    const zDialog = !!(await zuschauer.$('.ebene:not(#pin-ebene)'));
+    const zVersteckt = (await zustand(beamer)).wolke.begriffe.filter(b => b.versteckt).map(b => b.text);
+    pruefe(!zDialog && !zVersteckt.length, 'Zuschauer kann keine Begriffe ausblenden' + (zDialog || zVersteckt.length ? ' (Dialog: ' + zDialog + ', ausgeblendet: ' + zVersteckt.join(',') + ')' : ''));
     await foto(beamer, 'b-05-demo2-wortwolke');
     // Begriff ausblenden
     const weg = z2.wolke.begriffe.find(b => b.anzahl === 1) || z2.wolke.begriffe[0];
@@ -488,6 +520,9 @@ async function anmelden(page, vorname, initiale, passwort) {
     await anmelden(handys[5].page, handys[5].vorname, handys[5].initiale, 'neu123');
     await warteBis(async () => (await zustand(beamer)).tn.length === 1, 'Neuanmeldung');
     pruefe((await zustand(beamer)).tn[0].punkte.gesamt === 0, 'Neuanmeldung im neuen Durchgang startet bei 0 Punkten');
+    await warteBis(async () => /nicht \(mehr\) gültig/.test(await zuschauer.textContent('#buehne')), 'Zuschauer-Link abgelaufen');
+    pruefe(true, 'Nach dem Zurücksetzen ist der Zuschauer-Link ungültig');
+    await foto(zuschauer, 'z-02-zuschauer-abgelaufen');
     await foto(beamer, 'b-21-nach-zuruecksetzen');
   } catch (e) {
     fehler++;

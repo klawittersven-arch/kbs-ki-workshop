@@ -44,6 +44,7 @@ export function neuerZustand(durchgang = 1, jetzt = Date.now()) {
     vergaben: [],           // mündliche Punkte: { id, punkte, zeit }
     aufgerufen: null,       // id der Person, die gerade dran ist
     exportiert: false,
+    zuschauerCode: null,    // Code des Zuschauer-Links (nur anschauen); gilt bis zum Zurücksetzen
   };
 }
 
@@ -292,6 +293,14 @@ export function lehrerAktion(z, m, jetzt = Date.now(), laufend = null) {
       r.geaendert = true;
       break;
     }
+    case 'zuschauerErstellen':
+      // neuer Link – ein alter wird damit ungültig
+      z.zuschauerCode = zufallsId(16);
+      r.geaendert = true;
+      break;
+    case 'zuschauerLoeschen':
+      if (z.zuschauerCode) { z.zuschauerCode = null; r.geaendert = true; }
+      break;
     case 'exportiert':
       if (!z.exportiert) { z.exportiert = true; r.geaendert = true; }
       break;
