@@ -809,7 +809,7 @@ const BILDSCHIRME = {
       <p>live: <b class="ok-text">● Treffer</b> · <b class="nein-text">● daneben</b></p></div>
       <div class="grafik-feld">${GRAFIK_BILDER.map(b => `<div class="grafik-karte" data-bild="${b.bild}"><h2>${esc(b.titel)}</h2>
         <div class="grafik-svg"></div><ul class="grafik-aufgaben">${GRAFIK_AUFGABEN.map((a, i) => a.bild === b.bild
-          ? `<li data-aufgabe="${i}"><span>${esc(a.kurz)}${a.deutsch ? `<small>${esc(a.deutsch)}</small>` : ''}</span><span class="ok-text">✓ 0</span><span class="nein-text">✗ 0</span></li>` : '').join('')}</ul></div>`).join('')}</div>`;
+          ? `<li data-aufgabe="${i}"><span>${esc(a.kurz)}</span><span class="ok-text">✓ 0</span><span class="nein-text">✗ 0</span></li>` : '').join('')}</ul></div>`).join('')}</div>`;
     const radius = { europa: 12, koerper: 4.5, skelett: 4.5 };
     const svgs = {};
     const gesehen = new Set();

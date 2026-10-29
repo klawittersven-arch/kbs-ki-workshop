@@ -125,13 +125,13 @@ export const GRAFIK_AUFGABEN = [
   { bild: 'europa', ziel: 'UA', kurz: 'Ukraine', text: 'Wo spricht man Ukrainisch? Tippe auf das Land.' },
   { bild: 'europa', ziel: 'TR', kurz: 'Türkei', text: 'Wo spricht man Türkisch? Tippe auf das Land.' },
   { bild: 'europa', ziel: 'ES', kurz: 'Spanien', text: 'Wo spricht man Spanisch? Tippe auf das Land.' },
-  // Organe und Knochen: auf dem Handy nur die lateinische Fachsprache; „deutsch“ steht klein am Beamer
-  { bild: 'koerper', ziel: 'leber', kurz: 'Hepar', deutsch: 'Leber', text: 'Tippe auf: Hepar' },
-  { bild: 'koerper', ziel: 'magen', kurz: 'Gaster', deutsch: 'Magen', text: 'Tippe auf: Gaster' },
-  { bild: 'koerper', ziel: 'niere', kurz: 'Ren', deutsch: 'Niere', text: 'Tippe auf: Ren' },
-  { bild: 'skelett', ziel: 'femur', kurz: 'Femur', deutsch: 'Oberschenkelknochen', text: 'Tippe auf: Femur' },
-  { bild: 'skelett', ziel: 'clavicula', kurz: 'Clavicula', deutsch: 'Schlüsselbein', text: 'Tippe auf: Clavicula' },
-  { bild: 'skelett', ziel: 'wirbelsaeule', kurz: 'Columna vertebralis', deutsch: 'Wirbelsäule', text: 'Tippe auf: Columna vertebralis' },
+  // Organe und Knochen: nur die lateinische Fachsprache (Handy und Beamer)
+  { bild: 'koerper', ziel: 'leber', kurz: 'Hepar', text: 'Tippe auf: Hepar' },
+  { bild: 'koerper', ziel: 'magen', kurz: 'Gaster', text: 'Tippe auf: Gaster' },
+  { bild: 'koerper', ziel: 'niere', kurz: 'Ren', text: 'Tippe auf: Ren' },
+  { bild: 'skelett', ziel: 'femur', kurz: 'Femur', text: 'Tippe auf: Femur' },
+  { bild: 'skelett', ziel: 'clavicula', kurz: 'Clavicula', text: 'Tippe auf: Clavicula' },
+  { bild: 'skelett', ziel: 'wirbelsaeule', kurz: 'Columna vertebralis', text: 'Tippe auf: Columna vertebralis' },
 ];
 export const GRAFIK_BILDER = [
   { bild: 'europa', titel: 'Europakarte' },
