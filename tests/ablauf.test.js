@@ -555,7 +555,7 @@ async function anmelden(page, vorname, initiale, passwort) {
       await page.touchscreen.tap(p.x, p.y);
     }
     const grafikErwartet = [];
-    let grafikTipps = 0, grafikFertig = 0;
+    let grafikTipps = 0, grafikFertig = 0, grafikTexte = null;
     await Promise.all(handys.map(async (h, i) => {
       await handyModus(h, 'grafik');
       const bis = i % 8 === 7 ? 4 : 9;       // manche schaffen nur 4 Aufgaben
@@ -564,6 +564,7 @@ async function anmelden(page, vorname, initiale, passwort) {
         await warteBis(async () => (await h.page.textContent('.nr')) === `Aufgabe ${k + 1} von 9`, h.name + ' Aufgabe ' + (k + 1));
         const art = (i + k) % 5;            // 0, 1, 2: Treffer; 3: einmal daneben; 4: zweimal daneben
         if (art >= 3) { await antippen(h.page, DANEBEN[k]); grafikTipps++; }
+        if (i === 0 && k === 3) grafikTexte = [await h.page.textContent('.grafik-aufgabe'), await h.page.textContent('.grafik-rueck')];
         if (art === 4) {
           await warte(200);
           await antippen(h.page, DANEBEN[k]);
@@ -586,6 +587,8 @@ async function anmelden(page, vorname, initiale, passwort) {
     const z7 = await zustand(beamer);
     const tippsBeamer = Object.values(z7.grafik.punkte).reduce((s, l) => s + l.length, 0);
     pruefe(tippsBeamer === grafikTipps, `Beamer zeigt alle ${grafikTipps} Tipps (grün/rot)`);
+    pruefe(grafikTexte && grafikTexte[0] === 'Tippe auf: Hepar' && /Daneben – das ist Cor\./.test(grafikTexte[1]) && !/Leber|Herz/.test(grafikTexte.join(' ')),
+      'Organe und Knochen auf dem Handy nur lateinisch: ' + (grafikTexte ? grafikTexte.map(t => '„' + t.trim() + '“').join(', ') : '–'));
     const grafikFalsch = z7.tn.filter(t => t.punkte.grafik !== grafikErwartet[handys.findIndex(h => h.name === t.name)]);
     pruefe(!grafikFalsch.length, 'Grafik-Punkte: 10 beim ersten, 5 beim zweiten Versuch' + (grafikFalsch.length ? ' – falsch bei ' + grafikFalsch.map(t => t.name).join(', ') : ''));
     const europaPunkte = await beamer.$$eval('.grafik-karte[data-bild="europa"] .tipp', e => e.length);

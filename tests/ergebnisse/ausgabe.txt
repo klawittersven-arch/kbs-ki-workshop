@@ -1,4 +1,4 @@
-Starte lokalen Workshop auf Port 8849 …
+Starte lokalen Workshop auf Port 8848 …
 
 Beamer und PIN
   ✓ Beim ersten Öffnen wird eine PIN festgelegt
@@ -8,7 +8,7 @@ Beamer und PIN
   ✓ Falsche PIN wird abgelehnt
 
 Zuschauer-Link
-  ✓ Zuschauer-Link erstellt: http://127.0.0.1:8849/beamer?zuschauen=…
+  ✓ Zuschauer-Link erstellt: http://127.0.0.1:8848/beamer?zuschauen=…
   ✓ Zuschauer sieht den Anmeldebildschirm ohne PIN, ohne Weiter-Knopf und ohne Menü
   ✓ Zuschauer-Ansicht ist gekennzeichnet und hat einen Vollbild-Knopf
   ✓ Menü der Lehrkraft zählt 1 verbundenen Zuschauer
@@ -52,7 +52,7 @@ Demo 3: Punktestand
   ✓ Punkte = 1 je Stimme + 10 je Begriff (ausgeblendeter Begriff abgezogen)
   ✓ Handy zeigt jetzt die eigenen Punkte
   ✓ Am Beamer: 2 Namen grün (Antwort), 1 rot (Frage), Zurücknehmen klappt
-  ✓ „Zufällig aufrufen: NUR MIT MELDUNG“ wählt Paul J. (hat sich mit Antwort gemeldet)
+  ✓ „Zufällig aufrufen: NUR MIT MELDUNG“ wählt Sofia Q. (hat sich mit Antwort gemeldet)
   ✓ Aufgerufenes Handy zeigt „Du bist dran!“
   ✓ 50 Punkte vergeben und addiert, Meldung danach gelöscht
   ✓ Handy zeigt „+50 Punkte!“
@@ -96,6 +96,7 @@ Demo 7: Grafiken
   ✓ Beamer zeigt „folie“ (Schritt 19)
   ✓ Beamer zeigt „grafik“ (Schritt 20)
   ✓ Beamer zeigt alle 357 Tipps (grün/rot)
+  ✓ Organe und Knochen auf dem Handy nur lateinisch: „Tippe auf: Hepar“, „✗ Daneben – das ist Cor. Noch ein Versuch!“
   ✓ Grafik-Punkte: 10 beim ersten, 5 beim zweiten Versuch
   ✓ Europakarte am Beamer mit 126 Punkten
 
@@ -105,9 +106,9 @@ Demo 8: Gruppen und Gruppenpuzzle
   ✓ Selbst wählen: volle Gruppe (3) ist gesperrt
   ✓ Rest zufällig verteilt, die selbst gewählte Gruppe bleibt
   ✓ Gruppengrößen: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
-  ✓ Felix B. per Klick von Gruppe 2 in Gruppe 3 verschoben
+  ✓ Mehmet V. per Klick von Gruppe 2 in Gruppe 3 verschoben
   ✓ Beamer zeigt „puzzle“ (Schritt 23)
-  ✓ Jede Gruppe hat die Texte A, B und C (A/C/B · AC/B · A/A/C/B · C/A/B · B/C/A · B/A/C · B/A/C · A/B/C · A/C/B · B/A/C)
+  ✓ Jede Gruppe hat die Texte A, B und C (A/B/C · B/AC · C/A/A/B · A/C/B · B/A/C · C/B/A · C/A/B · B/A/C · A/B/C · B/C/A)
   ✓ Falsche Antwort in der Gruppe → Gruppe 15 s gesperrt
   ✓ Alle Handys der Gruppe sehen die Sperre, ohne dass verraten wird, wer falsch lag
   ✓ Nach 4 Fehlversuchen: Hinweis – Frage 1 ✗ mit Tipp, Frage 2 ✓ (ohne zu verraten, wer falsch lag)
@@ -123,7 +124,7 @@ Demo 8: Gruppen und Gruppenpuzzle
 Demo 9: KAROLINE-RUN!
   ✓ Beamer zeigt „folie“ (Schritt 26)
   ✓ Beamer zeigt „spiel“ (Schritt 27)
-  ✓ Highscores von 11 Spielenden am Beamer
+  ✓ Highscores von 12 Spielenden am Beamer
   ✓ Beamer zeigt „siegerehrung“ (Schritt 28)
   ✓ Handys zeigen „SIEGEREHRUNG“, Spiel ist beendet
   ✓ Spiel auf dem Handy geschlossen
@@ -150,7 +151,7 @@ Demo 10: Test mit Note
   ✓ Folie Fragerunde mit Knopf PUNKTESTAND-MODUS
   ✓ Beamer zeigt „punkte“ (Schritt 35)
   ✓ Punktestand der Fragerunde
-  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-28_20-17.xlsx
+  ✓ Dateiname: Punktestand_Durchgang-1_2026-10-29_07-15.xlsx
   ✓ Excel-Datei gültig: 30 Namen mit Endpunktestand
   ✓ Excel enthält Anmeldezeit, mündliche Note, Testergebnis und schriftliche Note
   ✓ Nach dem Export sieht jede*r die eigenen Noten auf dem Handy

@@ -77,13 +77,13 @@ const skelettSvg = `
 export const KOERPER = { viewBox: '0 0 240 326', svg: koerperSvg };
 export const SKELETT = { viewBox: '0 0 240 426', svg: skelettSvg };
 
-// Namen aller antippbaren Teile (für „Daneben – das ist …“)
+// Lateinische Fachbegriffe aller antippbaren Teile (für „Daneben – das ist …“ auf dem Handy)
 export const TEILE = {
-  gehirn: 'das Gehirn', lunge: 'die Lunge', herz: 'das Herz', leber: 'die Leber', magen: 'der Magen',
-  niere: 'eine Niere', darm: 'der Darm', harnblase: 'die Harnblase',
-  schaedel: 'der Schädel', wirbelsaeule: 'die Wirbelsäule', costa: 'eine Rippe (Costa)', brustbein: 'das Brustbein',
-  clavicula: 'das Schlüsselbein (Clavicula)', oberarmknochen: 'der Oberarmknochen', unterarm: 'Elle und Speiche (Unterarm)',
-  becken: 'das Becken', femur: 'der Oberschenkelknochen (Femur)', patella: 'die Kniescheibe (Patella)', unterschenkel: 'der Unterschenkel',
+  gehirn: 'Cerebrum', lunge: 'Pulmo', herz: 'Cor', leber: 'Hepar', magen: 'Gaster',
+  niere: 'Ren', darm: 'Intestinum', harnblase: 'Vesica urinaria',
+  schaedel: 'Cranium', wirbelsaeule: 'Columna vertebralis', costa: 'Costa', brustbein: 'Sternum',
+  clavicula: 'Clavicula', oberarmknochen: 'Humerus', unterarm: 'Radius und Ulna',
+  becken: 'Pelvis', femur: 'Femur', patella: 'Patella', unterschenkel: 'Tibia und Fibula',
 };
 
 // Europakarte (Daten aus grafik-europa.js) als SVG-Inhalt; jedes Land ist antippbar
